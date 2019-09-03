@@ -1,11 +1,11 @@
 import React from "react";
-import DatumParser from "./data/DatumParser";
+import Relationships from "./Relationships";
 import "./App.css";
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      <DatumParser />
+      <Relationships />
     </React.Fragment>
   );
 };
