@@ -9,10 +9,12 @@ jsonFilePath = "./datum.json"
 data = {}
 with open(csvFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)
+    index = 1;
 
     for csvRow in csvReader:
-        id = csvRow["\xef\xbb\xbfnodegoat ID"]
-        data[id] = csvRow
+        # id = csvRow["\xef\xbb\xbfnodegoat ID"]
+        data[index] = csvRow
+        index = index+1
 
 # Write contents to a JSON file - datum.json
 with open(jsonFilePath, "w") as jsonFile:
