@@ -8,13 +8,14 @@ type DatumProps = {};
 type DatumState = {
   id: string;
   name: string;
-  relationships: {
-    MOTHER: entityInfo[];
-    FATHER: entityInfo[];
-    SIBLINGS: entityInfo[];
-    WIVESHUSBANDS: entityInfo[];
-    CHILDREN: entityInfo[];
-  };
+  relationships: relationshipInfo;
+};
+type relationshipInfo = {
+  MOTHER: entityInfo[];
+  FATHER: entityInfo[];
+  SIBLINGS: entityInfo[];
+  WIVESHUSBANDS: entityInfo[];
+  CHILDREN: entityInfo[];
 };
 type entityInfo = {
   target: string;
@@ -54,6 +55,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     // Dionysus is 8188175
     // Atreus is 8187873
     // Theseus is 8188822
+    // Agamemnon is 8182035
     this.state = {
       id: "8188055",
       name: "",
@@ -76,10 +78,13 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   /*******************/
 
   componentDidMount() {
-    const that = this;
+    this.updateComponent(this.state.id);
+  }
 
+  updateComponent(id: string) {
+    const that = this;
     /* Preliminary information (i.e. name) about the entity */
-    let name = this.getNameFromID(that.state.id);
+    let name = this.getNameFromID(id);
 
     /*******************/
     /* Find all relationships */
@@ -96,7 +101,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     // Populate all family connections
     Object.values(datum).forEach(function(datumRow) {
       if (
-        datumRow["Direct Object ID"] === that.state.id &&
+        datumRow["Direct Object ID"] === id &&
         familyDatums.includes(datumRow.Verb)
       ) {
         // i.e. X <verb> Y where Y is your name
@@ -114,10 +119,9 @@ class Geneology extends React.Component<DatumProps, DatumState> {
           passageEnd:
             datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
         });
-        console.log(connections[0].passageEnd);
       }
       if (
-        datumRow["Subject ID"] === that.state.id &&
+        datumRow["Subject ID"] === id &&
         familyDatums.includes(datumRow.Verb)
       ) {
         // Add the logic reversals here
@@ -132,7 +136,13 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     });
 
     // Sort family relationships into their relevant relationship state categories
-    let relationships = that.state.relationships;
+    let relationships: relationshipInfo = {
+      MOTHER: [],
+      FATHER: [],
+      SIBLINGS: [],
+      WIVESHUSBANDS: [],
+      CHILDREN: []
+    };
     connections.forEach(datum => {
       let d: entityInfo = {
         target: datum.target,
@@ -168,7 +178,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     });
 
     // Modify the relationship and name
-    this.setState({ relationships, name });
+    this.setState({ id, relationships, name });
   }
 
   /********************/
@@ -197,7 +207,8 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   }
 
   handleNameClicked(targetID: string) {
-    this.setState({ id: targetID }, () => console.log(this.state.id));
+    /* TODO: Fix this rudimentary solution - data cards to links not volatile state */
+    this.updateComponent(targetID);
   }
 
   getDataPoints(relationship: string) {
@@ -292,7 +303,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         </div>
         {/* If no data is available for the subject */}
         <div className={this.checkNoRelations() ? "" : "no-display"}>
-          No relationship data is available for {this.state.name}
+          No relationship data is available for {this.state.name}.
         </div>
         {/* If data is available for the subject */}
         {Object.keys(this.state.relationships).map(key => {
