@@ -7,6 +7,7 @@ import entities from "./data/entities.json";
 type DatumProps = {};
 type DatumState = {
   id: string;
+  name: string;
   relationships: {
     MOTHER: entityInfo[];
     FATHER: entityInfo[];
@@ -44,8 +45,10 @@ let familyDatums = [
 class Geneology extends React.Component<DatumProps, DatumState> {
   constructor(props: any) {
     super(props);
+    // Dionysus is 8188175
     this.state = {
-      id: "8182002",
+      id: "8188175",
+      name: "",
       relationships: {
         MOTHER: [],
         FATHER: [],
@@ -66,7 +69,9 @@ class Geneology extends React.Component<DatumProps, DatumState> {
 
   componentDidMount() {
     const that = this;
-    /* Get preliminary information about the entity */
+
+    /* Preliminary information (i.e. name) about the entity */
+    let name = this.getNameFromID(that.state.id);
 
     /* Find all relationships */
     var connections: {
@@ -135,7 +140,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         relationships.WIVESHUSBANDS.push(d);
       }
     });
-    this.setState({ relationships });
+    this.setState({ relationships, name });
   }
 
   /********************/
@@ -144,11 +149,12 @@ class Geneology extends React.Component<DatumProps, DatumState> {
 
   /* Use the entity CSV instead when receive it */
   getNameFromID(id: string) {
-    Object.values(entities).forEach(function(entityRow) {
-      if (datumRow["Subject ID"] === id) {
-        return datumRow["Subject"];
-      }
-    });
+    let that = this;
+    if (that.hasKey(entities, id)) {
+      return entities[id]["Name (Smith & Trzaskoma)"];
+    } else {
+      return "unknown";
+    }
   }
 
   checkNoRelations() {
@@ -163,7 +169,9 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   }
 
   handleNameClicked(targetID: string) {
-    return this.setState({ id: targetID });
+    let that = this;
+    console.log(targetID, "is clicked");
+    that.setState({ id: targetID });
   }
 
   getDataPoints(relationship: string) {
@@ -182,12 +190,13 @@ class Geneology extends React.Component<DatumProps, DatumState> {
           {that.state.relationships[relationship].map(entity => {
             return (
               <span>
-                <button onClick={this.handleNameClicked(entity.targetID)}>
+                <button onClick={() => this.handleNameClicked(entity.targetID)}>
                   {entity.target}
                 </button>
                 ,{" "}
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   href={
                     "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-eng2:" +
                     entity.passage.split(" ")[2]
