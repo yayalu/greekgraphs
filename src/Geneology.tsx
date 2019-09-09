@@ -16,7 +16,12 @@ type DatumState = {
     CHILDREN: entityInfo[];
   };
 };
-type entityInfo = { target: string; targetID: string; passage: string };
+type entityInfo = {
+  target: string;
+  targetID: string;
+  passageStart: string;
+  passageEnd: string;
+};
 
 /* TODO:
 Get gender from subject ID
@@ -50,7 +55,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     // Atreus is 8187873
     // Theseus is 8188822
     this.state = {
-      id: "8189215",
+      id: "8188055",
       name: "",
       relationships: {
         MOTHER: [],
@@ -84,7 +89,8 @@ class Geneology extends React.Component<DatumProps, DatumState> {
       target: string;
       targetID: string;
       verb: string;
-      passage: string;
+      passageStart: string;
+      passageEnd: string;
     }[] = [];
 
     // Populate all family connections
@@ -104,8 +110,11 @@ class Geneology extends React.Component<DatumProps, DatumState> {
           target: datumRow["Subject"],
           targetID: datumRow["Subject ID"],
           verb: datumRow.Verb,
-          passage: datumRow["Passage: start"]
+          passageStart: datumRow["Passage: start"],
+          passageEnd:
+            datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
         });
+        console.log(connections[0].passageEnd);
       }
       if (
         datumRow["Subject ID"] === that.state.id &&
@@ -128,7 +137,8 @@ class Geneology extends React.Component<DatumProps, DatumState> {
       let d: entityInfo = {
         target: datum.target,
         targetID: datum.targetID,
-        passage: datum.passage
+        passageStart: datum.passageStart,
+        passageEnd: datum.passageEnd
       };
       if (datum.verb === "is mother of") {
         //TODO: add the logical reversals and complex relationships here
@@ -157,7 +167,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
       }
     });
 
-    // Modify the relationship and name states
+    // Modify the relationship and name
     this.setState({ relationships, name });
   }
 
@@ -226,7 +236,10 @@ class Geneology extends React.Component<DatumProps, DatumState> {
                     rel="noopener noreferrer"
                     href={
                       "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-eng2:" +
-                      entity.passage.split(" ")[2]
+                      entity.passageStart.split(" ")[2] +
+                      (entity.passageEnd === ""
+                        ? ""
+                        : "-" + entity.passageEnd.split(" ")[2])
                     }
                     style={{
                       color: "grey",
@@ -235,7 +248,11 @@ class Geneology extends React.Component<DatumProps, DatumState> {
                     }}
                   >
                     {/* Note change "eng" to "grc" to toggle between English and Greek */}
-                    ({entity.passage})
+
+                    {entity.passageStart +
+                      (entity.passageEnd === ""
+                        ? ""
+                        : "-" + entity.passageEnd.split(" ")[2])}
                   </a>
                 </div>
               );
