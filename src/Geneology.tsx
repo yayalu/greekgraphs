@@ -2,19 +2,20 @@ import React from "react";
 import "./App.css";
 import "./Geneology.scss";
 import datum from "./data/datum.json";
+import entities from "./data/entities.json";
 
 type DatumProps = {};
 type DatumState = {
-  name: string;
+  id: string;
   relationships: {
-    MOTHER: agentInfo[];
-    FATHER: agentInfo[];
-    SIBLINGS: agentInfo[];
-    WIVESHUSBANDS: agentInfo[];
-    CHILDREN: agentInfo[];
+    MOTHER: entityInfo[];
+    FATHER: entityInfo[];
+    SIBLINGS: entityInfo[];
+    WIVESHUSBANDS: entityInfo[];
+    CHILDREN: entityInfo[];
   };
 };
-type agentInfo = { target: string; targetID: string; passage: string };
+type entityInfo = { target: string; targetID: string; passage: string };
 
 /* TODO:
 Get gender from subject ID
@@ -44,7 +45,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      name: "Branchos",
+      id: "8182002",
       relationships: {
         MOTHER: [],
         FATHER: [],
@@ -56,6 +57,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     this.getNameFromID = this.getNameFromID.bind(this);
     this.checkNoRelations = this.checkNoRelations.bind(this);
     this.getDataPoints = this.getDataPoints.bind(this);
+    this.handleNameClicked = this.handleNameClicked.bind(this);
   }
 
   /*******************/
@@ -64,6 +66,9 @@ class Geneology extends React.Component<DatumProps, DatumState> {
 
   componentDidMount() {
     const that = this;
+    /* Get preliminary information about the entity */
+
+    /* Find all relationships */
     var connections: {
       target: string;
       targetID: string;
@@ -72,7 +77,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     }[] = [];
     Object.values(datum).forEach(function(datumRow) {
       if (
-        datumRow["Direct Object"] === that.state.name &&
+        datumRow["Direct Object ID"] === that.state.id &&
         familyDatums.includes(datumRow.Verb)
       ) {
         // i.e. X <verb> Y where Y is your name
@@ -84,7 +89,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         });
       }
       if (
-        datumRow.Subject === that.state.name &&
+        datumRow["Subject ID"] === that.state.id &&
         familyDatums.includes(datumRow.Verb)
       ) {
         // Add the logic reversals here
@@ -99,7 +104,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     });
     let relationships = that.state.relationships;
     connections.forEach(datum => {
-      let d: agentInfo = {
+      let d: entityInfo = {
         target: datum.target,
         targetID: datum.targetID,
         passage: datum.passage
@@ -137,9 +142,9 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   /* HELPER FUNCTIONS */
   /********************/
 
-  /* Use the agent CSV instead when receive it */
+  /* Use the entity CSV instead when receive it */
   getNameFromID(id: string) {
-    Object.values(datum).forEach(function(datumRow) {
+    Object.values(entities).forEach(function(entityRow) {
       if (datumRow["Subject ID"] === id) {
         return datumRow["Subject"];
       }
@@ -157,6 +162,10 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     );
   }
 
+  handleNameClicked(targetID: string) {
+    return this.setState({ id: targetID });
+  }
+
   getDataPoints(relationship: string) {
     let that = this;
     if (
@@ -170,20 +179,23 @@ class Geneology extends React.Component<DatumProps, DatumState> {
               ? "Wives / Husbands: "
               : relationship + ": "}
           </span>
-          {that.state.relationships[relationship].map(agent => {
+          {that.state.relationships[relationship].map(entity => {
             return (
               <span>
-                {agent.target},{" "}
+                <button onClick={this.handleNameClicked(entity.targetID)}>
+                  {entity.target}
+                </button>
+                ,{" "}
                 <a
                   target="_blank"
                   href={
                     "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-eng2:" +
-                    agent.passage.split(" ")[2]
+                    entity.passage.split(" ")[2]
                   }
                   style={{ color: "grey", fontStyle: "italic" }}
                 >
                   {/* Note change "eng" to "grc" to toggle between English and Greek */}
-                  ({agent.passage})
+                  ({entity.passage})
                 </a>
               </span>
             );

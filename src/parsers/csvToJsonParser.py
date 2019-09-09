@@ -35,14 +35,10 @@ entitiesJsonFilePath = "../data/entities.json"
 data = {}
 with open(entitiesCsvFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)
-    index = 1
-    
     for csvRow in csvReader:
-        # id = csvRow["\xef\xbb\xbfnodegoat ID"]
-        data[index] = csvRow
-        index = index+1
+        data[csvRow["ID"]] = csvRow
 
-# Write contents to a JSON file - datum.json
+# Write contents to a JSON file - entities.json
 with open(entitiesJsonFilePath, "w") as jsonFile:
     jsonFile.write(json.dumps(data, indent=4))
     print("Parsed entities.csv to entities.json")
