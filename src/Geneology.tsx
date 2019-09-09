@@ -34,6 +34,7 @@ let familyDatums = [
   "is twin of",
   "is wife of",
   "is husband of",
+  "marries",
   "is grandfather of",
   "is grandmother of",
   "is grandparent of",
@@ -46,8 +47,10 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   constructor(props: any) {
     super(props);
     // Dionysus is 8188175
+    // Atreus is 8187873
+    // Theseus is 8188822
     this.state = {
-      id: "8188175",
+      id: "8189215",
       name: "",
       relationships: {
         MOTHER: [],
@@ -73,19 +76,30 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     /* Preliminary information (i.e. name) about the entity */
     let name = this.getNameFromID(that.state.id);
 
+    /*******************/
     /* Find all relationships */
+    /*******************/
+
     var connections: {
       target: string;
       targetID: string;
       verb: string;
       passage: string;
     }[] = [];
+
+    // Populate all family connections
     Object.values(datum).forEach(function(datumRow) {
       if (
         datumRow["Direct Object ID"] === that.state.id &&
         familyDatums.includes(datumRow.Verb)
       ) {
         // i.e. X <verb> Y where Y is your name
+        console.log(
+          "Added",
+          datumRow["Subject"],
+          datumRow.Verb,
+          datumRow["Direct Object"]
+        );
         connections.push({
           target: datumRow["Subject"],
           targetID: datumRow["Subject ID"],
@@ -107,6 +121,8 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         );
       }
     });
+
+    // Sort family relationships into their relevant relationship state categories
     let relationships = that.state.relationships;
     connections.forEach(datum => {
       let d: entityInfo = {
@@ -140,6 +156,8 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         relationships.WIVESHUSBANDS.push(d);
       }
     });
+
+    // Modify the relationship and name states
     this.setState({ relationships, name });
   }
 
@@ -169,9 +187,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   }
 
   handleNameClicked(targetID: string) {
-    let that = this;
-    console.log(targetID, "is clicked");
-    that.setState({ id: targetID });
+    this.setState({ id: targetID }, () => console.log(this.state.id));
   }
 
   getDataPoints(relationship: string) {
@@ -181,34 +197,50 @@ class Geneology extends React.Component<DatumProps, DatumState> {
       that.state.relationships[relationship].length !== 0
     ) {
       return (
-        <div>
-          <span style={{ fontWeight: "bold", textTransform: "uppercase" }}>
+        <div style={{ margin: "0 0 2rem 0", clear: "both" }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              float: "left",
+              paddingRight: "1rem"
+            }}
+          >
             {relationship === "WIVESHUSBANDS"
               ? "Wives / Husbands: "
               : relationship + ": "}
-          </span>
-          {that.state.relationships[relationship].map(entity => {
-            return (
-              <span>
-                <button onClick={() => this.handleNameClicked(entity.targetID)}>
-                  {entity.target}
-                </button>
-                ,{" "}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={
-                    "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-eng2:" +
-                    entity.passage.split(" ")[2]
-                  }
-                  style={{ color: "grey", fontStyle: "italic" }}
-                >
-                  {/* Note change "eng" to "grc" to toggle between English and Greek */}
-                  ({entity.passage})
-                </a>
-              </span>
-            );
-          })}
+          </div>
+          <div style={{ float: "left" }}>
+            {that.state.relationships[relationship].map(entity => {
+              return (
+                <div style={{ margin: "0" }}>
+                  <div
+                    className="entity-button"
+                    onClick={() => this.handleNameClicked(entity.targetID)}
+                  >
+                    {entity.target}
+                  </div>
+                  ,{" "}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={
+                      "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-eng2:" +
+                      entity.passage.split(" ")[2]
+                    }
+                    style={{
+                      color: "grey",
+                      fontStyle: "italic",
+                      fontSize: "0.8rem"
+                    }}
+                  >
+                    {/* Note change "eng" to "grc" to toggle between English and Greek */}
+                    ({entity.passage})
+                  </a>
+                </div>
+              );
+            })}
+          </div>
         </div>
       );
     } else {
@@ -228,9 +260,17 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   render() {
     return (
       <div
-        style={{ margin: "2rem", border: "solid 1px black", padding: "3rem" }}
+        style={{
+          margin: "3rem 6rem 3rem 6rem",
+          padding: "3rem",
+          display: "flow-root",
+          border: "solid 1px black"
+        }}
       >
-        <div id="datacard-heading" style={{ marginBottom: "2rem" }}>
+        <div
+          id="datacard-heading"
+          style={{ marginBottom: "2rem", textTransform: "uppercase" }}
+        >
           {this.state.name}
         </div>
         {/* If no data is available for the subject */}

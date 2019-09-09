@@ -1,7 +1,7 @@
 # Meeting X, DD/MM/YYYY
 
 Completed: &#9745;
-Incomplete: &#9746;
+Unattempted: &#9746;
 In progress: &#9731;
 ``` All comments from Ben and Greta are in these code blocks ```
 

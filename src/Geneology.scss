@@ -9,5 +9,11 @@
   display: none;
 }
 
-.relation-data {
+.entity-button {
+  font-size: 0.9em;
+  cursor: pointer;
+  float: left;
+  :hover {
+    text-decoration: underline;
+  }
 }
