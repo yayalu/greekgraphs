@@ -3,50 +3,44 @@ from enum import Enum
 import csv
 import json
 
+datumFilePath = "../data/datum.csv"
+genderDataFilePath = "../data/genderData.json"
 
-class Gender(Enum):
-    FEMALE = 1
-    MALE = 2
-    UNDEFINED = 3
-
+#THEN CONVERT TO JSON USING CSV TO JSON PARSER
 
 genderData = {}
 
-
 def getGender(row):
     verb = row["Verb"]
-    # if gender has NOT already been assigned for the subject
-    if genderData[row["Subject ID"]].gender != Gender.UNDEFINED:
-        return genderData[row["Subject ID"]].gender
+    gender = ""
+    # if gender has already been assigned for the subject (removes duplicate relationships)
+    if row["Subject ID"] == '':
+        return 'invalid'
+    if (genderData.get(row["Subject ID"]) != None and genderData[row["Subject ID"]].get('gender') != 'undefined'):
+        print("Duplicated",row["Subject ID"],row["Subject"],genderData[row["Subject ID"]].get('gender'))
+        return 'duplicate'
     # if fits primary male attributes
     elif (verb == "is father of" or verb == "is son of" or verb == "is brother of" or verb == "is uncle of" or verb == "is husband of" or verb == "is grandfather of" or verb == "is grandson of"):
-        return Gender.MALE
+        gender = 'male'
     # if fits primary female attributes
     elif (verb == "is mother of" or verb == "is daughter of" or verb == "is sister of" or verb == "is aunt of" or verb == "is wife of" or verb == "is grandmother of" or verb == "is granddaughter of"):
-        return Gender.FEMALE
-    # if no related familial attributes
+        gender = 'female'
+    # if no family attributes discovered in current datum
     else:
-        return Gender.UNDEFINED
+        gender = 'undefined'
+    print(row["Subject ID"],row["Subject"],gender)
+    return {'id':row["Subject ID"], 'name':row["Subject"], 'gender': gender}
 
-
-csvFilePath = "../data/datum.csv"
-jsonFilePath = "../data/genderData.json"
-
-# Read from and parse existing datum.csv file
-with open(csvFilePath) as csvFile:
+with open(datumFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)
-
     for csvRow in csvReader:
-        # id = csvRow["\xef\xbb\xbfnodegoat ID"]
-        # genderData[index] = csvRow
-        # index = index+1
-        obj = {}
-        obj[name] = csvRow["Subject"]
-        obj[gender]: getGender(csvRow)
-        genderData[csvRow["Subject ID"]] = obj
+        if getGender(csvRow) != 'duplicate' and getGender(csvRow) != 'invalid' :
+            genderData[csvRow["Subject ID"]] = getGender(csvRow)
 
-
-# Write contents to a JSON file - datum.json
-with open(jsonFilePath, "w") as jsonFile:
+# Write contents to a JSON file - entities.json
+with open(genderDataFilePath, "w") as jsonFile:
     jsonFile.write(json.dumps(genderData, indent=4))
-    print("Parsed gender data to genderData.json")
+    print("Obtained genders and wrote to genderData.json")
+
+
+#TODO: Convert to JSON in csvToJSONParser.py

@@ -3,6 +3,7 @@ import "./App.css";
 import "./Geneology.scss";
 import datum from "./data/datum.json";
 import entities from "./data/entities.json";
+import { exportDefaultSpecifier } from "@babel/types";
 
 type DatumProps = {};
 type DatumState = {
@@ -56,6 +57,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     // Atreus is 8187873
     // Theseus is 8188822
     // Agamemnon is 8182035
+    // Use Clytaimnestra example, 8188055
     this.state = {
       id: "8188055",
       name: "",
@@ -69,6 +71,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     };
     this.getNameFromID = this.getNameFromID.bind(this);
     this.checkNoRelations = this.checkNoRelations.bind(this);
+    this.reversedVerb = this.reversedVerb.bind(this);
     this.getDataPoints = this.getDataPoints.bind(this);
     this.handleNameClicked = this.handleNameClicked.bind(this);
   }
@@ -105,12 +108,6 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         familyDatums.includes(datumRow.Verb)
       ) {
         // i.e. X <verb> Y where Y is your name
-        console.log(
-          "Added",
-          datumRow["Subject"],
-          datumRow.Verb,
-          datumRow["Direct Object"]
-        );
         connections.push({
           target: datumRow["Subject"],
           targetID: datumRow["Subject ID"],
@@ -126,16 +123,19 @@ class Geneology extends React.Component<DatumProps, DatumState> {
       ) {
         // Add the logic reversals here
         // i.e. Y <verb> X where Y is your name
-        console.log(
-          "Not yet addressed:",
-          datumRow["Subject"],
-          datumRow.Verb,
-          datumRow["Direct Object"]
-        );
+        connections.push({
+          target: datumRow["Direct Object"],
+          targetID: datumRow["Direct Object ID"],
+          verb: that.reversedVerb(datumRow.Verb, datumRow["Direct Object"]),
+          passageStart: datumRow["Passage: start"],
+          passageEnd:
+            datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+        });
       }
     });
 
     // Sort family relationships into their relevant relationship state categories
+    //TODO: deal with duplicates
     let relationships: relationshipInfo = {
       MOTHER: [],
       FATHER: [],
@@ -151,8 +151,6 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         passageEnd: datum.passageEnd
       };
       if (datum.verb === "is mother of") {
-        //TODO: add the logical reversals and complex relationships here
-        //TODO: deal with duplicates
         relationships.MOTHER.push(d);
       } else if (datum.verb === "is father of") {
         relationships.FATHER.push(d);
@@ -204,6 +202,41 @@ class Geneology extends React.Component<DatumProps, DatumState> {
       that.state.relationships.WIVESHUSBANDS.length === 0 &&
       that.state.relationships.CHILDREN.length === 0
     );
+  }
+
+  reversedVerb(verb: string, dirObject: string) {
+    if (
+      verb === "is mother of" ||
+      verb === "is father of" ||
+      verb === "is parent of"
+    ) {
+      return "is child of"; //TODO: Conduct gender parsing to allow specificity - daughter vs son
+    } else if (
+      verb === "is son of" ||
+      verb === "is daughter of" ||
+      verb === "is child of"
+    ) {
+      return "is mother of"; //TODO: VERY IMPORTANT DISTINCTION! Conduct gender parsing on this one - mother vs father
+    } else if (
+      verb === "is sister of" ||
+      verb === "is brother of" ||
+      verb === "is twin of"
+    ) {
+      return "is sister of"; //TODO: Conduct gender parsing to allow specificity. Use sister as placeholder
+    } else if (
+      verb === "is wife of" ||
+      verb === "is husband of" ||
+      verb === "marries"
+    ) {
+      return "marries"; //Do not need specificity here (?)
+    } else {
+      console.log(
+        "Unsure of this connection, or connection is not relevant for the datacards-",
+        verb,
+        dirObject
+      );
+      return "";
+    }
   }
 
   handleNameClicked(targetID: string) {
