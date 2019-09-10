@@ -3,6 +3,7 @@ import "./App.css";
 import "./Geneology.scss";
 import datum from "./data/datum.json";
 import entities from "./data/entities.json";
+import genderData from "./data/genderData.json";
 import { exportDefaultSpecifier } from "@babel/types";
 
 type DatumProps = {};
@@ -126,7 +127,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
         connections.push({
           target: datumRow["Direct Object"],
           targetID: datumRow["Direct Object ID"],
-          verb: that.reversedVerb(datumRow.Verb, datumRow["Direct Object"]),
+          verb: that.reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
           passageStart: datumRow["Passage: start"],
           passageEnd:
             datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
@@ -210,19 +211,31 @@ class Geneology extends React.Component<DatumProps, DatumState> {
       verb === "is father of" ||
       verb === "is parent of"
     ) {
-      return "is child of"; //TODO: Conduct gender parsing to allow specificity - daughter vs son
+      return "is child of"; // Uses generic "is child of" at the moment since data cards do not need gender specificity for children
     } else if (
       verb === "is son of" ||
       verb === "is daughter of" ||
       verb === "is child of"
     ) {
-      return "is mother of"; //TODO: VERY IMPORTANT DISTINCTION! Conduct gender parsing on this one - mother vs father
+      if (
+        this.hasKey(genderData, dirObject) &&
+        genderData[dirObject].gender === "female"
+      ) {
+        return "is mother of";
+      } else if (
+        this.hasKey(genderData, dirObject) &&
+        genderData[dirObject].gender === "male"
+      ) {
+        return "is father of";
+      } else {
+        return "is parent of"; // TODO: No way to deal with undefined parent genders yet.
+      }
     } else if (
       verb === "is sister of" ||
       verb === "is brother of" ||
       verb === "is twin of"
     ) {
-      return "is sister of"; //TODO: Conduct gender parsing to allow specificity. Use sister as placeholder
+      return "is sister of"; // TODO: Fix using sister as siblings placeholder since data cards is not specific on siblings gender
     } else if (
       verb === "is wife of" ||
       verb === "is husband of" ||
