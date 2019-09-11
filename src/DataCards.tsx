@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import "./Geneology.scss";
+import "./DataCards.scss";
 import datum from "./data/datum.json";
 import entities from "./data/entities.json";
 import genderData from "./data/genderData.json";
@@ -51,16 +51,16 @@ let familyDatums = [
   "is grandchild of"
 ];
 
-class Geneology extends React.Component<DatumProps, DatumState> {
+class DataCards extends React.Component<DatumProps, DatumState> {
   constructor(props: any) {
     super(props);
-    // Dionysus is 8188175
+    // Dionysus is 8188175, use to test multiple names
     // Atreus is 8187873
     // Theseus is 8188822
     // Agamemnon is 8182035
     // Use Clytaimnestra example, 8188055
     this.state = {
-      id: "8188055",
+      id: "8188175",
       name: "",
       relationships: {
         MOTHER: [],
@@ -75,6 +75,7 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     this.reversedVerb = this.reversedVerb.bind(this);
     this.getDataPoints = this.getDataPoints.bind(this);
     this.handleNameClicked = this.handleNameClicked.bind(this);
+    this.getAlternativeNames = this.getAlternativeNames.bind(this);
   }
 
   /*******************/
@@ -292,11 +293,12 @@ class Geneology extends React.Component<DatumProps, DatumState> {
                     target="_blank"
                     rel="noopener noreferrer"
                     href={
-                      "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-eng2:" +
+                      "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:" +
                       entity.passageStart.split(" ")[2] +
                       (entity.passageEnd === ""
                         ? ""
-                        : "-" + entity.passageEnd.split(" ")[2])
+                        : "-" + entity.passageEnd.split(" ")[2]) +
+                      "/?right=perseus-eng2"
                     }
                     style={{
                       color: "grey",
@@ -322,6 +324,53 @@ class Geneology extends React.Component<DatumProps, DatumState> {
     }
   }
 
+  getAlternativeNames(id: string) {
+    if (this.hasKey(entities, id)) {
+      let hasAlternatives: boolean = false;
+      let alternatives: string = "";
+      if (entities[id]["Name (transliteration)"] !== "") {
+        if (alternatives === "") {
+          alternatives = entities[id]["Name (transliteration)"];
+        } else {
+          alternatives =
+            alternatives + ", " + entities[id]["Name (transliteration)"];
+        }
+        console.log("1");
+      }
+      if (entities[id]["Name (Latinized)"] !== "") {
+        if (alternatives === "") {
+          alternatives = entities[id]["Name (Latinized)"];
+        } else {
+          alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
+        }
+        console.log("2");
+      }
+      if (entities[id]["Name in Latin texts"] !== "") {
+        if (alternatives === "") {
+          alternatives = entities[id]["Name in Latin texts"];
+        } else {
+          alternatives =
+            alternatives + ", " + entities[id]["Name in Latin texts"];
+        }
+        console.log("3");
+      }
+      if (entities[id]["Alternative names"] !== "") {
+        if (alternatives === "") {
+          alternatives = entities[id]["Alternative names"];
+        } else {
+          alternatives =
+            alternatives + ", " + entities[id]["Alternative names"];
+        }
+        console.log("4");
+      }
+      if (alternatives === "") {
+        return alternatives;
+      } else {
+        return "(Also known as: " + alternatives + ")";
+      }
+    }
+  }
+
   /* Addresses typescript indexing objects error */
   hasKey<O>(obj: O, key: keyof any): key is keyof O {
     return key in obj;
@@ -341,11 +390,9 @@ class Geneology extends React.Component<DatumProps, DatumState> {
           border: "solid 1px black"
         }}
       >
-        <div
-          id="datacard-heading"
-          style={{ marginBottom: "2rem", textTransform: "uppercase" }}
-        >
-          {this.state.name}
+        <div id="datacard-heading">{this.state.name}</div>
+        <div id="datacard-alternativenames">
+          {this.getAlternativeNames(this.state.id)}
         </div>
         {/* If no data is available for the subject */}
         <div className={this.checkNoRelations() ? "" : "no-display"}>
@@ -360,4 +407,4 @@ class Geneology extends React.Component<DatumProps, DatumState> {
   }
 }
 
-export default Geneology;
+export default DataCards;

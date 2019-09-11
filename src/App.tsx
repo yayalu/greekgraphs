@@ -1,11 +1,11 @@
 import React from "react";
-import Geneology from "./Geneology";
+import DataCards from "./DataCards";
 import "./App.css";
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      <Geneology></Geneology>{" "}
+      <DataCards></DataCards>{" "}
     </React.Fragment>
   );
 };

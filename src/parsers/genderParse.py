@@ -17,7 +17,6 @@ def getGender(row):
     if row["Subject ID"] == '':
         return 'invalid'
     if (genderData.get(row["Subject ID"]) != None and genderData[row["Subject ID"]].get('gender') != 'undefined'):
-        print("Duplicated",row["Subject ID"],row["Subject"],genderData[row["Subject ID"]].get('gender'))
         return 'duplicate'
     # if fits primary male attributes
     elif (verb == "is father of" or verb == "is son of" or verb == "is brother of" or verb == "is uncle of" or verb == "is husband of" or verb == "is grandfather of" or verb == "is grandson of"):
@@ -28,8 +27,7 @@ def getGender(row):
     # if no family attributes discovered in current datum
     else:
         gender = 'undefined'
-    print(row["Subject ID"],row["Subject"],gender)
-    return {'id':row["Subject ID"], 'name':row["Subject"], 'gender': gender}
+    return {'name':row["Subject"], 'gender': gender}
 
 with open(datumFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)

@@ -1,3437 +1,2750 @@
 {
     "8190253": {
         "gender": "undefined", 
-        "id": "8190253", 
         "name": "the Cephallenian contingent at Troy"
     }, 
     "8188390": {
         "gender": "female", 
-        "id": "8188390", 
         "name": "Hera"
     }, 
     "8188391": {
         "gender": "female", 
-        "id": "8188391", 
         "name": "Hestia"
     }, 
     "8189737": {
         "gender": "undefined", 
-        "id": "8189737", 
         "name": "Machaireus"
     }, 
     "8190256": {
         "gender": "undefined", 
-        "id": "8190256", 
         "name": "the Rhodian contingent at Troy"
     }, 
     "8182128": {
         "gender": "male", 
-        "id": "8182128", 
         "name": "Aloeus"
     }, 
     "8190257": {
         "gender": "undefined", 
-        "id": "8190257", 
         "name": "the Syme contingent at Troy"
     }, 
     "8189738": {
         "gender": "male", 
-        "id": "8189738", 
         "name": "Machaon"
     }, 
     "8188525": {
         "gender": "male", 
-        "id": "8188525", 
         "name": "Hippostratos"
     }, 
     "8194301": {
         "gender": "undefined", 
-        "id": "8194301", 
         "name": "the Lapiths"
     }, 
     "8188523": {
         "gender": "undefined", 
-        "id": "8188523", 
         "name": "Hipponoos"
     }, 
     "8188521": {
         "gender": "female", 
-        "id": "8188521", 
         "name": "Hipponoe"
     }, 
     "8189088": {
         "gender": "male", 
-        "id": "8189088", 
         "name": "Otos"
     }, 
     "8189083": {
         "gender": "male", 
-        "id": "8189083", 
         "name": "Orpheus"
     }, 
     "8188529": {
         "gender": "female", 
-        "id": "8188529", 
         "name": "Hippothoe"
     }, 
     "8189080": {
         "gender": "male", 
-        "id": "8189080", 
         "name": "Orion"
     }, 
     "8189168": {
         "gender": "male", 
-        "id": "8189168", 
         "name": "Iphicles"
     }, 
     "8189160": {
         "gender": "undefined", 
-        "id": "8189160", 
         "name": "Hippolyte"
     }, 
     "8189166": {
         "gender": "male", 
-        "id": "8189166", 
         "name": "Icarus"
     }, 
     "8189167": {
         "gender": "undefined", 
-        "id": "8189167", 
         "name": "Io"
     }, 
     "8372339": {
         "gender": "undefined", 
-        "id": "8372339", 
         "name": "Couretes"
     }, 
     "8190127": {
         "gender": "undefined", 
-        "id": "8190127", 
         "name": "Thoas"
     }, 
     "8190124": {
         "gender": "male", 
-        "id": "8190124", 
         "name": "Thoas"
     }, 
     "8190125": {
         "gender": "male", 
-        "id": "8190125", 
         "name": "Thoas"
     }, 
     "8190089": {
         "gender": "undefined", 
-        "id": "8190089", 
         "name": "Teucros"
     }, 
     "8190123": {
         "gender": "undefined", 
-        "id": "8190123", 
         "name": "Thoas"
     }, 
     "8190120": {
         "gender": "male", 
-        "id": "8190120", 
         "name": "Thestios"
     }, 
     "8190121": {
         "gender": "female", 
-        "id": "8190121", 
         "name": "Thetis"
     }, 
     "8187933": {
         "gender": "male", 
-        "id": "8187933", 
         "name": "Callileon"
     }, 
     "8188090": {
         "gender": "female", 
-        "id": "8188090", 
         "name": "Creousa"
     }, 
     "8190081": {
         "gender": "undefined", 
-        "id": "8190081", 
         "name": "Telmios"
     }, 
     "8187934": {
         "gender": "female", 
-        "id": "8187934", 
         "name": "Calliope"
     }, 
     "8190083": {
         "gender": "male", 
-        "id": "8190083", 
         "name": "Tenes"
     }, 
     "8188062": {
         "gender": "male", 
-        "id": "8188062", 
         "name": "Coios"
     }, 
     "8188061": {
         "gender": "undefined", 
-        "id": "8188061", 
         "name": "Cocalos"
     }, 
     "8188066": {
         "gender": "male", 
-        "id": "8188066", 
         "name": "Cometes"
     }, 
     "8188366": {
         "gender": "undefined", 
-        "id": "8188366", 
         "name": "Eurypylos"
     }, 
     "9358820": {
         "gender": "undefined", 
-        "id": "9358820", 
         "name": "the Promontory of Charybdis"
     }, 
     "8187986": {
         "gender": "female", 
-        "id": "8187986", 
         "name": "Ceto"
     }, 
     "8182253": {
         "gender": "male", 
-        "id": "8182253", 
         "name": "Ares"
     }, 
     "8187987": {
         "gender": "female", 
-        "id": "8187987", 
         "name": "Ceto"
     }, 
     "8189289": {
         "gender": "male", 
-        "id": "8189289", 
         "name": "Plexippos"
     }, 
     "8188151": {
         "gender": "female", 
-        "id": "8188151", 
         "name": "Deipyle"
     }, 
     "8182176": {
         "gender": "male", 
-        "id": "8182176", 
         "name": "Ancaios"
     }, 
     "8195647": {
         "gender": "undefined", 
-        "id": "8195647", 
         "name": "Adrastos"
     }, 
     "8187808": {
         "gender": "male", 
-        "id": "8187808", 
         "name": "Arges"
     }, 
     "8190013": {
         "gender": "male", 
-        "id": "8190013", 
         "name": "Staphylos"
     }, 
     "8190010": {
         "gender": "female", 
-        "id": "8190010", 
         "name": "Spermo"
     }, 
     "8190016": {
         "gender": "undefined", 
-        "id": "8190016", 
         "name": "Proteus"
     }, 
     "8189760": {
         "gender": "undefined", 
-        "id": "8189760", 
         "name": "Mecisteus"
     }, 
     "8190015": {
         "gender": "male", 
-        "id": "8190015", 
         "name": "Protesilaos"
     }, 
     "8182073": {
         "gender": "female", 
-        "id": "8182073", 
         "name": "Aigialeia"
     }, 
     "8182072": {
         "gender": "undefined", 
-        "id": "8182072", 
         "name": "Aigeus"
     }, 
     "8190019": {
         "gender": "male", 
-        "id": "8190019", 
         "name": "Prothoos"
     }, 
     "8189360": {
         "gender": "female", 
-        "id": "8189360", 
         "name": "Pronoe"
     }, 
     "8182075": {
         "gender": "male", 
-        "id": "8182075", 
         "name": "Aigialeus"
     }, 
     "8188019": {
         "gender": "female", 
-        "id": "8188019", 
         "name": "Chrysothemis"
     }, 
     "8188013": {
         "gender": "undefined", 
-        "id": "8188013", 
         "name": "Chryses"
     }, 
     "8188012": {
         "gender": "female", 
-        "id": "8188012", 
         "name": "Chryseis"
     }, 
     "8188010": {
         "gender": "undefined", 
-        "id": "8188010", 
         "name": "Chromios"
     }, 
     "8182086": {
         "gender": "female", 
-        "id": "8182086", 
         "name": "Aiolia"
     }, 
     "8182087": {
         "gender": "undefined", 
-        "id": "8182087", 
         "name": "Aiolos"
     }, 
     "8182084": {
         "gender": "male", 
-        "id": "8182084", 
         "name": "Aineias"
     }, 
     "8182156": {
         "gender": "undefined", 
-        "id": "8182156", 
         "name": "Amphinomos"
     }, 
     "8182080": {
         "gender": "male", 
-        "id": "8182080", 
         "name": "Aigisthos"
     }, 
     "8189324": {
         "gender": "male", 
-        "id": "8189324", 
         "name": "Polyphemos"
     }, 
     "8182088": {
         "gender": "male", 
-        "id": "8182088", 
         "name": "Aiolos"
     }, 
     "8188596": {
         "gender": "male", 
-        "id": "8188596", 
         "name": "Iphiclos"
     }, 
     "8188597": {
         "gender": "undefined", 
-        "id": "8188597", 
         "name": "Iphidamas"
     }, 
     "8189902": {
         "gender": "male", 
-        "id": "8189902", 
         "name": "Odysseus"
     }, 
     "8189901": {
         "gender": "male", 
-        "id": "8189901", 
         "name": "Odios"
     }, 
     "8195165": {
         "gender": "male", 
-        "id": "8195165", 
         "name": "Acamas"
     }, 
     "8189861": {
         "gender": "female", 
-        "id": "8189861", 
         "name": "Nausithoe"
     }, 
     "8188598": {
         "gender": "female", 
-        "id": "8188598", 
         "name": "Iphigeneia"
     }, 
     "8190265": {
         "gender": "undefined", 
-        "id": "8190265", 
         "name": "the Argissa contingent at Troy"
     }, 
     "8190264": {
         "gender": "undefined", 
-        "id": "8190264", 
         "name": "the Ormenius contingent at Troy"
     }, 
     "8190267": {
         "gender": "undefined", 
-        "id": "8190267", 
         "name": "the Peneius contingent at Troy"
     }, 
     "8190266": {
         "gender": "undefined", 
-        "id": "8190266", 
         "name": "the Cyphus contingent at Troy"
     }, 
     "8190261": {
         "gender": "undefined", 
-        "id": "8190261", 
         "name": "the Pherae contingent at Troy"
     }, 
     "8190260": {
         "gender": "undefined", 
-        "id": "8190260", 
         "name": "the Phylace contingent at Troy"
     }, 
     "8190263": {
         "gender": "undefined", 
-        "id": "8190263", 
         "name": "the Tricca contingent at Troy"
     }, 
     "8190262": {
         "gender": "undefined", 
-        "id": "8190262", 
         "name": "the Methone contingent at Troy"
     }, 
     "8190269": {
         "gender": "undefined", 
-        "id": "8190269", 
         "name": "the Halizones contingent at Troy"
     }, 
     "8190268": {
         "gender": "undefined", 
-        "id": "8190268", 
         "name": "the Paphlagonia contingent at Troy"
     }, 
     "8189302": {
         "gender": "undefined", 
-        "id": "8189302", 
         "name": "Polybotes"
     }, 
     "8188242": {
         "gender": "male", 
-        "id": "8188242", 
         "name": "Ennomos"
     }, 
     "8190066": {
         "gender": "undefined", 
-        "id": "8190066", 
         "name": "Teiresias"
     }, 
     "8188240": {
         "gender": "male", 
-        "id": "8188240", 
         "name": "Endymion"
     }, 
     "8360048": {
         "gender": "undefined", 
-        "id": "8360048", 
         "name": "Panoptes"
     }, 
     "8188247": {
         "gender": "undefined", 
-        "id": "8188247", 
         "name": "Epeios"
     }, 
     "8188245": {
         "gender": "female", 
-        "id": "8188245", 
         "name": "Eos"
     }, 
     "8189331": {
         "gender": "undefined", 
-        "id": "8189331", 
         "name": "Polypoites"
     }, 
     "8189330": {
         "gender": "male", 
-        "id": "8189330", 
         "name": "Polypoites"
     }, 
     "8188248": {
         "gender": "undefined", 
-        "id": "8188248", 
         "name": "Ephialtes"
     }, 
     "8188249": {
         "gender": "male", 
-        "id": "8188249", 
         "name": "Ephialtes"
     }, 
     "8189337": {
         "gender": "female", 
-        "id": "8189337", 
         "name": "Pontomedousa"
     }, 
     "8190068": {
         "gender": "undefined", 
-        "id": "8190068", 
         "name": "Telchis"
     }, 
     "8188084": {
         "gender": "undefined", 
-        "id": "8188084", 
         "name": "Cratos"
     }, 
     "8188085": {
         "gender": "male", 
-        "id": "8188085", 
         "name": "Creios"
     }, 
     "8188128": {
         "gender": "undefined", 
-        "id": "8188128", 
         "name": "Daidalos"
     }, 
     "8188081": {
         "gender": "female", 
-        "id": "8188081", 
         "name": "Cranto"
     }, 
     "8188120": {
         "gender": "female", 
-        "id": "8188120", 
         "name": "Cymothoe"
     }, 
     "8188125": {
         "gender": "male", 
-        "id": "8188125", 
         "name": "Cytisoros"
     }, 
     "8190040": {
         "gender": "undefined", 
-        "id": "8190040", 
         "name": "Strophios"
     }, 
     "8188104": {
         "gender": "undefined", 
-        "id": "8188104", 
         "name": "Ctesios"
     }, 
     "8194558": {
         "gender": "male", 
-        "id": "8194558", 
         "name": "[son of Tantalos and Clytaimnestra]"
     }, 
     "8189796": {
         "gender": "female", 
-        "id": "8189796", 
         "name": "Melite"
     }, 
     "8189205": {
         "gender": "undefined", 
-        "id": "8189205", 
         "name": "Kore"
     }, 
     "8188445": {
         "gender": "male", 
-        "id": "8188445", 
         "name": "Gouneus"
     }, 
     "8189207": {
         "gender": "male", 
-        "id": "8189207", 
         "name": "Perses"
     }, 
     "8188568": {
         "gender": "male", 
-        "id": "8188568", 
         "name": "Iasos"
     }, 
     "8187571": {
         "gender": "female", 
-        "id": "8187571", 
         "name": "Phaia"
     }, 
     "8187572": {
         "gender": "undefined", 
-        "id": "8187572", 
         "name": "Phaia"
     }, 
     "8188449": {
         "gender": "undefined", 
-        "id": "8188449", 
         "name": "Hagios"
     }, 
     "8188564": {
         "gender": "female", 
-        "id": "8188564", 
         "name": "Ianeira"
     }, 
     "8188236": {
         "gender": "undefined", 
-        "id": "8188236", 
         "name": "Encelados"
     }, 
     "8188234": {
         "gender": "female", 
-        "id": "8188234", 
         "name": "Enarete"
     }, 
     "8190087": {
         "gender": "female", 
-        "id": "8190087", 
         "name": "Terpsichore"
     }, 
     "8188231": {
         "gender": "undefined", 
-        "id": "8188231", 
         "name": "Elpenor"
     }, 
     "8188336": {
         "gender": "female", 
-        "id": "8188336", 
         "name": "Eurybia"
     }, 
     "8188334": {
         "gender": "male", 
-        "id": "8188334", 
         "name": "Euryalos"
     }, 
     "8188335": {
         "gender": "undefined", 
-        "id": "8188335", 
         "name": "Euryalos"
     }, 
     "8182208": {
         "gender": "undefined", 
-        "id": "8182208", 
         "name": "Antigonos"
     }, 
     "8190162": {
         "gender": "undefined", 
-        "id": "8190162", 
         "name": "Tyndareos"
     }, 
     "8182205": {
         "gender": "undefined", 
-        "id": "8182205", 
         "name": "Anticlos"
     }, 
     "8190161": {
         "gender": "male", 
-        "id": "8190161", 
         "name": "Tydeus"
     }, 
     "8182203": {
         "gender": "female", 
-        "id": "8182203", 
         "name": "Anticleia"
     }, 
     "8189249": {
         "gender": "undefined", 
-        "id": "8189249", 
         "name": "Phoinix"
     }, 
     "8188622": {
         "gender": "undefined", 
-        "id": "8188622", 
         "name": "Ixion"
     }, 
     "8188623": {
         "gender": "male", 
-        "id": "8188623", 
         "name": "Jason"
     }, 
     "8194782": {
         "gender": "undefined", 
-        "id": "8194782", 
         "name": "Leucophrys"
     }, 
     "8188625": {
         "gender": "female", 
-        "id": "8188625", 
         "name": "Lachesis"
     }, 
     "8188629": {
         "gender": "undefined", 
-        "id": "8188629", 
         "name": "Lamas"
     }, 
     "8189887": {
         "gender": "female", 
-        "id": "8189887", 
         "name": "Niobe"
     }, 
     "8189884": {
         "gender": "undefined", 
-        "id": "8189884", 
         "name": "Nike"
     }, 
     "8189882": {
         "gender": "undefined", 
-        "id": "8189882", 
         "name": "Nicomachos"
     }, 
     "8189764": {
         "gender": "female", 
-        "id": "8189764", 
         "name": "Medesicaste"
     }, 
     "8189765": {
         "gender": "undefined", 
-        "id": "8189765", 
         "name": "Medon"
     }, 
     "8189762": {
         "gender": "female", 
-        "id": "8189762", 
         "name": "Medeia"
     }, 
     "8189889": {
         "gender": "male", 
-        "id": "8189889", 
         "name": "Nireus"
     }, 
     "8189761": {
         "gender": "female", 
-        "id": "8189761", 
         "name": "Meda"
     }, 
     "8189117": {
         "gender": "female", 
-        "id": "8189117", 
         "name": "Panope"
     }, 
     "8189119": {
         "gender": "undefined", 
-        "id": "8189119", 
         "name": "Paralos"
     }, 
     "8188540": {
         "gender": "male", 
-        "id": "8188540", 
         "name": "Hopleus"
     }, 
     "9051539": {
         "gender": "undefined", 
-        "id": "9051539", 
         "name": "Cape Caphereus"
     }, 
     "9356312": {
         "gender": "undefined", 
-        "id": "9356312", 
         "name": "River Lycormas"
     }, 
     "8188053": {
         "gender": "male", 
-        "id": "8188053", 
         "name": "Clymenos"
     }, 
     "8188051": {
         "gender": "female", 
-        "id": "8188051", 
         "name": "Clymene"
     }, 
     "8188056": {
         "gender": "undefined", 
-        "id": "8188056", 
         "name": "Clytios"
     }, 
     "8188055": {
         "gender": "female", 
-        "id": "8188055", 
         "name": "Clytaimnestra"
     }, 
     "8188054": {
         "gender": "undefined", 
-        "id": "8188054", 
         "name": "Clymenos"
     }, 
     "8228933": {
         "gender": "undefined", 
-        "id": "8228933", 
         "name": "the Cyprian contingent at Troy"
     }, 
     "8188190": {
         "gender": "male", 
-        "id": "8188190", 
         "name": "Dryas"
     }, 
     "8190114": {
         "gender": "undefined", 
-        "id": "8190114", 
         "name": "Thersites"
     }, 
     "8228937": {
         "gender": "undefined", 
-        "id": "8228937", 
         "name": "the Ethiopian contingent at Troy"
     }, 
     "8190112": {
         "gender": "male", 
-        "id": "8190112", 
         "name": "Thersandros"
     }, 
     "8188195": {
         "gender": "female", 
-        "id": "8188195", 
         "name": "Dynamene"
     }, 
     "8188058": {
         "gender": "undefined", 
-        "id": "8188058", 
         "name": "Clytios"
     }, 
     "8190113": {
         "gender": "undefined", 
-        "id": "8190113", 
         "name": "Thersilochos"
     }, 
     "8372324": {
         "gender": "undefined", 
-        "id": "8372324", 
         "name": "Bosporos"
     }, 
     "8188197": {
         "gender": "male", 
-        "id": "8188197", 
         "name": "Ecbasos"
     }, 
     "8187976": {
         "gender": "undefined", 
-        "id": "8187976", 
         "name": "Ceraos"
     }, 
     "8187970": {
         "gender": "undefined", 
-        "id": "8187970", 
         "name": "the Centaurs"
     }, 
     "8187972": {
         "gender": "male", 
-        "id": "8187972", 
         "name": "Cepheus"
     }, 
     "8189948": {
         "gender": "undefined", 
-        "id": "8189948", 
         "name": "Ptolemaios"
     }, 
     "8189942": {
         "gender": "female", 
-        "id": "8189942", 
         "name": "Protogeneia"
     }, 
     "8189943": {
         "gender": "female", 
-        "id": "8189943", 
         "name": "Protogeneia"
     }, 
     "8189941": {
         "gender": "female", 
-        "id": "8189941", 
         "name": "Proto"
     }, 
     "8189944": {
         "gender": "female", 
-        "id": "8189944", 
         "name": "Psamathe"
     }, 
     "8189945": {
         "gender": "undefined", 
-        "id": "8189945", 
         "name": "Pseras"
     }, 
     "8182149": {
         "gender": "male", 
-        "id": "8182149", 
         "name": "Amphilochos"
     }, 
     "8188285": {
         "gender": "female", 
-        "id": "8188285", 
         "name": "Euadne"
     }, 
     "8360050": {
         "gender": "undefined", 
-        "id": "8360050", 
         "name": "the Arcadian Bull"
     }, 
     "8187991": {
         "gender": "female", 
-        "id": "8187991", 
         "name": "Chalciope"
     }, 
     "8182143": {
         "gender": "male", 
-        "id": "8182143", 
         "name": "Amphictyon"
     }, 
     "8182142": {
         "gender": "male", 
-        "id": "8182142", 
         "name": "Amphiaraos"
     }, 
     "9358839": {
         "gender": "undefined", 
-        "id": "9358839", 
         "name": "Schedios"
     }, 
     "8182028": {
         "gender": "male", 
-        "id": "8182028", 
         "name": "Admetos"
     }, 
     "8187850": {
         "gender": "male", 
-        "id": "8187850", 
         "name": "Astyanax"
     }, 
     "8188289": {
         "gender": "female", 
-        "id": "8188289", 
         "name": "Euagore"
     }, 
     "8190184": {
         "gender": "female", 
-        "id": "8190184", 
         "name": "Nephele"
     }, 
     "8190023": {
         "gender": "male", 
-        "id": "8190023", 
         "name": "Sternops"
     }, 
     "8190020": {
         "gender": "male", 
-        "id": "8190020", 
         "name": "Prothoos"
     }, 
     "8190026": {
         "gender": "female", 
-        "id": "8190026", 
         "name": "Sterope"
     }, 
     "8190025": {
         "gender": "female", 
-        "id": "8190025", 
         "name": "Sterope"
     }, 
     "8189835": {
         "gender": "male", 
-        "id": "8189835", 
         "name": "Minos"
     }, 
     "8194340": {
         "gender": "undefined", 
-        "id": "8194340", 
         "name": "the Suitors of Hippodameia"
     }, 
     "8188831": {
         "gender": "male", 
-        "id": "8188831", 
         "name": "Pelops"
     }, 
     "8189932": {
         "gender": "male", 
-        "id": "8189932", 
         "name": "Orchomenos"
     }, 
     "8188408": {
         "gender": "female", 
-        "id": "8188408", 
         "name": "Tethys"
     }, 
     "8188373": {
         "gender": "female", 
-        "id": "8188373", 
         "name": "Eurythemis"
     }, 
     "8188370": {
         "gender": "female", 
-        "id": "8188370", 
         "name": "Euryte"
     }, 
     "8188377": {
         "gender": "undefined", 
-        "id": "8188377", 
         "name": "Eurytos"
     }, 
     "8190239": {
         "gender": "undefined", 
-        "id": "8190239", 
         "name": "the Boeotian contingent at Troy"
     }, 
     "8188400": {
         "gender": "male", 
-        "id": "8188400", 
         "name": "Ouranos"
     }, 
     "8188401": {
         "gender": "female", 
-        "id": "8188401", 
         "name": "Phoibe"
     }, 
     "8190234": {
         "gender": "undefined", 
-        "id": "8190234", 
         "name": "Antiope"
     }, 
     "8188403": {
         "gender": "male", 
-        "id": "8188403", 
         "name": "Poseidon"
     }, 
     "8188404": {
         "gender": "undefined", 
-        "id": "8188404", 
         "name": "Hades"
     }, 
     "8188405": {
         "gender": "female", 
-        "id": "8188405", 
         "name": "Rhea"
     }, 
     "8188406": {
         "gender": "male", 
-        "id": "8188406", 
         "name": "Steropes"
     }, 
     "8188438": {
         "gender": "female", 
-        "id": "8188438", 
         "name": "Gorge"
     }, 
     "8188174": {
         "gender": "female", 
-        "id": "8188174", 
         "name": "Dione"
     }, 
     "8188175": {
         "gender": "undefined", 
-        "id": "8188175", 
         "name": "Dionysos"
     }, 
     "8188176": {
         "gender": "undefined", 
-        "id": "8188176", 
         "name": "Diopithes"
     }, 
     "8188173": {
         "gender": "male", 
-        "id": "8188173", 
         "name": "Diomedes"
     }, 
     "8188272": {
         "gender": "undefined", 
-        "id": "8188272", 
         "name": "the Erinyes"
     }, 
     "8188271": {
         "gender": "female", 
-        "id": "8188271", 
         "name": "Erigone"
     }, 
     "8189870": {
         "gender": "female", 
-        "id": "8189870", 
         "name": "Neomeris"
     }, 
     "8188274": {
         "gender": "undefined", 
-        "id": "8188274", 
         "name": "Eris"
     }, 
     "8189871": {
         "gender": "male", 
-        "id": "8189871", 
         "name": "Neoptolemos"
     }, 
     "8182213": {
         "gender": "undefined", 
-        "id": "8182213", 
         "name": "Antimachos"
     }, 
     "8189724": {
         "gender": "female", 
-        "id": "8189724", 
         "name": "Lysianassa"
     }, 
     "8189685": {
         "gender": "undefined", 
-        "id": "8189685", 
         "name": "Leucos"
     }, 
     "8189684": {
         "gender": "male", 
-        "id": "8189684", 
         "name": "Leucopeus"
     }, 
     "8188535": {
         "gender": "male", 
-        "id": "8188535", 
         "name": "Hippothoos"
     }, 
     "8189099": {
         "gender": "male", 
-        "id": "8189099", 
         "name": "Palamedes"
     }, 
     "8189153": {
         "gender": "female", 
-        "id": "8189153", 
         "name": "Helen"
     }, 
     "8189152": {
         "gender": "female", 
-        "id": "8189152", 
         "name": "Hecate"
     }, 
     "8189094": {
         "gender": "male", 
-        "id": "8189094", 
         "name": "Oxylos"
     }, 
     "8189318": {
         "gender": "female", 
-        "id": "8189318", 
         "name": "Polymnia"
     }, 
     "8189158": {
         "gender": "undefined", 
-        "id": "8189158", 
         "name": "Hierax"
     }, 
     "8189092": {
         "gender": "female", 
-        "id": "8189092", 
         "name": "Ourania"
     }, 
     "8188306": {
         "gender": "female", 
-        "id": "8188306", 
         "name": "Eulimene"
     }, 
     "8188305": {
         "gender": "male", 
-        "id": "8188305", 
         "name": "Euippos"
     }, 
     "8189256": {
         "gender": "male", 
-        "id": "8189256", 
         "name": "Phorcys"
     }, 
     "8189257": {
         "gender": "male", 
-        "id": "8189257", 
         "name": "Phoroneus"
     }, 
     "8189254": {
         "gender": "female", 
-        "id": "8189254", 
         "name": "the Phorcides"
     }, 
     "8189255": {
         "gender": "male", 
-        "id": "8189255", 
         "name": "Phorcos"
     }, 
     "8188385": {
         "gender": "female", 
-        "id": "8188385", 
         "name": "Euterpe"
     }, 
     "8188309": {
         "gender": "male", 
-        "id": "8188309", 
         "name": "Eumedes"
     }, 
     "8189323": {
         "gender": "undefined", 
-        "id": "8189323", 
         "name": "Polypheides"
     }, 
     "8190153": {
         "gender": "male", 
-        "id": "8190153", 
         "name": "Triops"
     }, 
     "8189320": {
         "gender": "female", 
-        "id": "8189320", 
         "name": "Polynome"
     }, 
     "8190155": {
         "gender": "male", 
-        "id": "8190155", 
         "name": "Triton"
     }, 
     "8190154": {
         "gender": "male", 
-        "id": "8190154", 
         "name": "Triptolemos"
     }, 
     "8189313": {
         "gender": "undefined", 
-        "id": "8189313", 
         "name": "Polyidos"
     }, 
     "8190097": {
         "gender": "male", 
-        "id": "8190097", 
         "name": "Thamyris"
     }, 
     "8190094": {
         "gender": "female", 
-        "id": "8190094", 
         "name": "Thaleia"
     }, 
     "8190095": {
         "gender": "female", 
-        "id": "8190095", 
         "name": "Thaleia"
     }, 
     "8189287": {
         "gender": "male", 
-        "id": "8189287", 
         "name": "Pleuron"
     }, 
     "8189756": {
         "gender": "male", 
-        "id": "8189756", 
         "name": "Marsyas"
     }, 
     "8189754": {
         "gender": "undefined", 
-        "id": "8189754", 
         "name": "Marpsios"
     }, 
     "8189753": {
         "gender": "female", 
-        "id": "8189753", 
         "name": "Marpessa"
     }, 
     "8189752": {
         "gender": "undefined", 
-        "id": "8189752", 
         "name": "Maron"
     }, 
     "8182119": {
         "gender": "undefined", 
-        "id": "8182119", 
         "name": "Alcyoneus"
     }, 
     "8182243": {
         "gender": "male", 
-        "id": "8182243", 
         "name": "Archelochos"
     }, 
     "8187869": {
         "gender": "male", 
-        "id": "8187869", 
         "name": "Athamas"
     }, 
     "8188258": {
         "gender": "male", 
-        "id": "8188258", 
         "name": "Epistrophos"
     }, 
     "8187817": {
         "gender": "undefined", 
-        "id": "8187817", 
         "name": "Ariadne"
     }, 
     "8187814": {
         "gender": "male", 
-        "id": "8187814", 
         "name": "Argos"
     }, 
     "8187815": {
         "gender": "male", 
-        "id": "8187815", 
         "name": "Argos"
     }, 
     "8182182": {
         "gender": "undefined", 
-        "id": "8182182", 
         "name": "Andraimon"
     }, 
     "8182181": {
         "gender": "male", 
-        "id": "8182181", 
         "name": "Andraimon"
     }, 
     "8182068": {
         "gender": "male", 
-        "id": "8182068", 
         "name": "Aias"
     }, 
     "8182069": {
         "gender": "male", 
-        "id": "8182069", 
         "name": "Aietes"
     }, 
     "8182063": {
         "gender": "undefined", 
-        "id": "8182063", 
         "name": "Agrios"
     }, 
     "8182064": {
         "gender": "male", 
-        "id": "8182064", 
         "name": "Agrios"
     }, 
     "8182065": {
         "gender": "undefined", 
-        "id": "8182065", 
         "name": "Agrios"
     }, 
     "8190115": {
         "gender": "male", 
-        "id": "8190115", 
         "name": "Thersites"
     }, 
     "8182067": {
         "gender": "male", 
-        "id": "8182067", 
         "name": "Aias"
     }, 
     "8188002": {
         "gender": "male", 
-        "id": "8188002", 
         "name": "Cheiron"
     }, 
     "8194724": {
         "gender": "undefined", 
-        "id": "8194724", 
         "name": "the Eidolon of Helen"
     }, 
     "8187924": {
         "gender": "undefined", 
-        "id": "8187924", 
         "name": "Broteas"
     }, 
     "8182148": {
         "gender": "undefined", 
-        "id": "8182148", 
         "name": "Amphilochos"
     }, 
     "8187889": {
         "gender": "undefined", 
-        "id": "8187889", 
         "name": "Axios"
     }, 
     "8187923": {
         "gender": "male", 
-        "id": "8187923", 
         "name": "Brontes"
     }, 
     "8187920": {
         "gender": "male", 
-        "id": "8187920", 
         "name": "Briareos"
     }, 
     "8187887": {
         "gender": "female", 
-        "id": "8187887", 
         "name": "Autonoe"
     }, 
     "8194729": {
         "gender": "male", 
-        "id": "8194729", 
         "name": "Helios"
     }, 
     "8187929": {
         "gender": "undefined", 
-        "id": "8187929", 
         "name": "Calchas"
     }, 
     "8189878": {
         "gender": "male", 
-        "id": "8189878", 
         "name": "Nestor"
     }, 
     "8189970": {
         "gender": "female", 
-        "id": "8189970", 
         "name": "Rhode"
     }, 
     "8189977": {
         "gender": "female", 
-        "id": "8189977", 
         "name": "Sao"
     }, 
     "8187858": {
         "gender": "undefined", 
-        "id": "8187858", 
         "name": "Astylochos"
     }, 
     "8189974": {
         "gender": "male", 
-        "id": "8189974", 
         "name": "Salmoneus"
     }, 
     "8189979": {
         "gender": "male", 
-        "id": "8189979", 
         "name": "Sarpedon"
     }, 
     "8195171": {
         "gender": "male", 
-        "id": "8195171", 
         "name": "Adrastos"
     }, 
     "8189876": {
         "gender": "female", 
-        "id": "8189876", 
         "name": "Nesaia"
     }, 
     "8189875": {
         "gender": "male", 
-        "id": "8189875", 
         "name": "Nereus"
     }, 
     "8190272": {
         "gender": "undefined", 
-        "id": "8190272", 
         "name": "the Maeonia contingent at Troy"
     }, 
     "8190273": {
         "gender": "undefined", 
-        "id": "8190273", 
         "name": "the Caria contingent at Troy"
     }, 
     "8190270": {
         "gender": "undefined", 
-        "id": "8190270", 
         "name": "the Mysia contingent at Troy"
     }, 
     "8190271": {
         "gender": "undefined", 
-        "id": "8190271", 
         "name": "the Phrygia contingent at Troy"
     }, 
     "8190276": {
         "gender": "undefined", 
-        "id": "8190276", 
         "name": "the Zeleia contingent at Troy"
     }, 
     "8190277": {
         "gender": "undefined", 
-        "id": "8190277", 
         "name": "the Adrasteia contingent at Troy"
     }, 
     "8190274": {
         "gender": "undefined", 
-        "id": "8190274", 
         "name": "the Lycia contingent at Troy"
     }, 
     "8190275": {
         "gender": "undefined", 
-        "id": "8190275", 
         "name": "the Dardanian contingent at Troy"
     }, 
     "8190278": {
         "gender": "undefined", 
-        "id": "8190278", 
         "name": "the Percote contingent at Troy"
     }, 
     "8190279": {
         "gender": "undefined", 
-        "id": "8190279", 
         "name": "the Palasgi contingent at Troy"
     }, 
     "8189280": {
         "gender": "male", 
-        "id": "8189280", 
         "name": "Pittheus"
     }, 
     "8189328": {
         "gender": "male", 
-        "id": "8189328", 
         "name": "Polypoites"
     }, 
     "8190074": {
         "gender": "male", 
-        "id": "8190074", 
         "name": "Telemachos"
     }, 
     "8190077": {
         "gender": "male", 
-        "id": "8190077", 
         "name": "Telephos"
     }, 
     "8190071": {
         "gender": "male", 
-        "id": "8190071", 
         "name": "Telegonos"
     }, 
     "8188135": {
         "gender": "undefined", 
-        "id": "8188135", 
         "name": "Damastes"
     }, 
     "8188136": {
         "gender": "undefined", 
-        "id": "8188136", 
         "name": "Damastor"
     }, 
     "8182262": {
         "gender": "undefined", 
-        "id": "8182262", 
         "name": "Argeios"
     }, 
     "8194543": {
         "gender": "female", 
-        "id": "8194543", 
         "name": "Pelopia daughter of Thyestes"
     }, 
     "8182111": {
         "gender": "undefined", 
-        "id": "8182111", 
         "name": "Alcmaion"
     }, 
     "8189288": {
         "gender": "female", 
-        "id": "8189288", 
         "name": "Plexaura"
     }, 
     "8189805": {
         "gender": "undefined", 
-        "id": "8189805", 
         "name": "Menestheus"
     }, 
     "8189804": {
         "gender": "undefined", 
-        "id": "8189804", 
         "name": "Meneptolemos"
     }, 
     "8189802": {
         "gender": "male", 
-        "id": "8189802", 
         "name": "Menelaos"
     }, 
     "8188471": {
         "gender": "female", 
-        "id": "8188471", 
         "name": "Helle"
     }, 
     "8188470": {
         "gender": "undefined", 
-        "id": "8188470", 
         "name": "Hellanicos"
     }, 
     "8188473": {
         "gender": "female", 
-        "id": "8188473", 
         "name": "Hemithea"
     }, 
     "8188472": {
         "gender": "male", 
-        "id": "8188472", 
         "name": "Hellen"
     }, 
     "8188476": {
         "gender": "male", 
-        "id": "8188476", 
         "name": "Hephaistos"
     }, 
     "8188478": {
         "gender": "undefined", 
-        "id": "8188478", 
         "name": "Heracles"
     }, 
     "8189193": {
         "gender": "female", 
-        "id": "8189193", 
         "name": "Perimede"
     }, 
     "8188573": {
         "gender": "male", 
-        "id": "8188573", 
         "name": "Idas"
     }, 
     "9055247": {
         "gender": "undefined", 
-        "id": "9055247", 
         "name": "Pytho"
     }, 
     "8188576": {
         "gender": "male", 
-        "id": "8188576", 
         "name": "Idomeneus"
     }, 
     "8188225": {
         "gender": "female", 
-        "id": "8188225", 
         "name": "Electra"
     }, 
     "8188349": {
         "gender": "undefined", 
-        "id": "8188349", 
         "name": "Eurylochos"
     }, 
     "8188223": {
         "gender": "female", 
-        "id": "8188223", 
         "name": "Electra"
     }, 
     "8188228": {
         "gender": "undefined", 
-        "id": "8188228", 
         "name": "Elephenor"
     }, 
     "8182231": {
         "gender": "female", 
-        "id": "8182231", 
         "name": "Aphrodite"
     }, 
     "8182233": {
         "gender": "male", 
-        "id": "8182233", 
         "name": "Apollo"
     }, 
     "8182232": {
         "gender": "male", 
-        "id": "8182232", 
         "name": "Apis"
     }, 
     "8195204": {
         "gender": "male", 
-        "id": "8195204", 
         "name": "Elphenor"
     }, 
     "8189656": {
         "gender": "male", 
-        "id": "8189656", 
         "name": "Laomedon"
     }, 
     "8188615": {
         "gender": "female", 
-        "id": "8188615", 
         "name": "Ismene"
     }, 
     "8189719": {
         "gender": "male", 
-        "id": "8189719", 
         "name": "Lynceus"
     }, 
     "8189890": {
         "gender": "male", 
-        "id": "8189890", 
         "name": "Nireus"
     }, 
     "8189899": {
         "gender": "female", 
-        "id": "8189899", 
         "name": "Ocypete"
     }, 
     "8253943": {
         "gender": "undefined", 
-        "id": "8253943", 
         "name": "Mount Haimos"
     }, 
     "8189215": {
         "gender": "female", 
-        "id": "8189215", 
         "name": "Phaidra"
     }, 
     "8189262": {
         "gender": "male", 
-        "id": "8189262", 
         "name": "Phrontis"
     }, 
     "8189261": {
         "gender": "male", 
-        "id": "8189261", 
         "name": "Phrixos"
     }, 
     "8189109": {
         "gender": "male", 
-        "id": "8189109", 
         "name": "Pandaros"
     }, 
     "8189107": {
         "gender": "male", 
-        "id": "8189107", 
         "name": "Pan"
     }, 
     "8189100": {
         "gender": "undefined", 
-        "id": "8189100", 
         "name": "Pallas"
     }, 
     "8189101": {
         "gender": "male", 
-        "id": "8189101", 
         "name": "Pallas"
     }, 
     "8188042": {
         "gender": "female", 
-        "id": "8188042", 
         "name": "Cleopatra"
     }, 
     "8188049": {
         "gender": "female", 
-        "id": "8188049", 
         "name": "Clotho"
     }, 
     "8190106": {
         "gender": "female", 
-        "id": "8190106", 
         "name": "Thelxiepeia"
     }, 
     "8190107": {
         "gender": "undefined", 
-        "id": "8190107", 
         "name": "Thelxion"
     }, 
     "8190100": {
         "gender": "male", 
-        "id": "8190100", 
         "name": "Thaumas"
     }, 
     "8254104": {
         "gender": "male", 
-        "id": "8254104", 
         "name": "Glaucos"
     }, 
     "8189279": {
         "gender": "male", 
-        "id": "8189279", 
         "name": "Pieros"
     }, 
     "8187969": {
         "gender": "male", 
-        "id": "8187969", 
         "name": "Centauros"
     }, 
     "8187967": {
         "gender": "male", 
-        "id": "8187967", 
         "name": "Celeutor"
     }, 
     "8187965": {
         "gender": "undefined", 
-        "id": "8187965", 
         "name": "Celeos"
     }, 
     "8188480": {
         "gender": "undefined", 
-        "id": "8188480", 
         "name": "Hermes"
     }, 
     "8189149": {
         "gender": "undefined", 
-        "id": "8189149", 
         "name": "the Golden Fleece"
     }, 
     "8182158": {
         "gender": "male", 
-        "id": "8182158", 
         "name": "Amphios"
     }, 
     "8187829": {
         "gender": "female", 
-        "id": "8187829", 
         "name": "Artemis"
     }, 
     "8182012": {
         "gender": "male", 
-        "id": "8182012", 
         "name": "Achilles"
     }, 
     "8187981": {
         "gender": "male", 
-        "id": "8187981", 
         "name": "Cercyon"
     }, 
     "8182016": {
         "gender": "female", 
-        "id": "8182016", 
         "name": "Actaia"
     }, 
     "8182150": {
         "gender": "undefined", 
-        "id": "8182150", 
         "name": "Amphimachos"
     }, 
     "8182152": {
         "gender": "male", 
-        "id": "8182152", 
         "name": "Amphimachos"
     }, 
     "8182153": {
         "gender": "undefined", 
-        "id": "8182153", 
         "name": "Amphimachos"
     }, 
     "8189367": {
         "gender": "undefined", 
-        "id": "8189367", 
         "name": "The Turtle of Sceiron"
     }, 
     "8189364": {
         "gender": "undefined", 
-        "id": "8189364", 
         "name": "Caineus"
     }, 
     "8189833": {
         "gender": "undefined", 
-        "id": "8189833", 
         "name": "Mimas"
     }, 
     "8190038": {
         "gender": "female", 
-        "id": "8190038", 
         "name": "Stratonice"
     }, 
     "8228942": {
         "gender": "undefined", 
-        "id": "8228942", 
         "name": "the second Mysia contingent at Troy"
     }, 
     "8194735": {
         "gender": "male", 
-        "id": "8194735", 
         "name": "[son of Mygdalion]"
     }, 
     "8195638": {
         "gender": "male", 
-        "id": "8195638", 
         "name": "Chromios"
     }, 
     "8187862": {
         "gender": "female", 
-        "id": "8187862", 
         "name": "Astyoche"
     }, 
     "8189199": {
         "gender": "undefined", 
-        "id": "8189199", 
         "name": "Periphron"
     }, 
     "8189840": {
         "gender": "undefined", 
-        "id": "8189840", 
         "name": "the Moirai"
     }, 
     "8189847": {
         "gender": "male", 
-        "id": "8189847", 
         "name": "Molossos"
     }, 
     "8189845": {
         "gender": "male", 
-        "id": "8189845", 
         "name": "Molos"
     }, 
     "8189849": {
         "gender": "male", 
-        "id": "8189849", 
         "name": "Mygdalion"
     }, 
     "8189848": {
         "gender": "male", 
-        "id": "8189848", 
         "name": "Mopsos"
     }, 
     "8188435": {
         "gender": "undefined", 
-        "id": "8188435", 
         "name": "Glaucos"
     }, 
     "8188436": {
         "gender": "undefined", 
-        "id": "8188436", 
         "name": "Glaucos"
     }, 
     "8188431": {
         "gender": "female", 
-        "id": "8188431", 
         "name": "Glauconome"
     }, 
     "8189929": {
         "gender": "undefined", 
-        "id": "8189929", 
         "name": "Opis"
     }, 
     "8188433": {
         "gender": "male", 
-        "id": "8188433", 
         "name": "Glaucos"
     }, 
     "8188548": {
         "gender": "undefined", 
-        "id": "8188548", 
         "name": "Hyleus"
     }, 
     "8189925": {
         "gender": "male", 
-        "id": "8189925", 
         "name": "Onchestos"
     }, 
     "8188824": {
         "gender": "male", 
-        "id": "8188824", 
         "name": "Typhon"
     }, 
     "8188822": {
         "gender": "male", 
-        "id": "8188822", 
         "name": "Theseus"
     }, 
     "8188823": {
         "gender": "male", 
-        "id": "8188823", 
         "name": "Sceiron"
     }, 
     "8187835": {
         "gender": "female", 
-        "id": "8187835", 
         "name": "Asia"
     }, 
     "8189081": {
         "gender": "undefined", 
-        "id": "8189081", 
         "name": "Ormenios"
     }, 
     "8190249": {
         "gender": "undefined", 
-        "id": "8190249", 
         "name": "the Pylos contingent at Troy"
     }, 
     "8190248": {
         "gender": "undefined", 
-        "id": "8190248", 
         "name": "the Lacedaemon contingent at Troy"
     }, 
     "8188389": {
         "gender": "male", 
-        "id": "8188389", 
         "name": "Gyes"
     }, 
     "8188388": {
         "gender": "undefined", 
-        "id": "8188388", 
         "name": "Ge"
     }, 
     "8190243": {
         "gender": "undefined", 
-        "id": "8190243", 
         "name": "the Euboean contingent at Troy"
     }, 
     "8190242": {
         "gender": "undefined", 
-        "id": "8190242", 
         "name": "the Phocian contingent at Troy"
     }, 
     "8190241": {
         "gender": "undefined", 
-        "id": "8190241", 
         "name": "the Orchomenus contingent at Troy"
     }, 
     "8190240": {
         "gender": "undefined", 
-        "id": "8190240", 
         "name": "the Locrian contingent at Troy"
     }, 
     "8190247": {
         "gender": "undefined", 
-        "id": "8190247", 
         "name": "the Mycenae contingent at Troy"
     }, 
     "8190246": {
         "gender": "undefined", 
-        "id": "8190246", 
         "name": "the Argos contingent at Troy"
     }, 
     "8190245": {
         "gender": "undefined", 
-        "id": "8190245", 
         "name": "the Salamis contingent at Troy"
     }, 
     "8190244": {
         "gender": "undefined", 
-        "id": "8190244", 
         "name": "the Athenian contingent at Troy"
     }, 
     "8188140": {
         "gender": "female", 
-        "id": "8188140", 
         "name": "Deianeira"
     }, 
     "8189347": {
         "gender": "undefined", 
-        "id": "8189347", 
         "name": "Priam"
     }, 
     "8188146": {
         "gender": "male", 
-        "id": "8188146", 
         "name": "Deion"
     }, 
     "8188148": {
         "gender": "undefined", 
-        "id": "8188148", 
         "name": "Deiphobos"
     }, 
     "8188262": {
         "gender": "female", 
-        "id": "8188262", 
         "name": "Erato"
     }, 
     "8188263": {
         "gender": "female", 
-        "id": "8188263", 
         "name": "Erato"
     }, 
     "9358723": {
         "gender": "undefined", 
-        "id": "9358723", 
         "name": "Crimissa"
     }, 
     "8189692": {
         "gender": "male", 
-        "id": "8189692", 
         "name": "Linos"
     }, 
     "8189691": {
         "gender": "female", 
-        "id": "8189691", 
         "name": "Limnoreia"
     }, 
     "8182021": {
         "gender": "male", 
-        "id": "8182021", 
         "name": "Actor"
     }, 
     "8190131": {
         "gender": "undefined", 
-        "id": "8190131", 
         "name": "Thrasymedes"
     }, 
     "8188592": {
         "gender": "female", 
-        "id": "8188592", 
         "name": "Ione"
     }, 
     "8189143": {
         "gender": "male", 
-        "id": "8189143", 
         "name": "Pelasgos"
     }, 
     "8189993": {
         "gender": "female", 
-        "id": "8189993", 
         "name": "Selene"
     }, 
     "8189146": {
         "gender": "male", 
-        "id": "8189146", 
         "name": "Peleus"
     }, 
     "8188504": {
         "gender": "male", 
-        "id": "8188504", 
         "name": "Hippodamas"
     }, 
     "8189145": {
         "gender": "male", 
-        "id": "8189145", 
         "name": "Pelegon"
     }, 
     "8189999": {
         "gender": "undefined", 
-        "id": "8189999", 
         "name": "Sinon"
     }, 
     "8188591": {
         "gender": "male", 
-        "id": "8188591", 
         "name": "Ion"
     }, 
     "8187875": {
         "gender": "female", 
-        "id": "8187875", 
         "name": "Atropos"
     }, 
     "8188314": {
         "gender": "female", 
-        "id": "8188314", 
         "name": "Eumolpe"
     }, 
     "8189229": {
         "gender": "female", 
-        "id": "8189229", 
         "name": "Pherousa"
     }, 
     "8188310": {
         "gender": "male", 
-        "id": "8188310", 
         "name": "Eumelos"
     }, 
     "8189223": {
         "gender": "male", 
-        "id": "8189223", 
         "name": "Pheidippos"
     }, 
     "8188319": {
         "gender": "female", 
-        "id": "8188319", 
         "name": "Eunice"
     }, 
     "8189225": {
         "gender": "undefined", 
-        "id": "8189225", 
         "name": "Phereclos"
     }, 
     "8189224": {
         "gender": "male", 
-        "id": "8189224", 
         "name": "Pheneus"
     }, 
     "8190144": {
         "gender": "undefined", 
-        "id": "8190144", 
         "name": "the Titans"
     }, 
     "8190146": {
         "gender": "male", 
-        "id": "8190146", 
         "name": "Tityos"
     }, 
     "8190147": {
         "gender": "male", 
-        "id": "8190147", 
         "name": "Tlepolemos"
     }, 
     "8190149": {
         "gender": "male", 
-        "id": "8190149", 
         "name": "Toxeus"
     }, 
     "8189669": {
         "gender": "female", 
-        "id": "8189669", 
         "name": "Leda"
     }, 
     "8189668": {
         "gender": "male", 
-        "id": "8189668", 
         "name": "Learchos"
     }, 
     "8189740": {
         "gender": "male", 
-        "id": "8189740", 
         "name": "Magnes"
     }, 
     "8182079": {
         "gender": "undefined", 
-        "id": "8182079", 
         "name": "Aigipan"
     }, 
     "8189661": {
         "gender": "female", 
-        "id": "8189661", 
         "name": "Laophonte"
     }, 
     "8188375": {
         "gender": "male", 
-        "id": "8188375", 
         "name": "Eurytion"
     }, 
     "8189664": {
         "gender": "male", 
-        "id": "8189664", 
         "name": "Latinos"
     }, 
     "8189136": {
         "gender": "female", 
-        "id": "8189136", 
         "name": "Peisidice"
     }, 
     "8189133": {
         "gender": "male", 
-        "id": "8189133", 
         "name": "Peirithous"
     }, 
     "8189130": {
         "gender": "male", 
-        "id": "8189130", 
         "name": "Peiren"
     }, 
     "9055304": {
         "gender": "undefined", 
-        "id": "9055304", 
         "name": "Rock Agelastos"
     }, 
     "8188402": {
         "gender": "male", 
-        "id": "8188402", 
         "name": "Plouton"
     }, 
     "8189139": {
         "gender": "female", 
-        "id": "8189139", 
         "name": "Peisinoe"
     }, 
     "8182054": {
         "gender": "undefined", 
-        "id": "8182054", 
         "name": "Agerochos"
     }, 
     "8182057": {
         "gender": "female", 
-        "id": "8182057", 
         "name": "Aglaia"
     }, 
     "8182051": {
         "gender": "male", 
-        "id": "8182051", 
         "name": "Agenor"
     }, 
     "8182101": {
         "gender": "male", 
-        "id": "8182101", 
         "name": "Alcathoos"
     }, 
     "8182052": {
         "gender": "male", 
-        "id": "8182052", 
         "name": "Agenor"
     }, 
     "8190232": {
         "gender": "undefined", 
-        "id": "8190232", 
         "name": "the Amazons"
     }, 
     "8182196": {
         "gender": "undefined", 
-        "id": "8182196", 
         "name": "Antenor"
     }, 
     "8182059": {
         "gender": "male", 
-        "id": "8182059", 
         "name": "Aglaos"
     }, 
     "8182058": {
         "gender": "female", 
-        "id": "8182058", 
         "name": "Aglaope"
     }, 
     "8182192": {
         "gender": "male", 
-        "id": "8182192", 
         "name": "Anios"
     }, 
     "8188031": {
         "gender": "female", 
-        "id": "8188031", 
         "name": "Cleio"
     }, 
     "8188032": {
         "gender": "female", 
-        "id": "8188032", 
         "name": "Cleisithyra"
     }, 
     "8187953": {
         "gender": "undefined", 
-        "id": "8187953", 
         "name": "Cassandra"
     }, 
     "8187899": {
         "gender": "undefined", 
-        "id": "8187899", 
         "name": "Bia"
     }, 
     "8187956": {
         "gender": "male", 
-        "id": "8187956", 
         "name": "Catreus"
     }, 
     "8187955": {
         "gender": "male", 
-        "id": "8187955", 
         "name": "Castor"
     }, 
     "8182108": {
         "gender": "undefined", 
-        "id": "8182108", 
         "name": "Alcinoos"
     }, 
     "8189960": {
         "gender": "undefined", 
-        "id": "8189960", 
         "name": "Pyraichmes"
     }, 
     "8189339": {
         "gender": "undefined", 
-        "id": "8189339", 
         "name": "Porphyrion"
     }, 
     "8189963": {
         "gender": "female", 
-        "id": "8189963", 
         "name": "Pyrrha"
     }, 
     "8189968": {
         "gender": "male", 
-        "id": "8189968", 
         "name": "Rhesos"
     }, 
     "8182120": {
         "gender": "undefined", 
-        "id": "8182120", 
         "name": "Alecto"
     }, 
     "8187870": {
         "gender": "female", 
-        "id": "8187870", 
         "name": "Athena"
     }, 
     "8182124": {
         "gender": "undefined", 
-        "id": "8182124", 
         "name": "Alexander"
     }, 
     "8187872": {
         "gender": "male", 
-        "id": "8187872", 
         "name": "Atlas"
     }, 
     "8187873": {
         "gender": "male", 
-        "id": "8187873", 
         "name": "Atreus"
     }, 
     "8188246": {
         "gender": "male", 
-        "id": "8188246", 
         "name": "Epaphos"
     }, 
     "8189291": {
         "gender": "male", 
-        "id": "8189291", 
         "name": "Podaleirios"
     }, 
     "8190282": {
         "gender": "undefined", 
-        "id": "8190282", 
         "name": "the Paeonian contingent at Troy"
     }, 
     "8190281": {
         "gender": "undefined", 
-        "id": "8190281", 
         "name": "the Cicones contingent at Troy"
     }, 
     "8190280": {
         "gender": "undefined", 
-        "id": "8190280", 
         "name": "the Thracian contingent at Troy"
     }, 
     "8189340": {
         "gender": "male", 
-        "id": "8189340", 
         "name": "Porthaon"
     }, 
     "8190042": {
         "gender": "undefined", 
-        "id": "8190042", 
         "name": "Strymon"
     }, 
     "8190047": {
         "gender": "female", 
-        "id": "8190047", 
         "name": "Styx"
     }, 
     "8188102": {
         "gender": "male", 
-        "id": "8188102", 
         "name": "Cronos"
     }, 
     "8188179": {
         "gender": "male", 
-        "id": "8188179", 
         "name": "Dolon"
     }, 
     "8189791": {
         "gender": "female", 
-        "id": "8189791", 
         "name": "Melia"
     }, 
     "8189790": {
         "gender": "male", 
-        "id": "8189790", 
         "name": "Meleagros"
     }, 
     "8189797": {
         "gender": "female", 
-        "id": "8189797", 
         "name": "Melpomene"
     }, 
     "8187847": {
         "gender": "male", 
-        "id": "8187847", 
         "name": "Asteropaios"
     }, 
     "8189794": {
         "gender": "male", 
-        "id": "8189794", 
         "name": "Melicertes"
     }, 
     "8189798": {
         "gender": "male", 
-        "id": "8189798", 
         "name": "Memnon"
     }, 
     "8240627": {
         "gender": "undefined", 
-        "id": "8240627", 
         "name": "the Bones of Pelops"
     }, 
     "8189182": {
         "gender": "female", 
-        "id": "8189182", 
         "name": "Periboia"
     }, 
     "8189819": {
         "gender": "male", 
-        "id": "8189819", 
         "name": "Mesthles"
     }, 
     "8240623": {
         "gender": "male", 
-        "id": "8240623", 
         "name": "the Sons of Laocoon"
     }, 
     "8188542": {
         "gender": "male", 
-        "id": "8188542", 
         "name": "Hyacinthos"
     }, 
     "8189817": {
         "gender": "female", 
-        "id": "8189817", 
         "name": "Merope"
     }, 
     "9356319": {
         "gender": "female", 
-        "id": "9356319", 
         "name": "Hypermnestra"
     }, 
     "8189812": {
         "gender": "male", 
-        "id": "8189812", 
         "name": "Menoitios"
     }, 
     "8189189": {
         "gender": "male", 
-        "id": "8189189", 
         "name": "Perieres"
     }, 
     "8188467": {
         "gender": "undefined", 
-        "id": "8188467", 
         "name": "Helenos"
     }, 
     "8188465": {
         "gender": "male", 
-        "id": "8188465", 
         "name": "Hector"
     }, 
     "8188463": {
         "gender": "female", 
-        "id": "8188463", 
         "name": "Hebe"
     }, 
     "8188210": {
         "gender": "female", 
-        "id": "8188210", 
         "name": "Eileithyia"
     }, 
     "8188213": {
         "gender": "female", 
-        "id": "8188213", 
         "name": "Eirene"
     }, 
     "8188212": {
         "gender": "female", 
-        "id": "8188212", 
         "name": "Eione"
     }, 
     "8188215": {
         "gender": "female", 
-        "id": "8188215", 
         "name": "Elais"
     }, 
     "8188216": {
         "gender": "female", 
-        "id": "8188216", 
         "name": "Elare"
     }, 
     "8188355": {
         "gender": "female", 
-        "id": "8188355", 
         "name": "Eurynome"
     }, 
     "8359949": {
         "gender": "male", 
-        "id": "8359949", 
         "name": "Argos"
     }, 
     "8190067": {
         "gender": "male", 
-        "id": "8190067", 
         "name": "Telamon"
     }, 
     "8188609": {
         "gender": "female", 
-        "id": "8188609", 
         "name": "Iris"
     }, 
     "8188600": {
         "gender": "female", 
-        "id": "8188600", 
         "name": "Iphimedeia"
     }, 
     "8189078": {
         "gender": "male", 
-        "id": "8189078", 
         "name": "Orestes"
     }, 
     "8189079": {
         "gender": "male", 
-        "id": "8189079", 
         "name": "Orestes"
     }, 
     "8189704": {
         "gender": "undefined", 
-        "id": "8189704", 
         "name": "Lycomedes"
     }, 
     "8189705": {
         "gender": "male", 
-        "id": "8189705", 
         "name": "Lycopeus"
     }, 
     "9055229": {
         "gender": "undefined", 
-        "id": "9055229", 
         "name": "Asteria"
     }, 
     "8189272": {
         "gender": "undefined", 
-        "id": "8189272", 
         "name": "Phyllis"
     }, 
     "8189170": {
         "gender": "undefined", 
-        "id": "8189170", 
         "name": "the Muses"
     }, 
     "8189176": {
         "gender": "male", 
-        "id": "8189176", 
         "name": "Peparethos"
     }, 
     "8189174": {
         "gender": "female", 
-        "id": "8189174", 
         "name": "Penthesileia"
     }, 
     "8190002": {
         "gender": "male", 
-        "id": "8190002", 
         "name": "Sisyphos"
     }, 
     "8182095": {
         "gender": "female", 
-        "id": "8182095", 
         "name": "Aithylla"
     }, 
     "8182094": {
         "gender": "female", 
-        "id": "8182094", 
         "name": "Aithra"
     }, 
     "8187902": {
         "gender": "undefined", 
-        "id": "8187902", 
         "name": "Bias"
     }, 
     "8182096": {
         "gender": "male", 
-        "id": "8182096", 
         "name": "Aitolos"
     }, 
     "8190050": {
         "gender": "undefined", 
-        "id": "8190050", 
         "name": "the Greek contingent at Troy"
     }, 
     "8188075": {
         "gender": "male", 
-        "id": "8188075", 
         "name": "Cottos"
     }, 
     "8188077": {
         "gender": "undefined", 
-        "id": "8188077", 
         "name": "the Couretes"
     }, 
     "8190134": {
         "gender": "male", 
-        "id": "8190134", 
         "name": "Thyestes"
     }, 
     "8188073": {
         "gender": "male", 
-        "id": "8188073", 
         "name": "the Corybantes"
     }, 
     "8190136": {
         "gender": "male", 
-        "id": "8190136", 
         "name": "Thyreus"
     }, 
     "8182005": {
         "gender": "undefined", 
-        "id": "8182005", 
         "name": "Acamas"
     }, 
     "8190008": {
         "gender": "female", 
-        "id": "8190008", 
         "name": "Speio"
     }, 
     "8182225": {
         "gender": "male", 
-        "id": "8182225", 
         "name": "Antiphos"
     }, 
     "8182222": {
         "gender": "male", 
-        "id": "8182222", 
         "name": "Antiphos"
     }, 
     "8182220": {
         "gender": "undefined", 
-        "id": "8182220", 
         "name": "Antiphates"
     }, 
     "8182221": {
         "gender": "male", 
-        "id": "8182221", 
         "name": "Antiphos"
     }, 
     "9063132": {
         "gender": "male", 
-        "id": "9063132", 
         "name": "Epopeus"
     }, 
     "8182161": {
         "gender": "female", 
-        "id": "8182161", 
         "name": "Amphitrite"
     }, 
     "8182162": {
         "gender": "female", 
-        "id": "8182162", 
         "name": "Amphitrite"
     }, 
     "8190001": {
         "gender": "female", 
-        "id": "8190001", 
         "name": "the Sirens"
     }, 
     "8182008": {
         "gender": "undefined", 
-        "id": "8182008", 
         "name": "Acastos"
     }, 
     "8182009": {
         "gender": "male", 
-        "id": "8182009", 
         "name": "Achaios"
     }, 
     "8187830": {
         "gender": "male", 
-        "id": "8187830", 
         "name": "Ascalaphos"
     }, 
     "8182007": {
         "gender": "undefined", 
-        "id": "8182007", 
         "name": "Acarnan"
     }, 
     "8182004": {
         "gender": "male", 
-        "id": "8182004", 
         "name": "Acamas"
     }, 
     "8187833": {
         "gender": "male", 
-        "id": "8187833", 
         "name": "Ascanios"
     }, 
     "8182003": {
         "gender": "male", 
-        "id": "8182003", 
         "name": "Acamas"
     }, 
     "8187836": {
         "gender": "male", 
-        "id": "8187836", 
         "name": "Asios"
     }, 
     "8189150": {
         "gender": "female", 
-        "id": "8189150", 
         "name": "the Gorgons"
     }, 
     "9055626": {
         "gender": "undefined", 
-        "id": "9055626", 
         "name": "the Flood of Deucalion"
     }, 
     "9358754": {
         "gender": "undefined", 
-        "id": "9358754", 
         "name": "River Nauaithos"
     }, 
     "8189854": {
         "gender": "undefined", 
-        "id": "8189854", 
         "name": "Myrtilos"
     }, 
     "8189855": {
         "gender": "male", 
-        "id": "8189855", 
         "name": "Nastes"
     }, 
     "8189857": {
         "gender": "undefined", 
-        "id": "8189857", 
         "name": "Naucrate"
     }, 
     "8189858": {
         "gender": "undefined", 
-        "id": "8189858", 
         "name": "Nauplios"
     }, 
     "8189859": {
         "gender": "female", 
-        "id": "8189859", 
         "name": "Nausicaa"
     }, 
     "8189918": {
         "gender": "male", 
-        "id": "8189918", 
         "name": "Olenias"
     }, 
     "8188420": {
         "gender": "female", 
-        "id": "8188420", 
         "name": "Galateia"
     }, 
     "8188426": {
         "gender": "male", 
-        "id": "8188426", 
         "name": "the Giants"
     }, 
     "8189910": {
         "gender": "male", 
-        "id": "8189910", 
         "name": "Oineus"
     }, 
     "8189913": {
         "gender": "male", 
-        "id": "8189913", 
         "name": "Oinomaos"
     }, 
     "8189912": {
         "gender": "female", 
-        "id": "8189912", 
         "name": "Oino"
     }, 
     "8189915": {
         "gender": "male", 
-        "id": "8189915", 
         "name": "Oinopion"
     }, 
     "8190258": {
         "gender": "undefined", 
-        "id": "8190258", 
         "name": "the Cos contingent at Troy"
     }, 
     "8190259": {
         "gender": "undefined", 
-        "id": "8190259", 
         "name": "the Myrmidonian contingent at Troy"
     }, 
     "8188256": {
         "gender": "male", 
-        "id": "8188256", 
         "name": "Epimetheus"
     }, 
     "8188399": {
         "gender": "male", 
-        "id": "8188399", 
         "name": "Oceanos"
     }, 
     "8188253": {
         "gender": "male", 
-        "id": "8188253", 
         "name": "Epidauros"
     }, 
     "8188394": {
         "gender": "undefined", 
-        "id": "8188394", 
         "name": "Ida"
     }, 
     "8190251": {
         "gender": "undefined", 
-        "id": "8190251", 
         "name": "the Epeian contingent at Troy"
     }, 
     "8190252": {
         "gender": "undefined", 
-        "id": "8190252", 
         "name": "the Dulichium contingent at Troy"
     }, 
     "8188397": {
         "gender": "female", 
-        "id": "8188397", 
         "name": "Mnemosyne"
     }, 
     "8190254": {
         "gender": "undefined", 
-        "id": "8190254", 
         "name": "the Aetolian contingent at Troy"
     }, 
     "8190255": {
         "gender": "undefined", 
-        "id": "8190255", 
         "name": "the Cretan contingent at Troy"
     }, 
     "8188392": {
         "gender": "male", 
-        "id": "8188392", 
         "name": "Hyperion"
     }, 
     "8188393": {
         "gender": "male", 
-        "id": "8188393", 
         "name": "Iapetos"
     }, 
     "8188097": {
         "gender": "male", 
-        "id": "8188097", 
         "name": "Cretheus"
     }, 
     "8188158": {
         "gender": "male", 
-        "id": "8188158", 
         "name": "Demophon"
     }, 
     "8188159": {
         "gender": "male", 
-        "id": "8188159", 
         "name": "Demophon"
     }, 
     "8188157": {
         "gender": "female", 
-        "id": "8188157", 
         "name": "Demonice"
     }, 
     "8188154": {
         "gender": "undefined", 
-        "id": "8188154", 
         "name": "Delphyne"
     }, 
     "8188155": {
         "gender": "female", 
-        "id": "8188155", 
         "name": "Demeter"
     }, 
     "8188098": {
         "gender": "male", 
-        "id": "8188098", 
         "name": "Criasos"
     }, 
     "8358920": {
         "gender": "female", 
-        "id": "8358920", 
         "name": "Dione"
     }, 
     "8189204": {
         "gender": "female", 
-        "id": "8189204", 
         "name": "Persephone"
     }, 
     "8188447": {
         "gender": "undefined", 
-        "id": "8188447", 
         "name": "Gration"
     }, 
     "8182116": {
         "gender": "female", 
-        "id": "8182116", 
         "name": "Alcyone"
     }, 
     "8194528": {
         "gender": "female", 
-        "id": "8194528", 
         "name": "the daughters of Cocolos"
     }, 
     "8188455": {
         "gender": "female", 
-        "id": "8188455", 
         "name": "Halimede"
     }, 
     "8188454": {
         "gender": "female", 
-        "id": "8188454", 
         "name": "Halie"
     }, 
     "8189989": {
         "gender": "female", 
-        "id": "8189989", 
         "name": "Scylla"
     }, 
     "8188515": {
         "gender": "undefined", 
-        "id": "8188515", 
         "name": "Hippolytos"
     }, 
     "8188513": {
         "gender": "male", 
-        "id": "8188513", 
         "name": "Hippolytos"
     }, 
     "8189981": {
         "gender": "undefined", 
-        "id": "8189981", 
         "name": "Satyros"
     }, 
     "8189238": {
         "gender": "female", 
-        "id": "8189238", 
         "name": "Philonome"
     }, 
     "8188320": {
         "gender": "female", 
-        "id": "8188320", 
         "name": "Eunomia"
     }, 
     "8188323": {
         "gender": "male", 
-        "id": "8188323", 
         "name": "Euphemos"
     }, 
     "8188325": {
         "gender": "undefined", 
-        "id": "8188325", 
         "name": "Euphorbos"
     }, 
     "8188326": {
         "gender": "female", 
-        "id": "8188326", 
         "name": "Euphrosyne"
     }, 
     "8189232": {
         "gender": "male", 
-        "id": "8189232", 
         "name": "Philoctetes"
     }, 
     "8189233": {
         "gender": "undefined", 
-        "id": "8189233", 
         "name": "Philodemos"
     }, 
     "8190178": {
         "gender": "undefined", 
-        "id": "8190178", 
         "name": "Zelos"
     }, 
     "8182216": {
         "gender": "male", 
-        "id": "8182216", 
         "name": "Antiochos"
     }, 
     "8190177": {
         "gender": "male", 
-        "id": "8190177", 
         "name": "Xouthos"
     }, 
     "8190171": {
         "gender": "male", 
-        "id": "8190171", 
         "name": "Xanthippos"
     }, 
     "8190170": {
         "gender": "female", 
-        "id": "8190170", 
         "name": "Xanthippe"
     }, 
     "8182210": {
         "gender": "undefined", 
-        "id": "8182210", 
         "name": "Antilochos"
     }, 
     "8188632": {
         "gender": "undefined", 
-        "id": "8188632", 
         "name": "Laocoon"
     }, 
     "8188636": {
         "gender": "female", 
-        "id": "8188636", 
         "name": "Laodice"
     }, 
     "8188634": {
         "gender": "female", 
-        "id": "8188634", 
         "name": "Laodameia"
     }, 
     "8188639": {
         "gender": "male", 
-        "id": "8188639", 
         "name": "Laodocos"
     }, 
     "8189678": {
         "gender": "female", 
-        "id": "8189678", 
         "name": "Leto"
     }, 
     "8190128": {
         "gender": "undefined", 
-        "id": "8190128", 
         "name": "Thoas"
     }, 
     "8189777": {
         "gender": "undefined", 
-        "id": "8189777", 
         "name": "Megasthenes"
     }, 
     "8189778": {
         "gender": "male", 
-        "id": "8189778", 
         "name": "Meges"
     }, 
     "8189675": {
         "gender": "undefined", 
-        "id": "8189675", 
         "name": "Leonteus"
     }, 
     "8189677": {
         "gender": "undefined", 
-        "id": "8189677", 
         "name": "Lestorides"
     }, 
     "8189125": {
         "gender": "undefined", 
-        "id": "8189125", 
         "name": "Patroclos"
     }, 
     "9356974": {
         "gender": "male", 
-        "id": "9356974", 
         "name": "Hyperlaos"
     }, 
     "9356975": {
         "gender": "male", 
-        "id": "9356975", 
         "name": "Sthenelaos"
     }, 
     "8187865": {
         "gender": "female", 
-        "id": "8187865", 
         "name": "Atalante"
     }, 
     "8189129": {
         "gender": "male", 
-        "id": "8189129", 
         "name": "Peiras"
     }, 
     "8182041": {
         "gender": "female", 
-        "id": "8182041", 
         "name": "Agaue"
     }, 
     "8182048": {
         "gender": "undefined", 
-        "id": "8182048", 
         "name": "Agenor"
     }, 
     "8187989": {
         "gender": "male", 
-        "id": "8187989", 
         "name": "Ceyx"
     }, 
     "8188026": {
         "gender": "female", 
-        "id": "8188026", 
         "name": "Circe"
     }, 
     "8188025": {
         "gender": "undefined", 
-        "id": "8188025", 
         "name": "Cinyras"
     }, 
     "8189358": {
         "gender": "undefined", 
-        "id": "8189358", 
         "name": "Promos"
     }, 
     "8188186": {
         "gender": "female", 
-        "id": "8188186", 
         "name": "Doto"
     }, 
     "8188181": {
         "gender": "female", 
-        "id": "8188181", 
         "name": "Doris"
     }, 
     "8188183": {
         "gender": "male", 
-        "id": "8188183", 
         "name": "Doros"
     }, 
     "8188182": {
         "gender": "male", 
-        "id": "8188182", 
         "name": "Doros"
     }, 
     "8187940": {
         "gender": "female", 
-        "id": "8187940", 
         "name": "Calyce"
     }, 
     "8187941": {
         "gender": "male", 
-        "id": "8187941", 
         "name": "Calydon"
     }, 
     "8187942": {
         "gender": "undefined", 
-        "id": "8187942", 
         "name": "Calydoneus"
     }, 
     "8187943": {
         "gender": "undefined", 
-        "id": "8187943", 
         "name": "the Calydonian Boar"
     }, 
     "8187944": {
         "gender": "female", 
-        "id": "8187944", 
         "name": "Calypso"
     }, 
     "8187945": {
         "gender": "female", 
-        "id": "8187945", 
         "name": "Calypso"
     }, 
     "8187946": {
         "gender": "undefined", 
-        "id": "8187946", 
         "name": "Campe"
     }, 
     "8187947": {
         "gender": "female", 
-        "id": "8187947", 
         "name": "Canace"
     }, 
     "8189959": {
         "gender": "male", 
-        "id": "8189959", 
         "name": "Pylos"
     }, 
     "8189951": {
         "gender": "male", 
-        "id": "8189951", 
         "name": "Pylades"
     }, 
     "8189953": {
         "gender": "undefined", 
-        "id": "8189953", 
         "name": "Pylaimenes"
     }, 
     "8189952": {
         "gender": "male", 
-        "id": "8189952", 
         "name": "Pylaimenes"
     }, 
     "8187841": {
         "gender": "female", 
-        "id": "8187841", 
         "name": "Asteria"
     }, 
     "8182036": {
         "gender": "undefined", 
-        "id": "8182036", 
         "name": "Agapenor"
     }, 
     "8182035": {
         "gender": "male", 
-        "id": "8182035", 
         "name": "Agamemnon"
     }, 
     "8182034": {
         "gender": "male", 
-        "id": "8182034", 
         "name": "Aethlios"
     }, 
     "8190298": {
         "gender": "undefined", 
-        "id": "8190298", 
         "name": "the Skin of the Calydonian Boar"
     }, 
     "8182032": {
         "gender": "female", 
-        "id": "8182032", 
         "name": "Aerope"
     }, 
     "8182031": {
         "gender": "female", 
-        "id": "8182031", 
         "name": "Aello"
     }, 
     "8182030": {
         "gender": "undefined", 
-        "id": "8182030", 
         "name": "Adrasteia"
     }, 
     "8187849": {
         "gender": "male", 
-        "id": "8187849", 
         "name": "Astraios"
     }, 
     "8188583": {
         "gender": "male", 
-        "id": "8188583", 
         "name": "Inachos"
     }, 
     "8190292": {
         "gender": "undefined", 
-        "id": "8190292", 
         "name": "the Cattle of Helios"
     }, 
     "8182131": {
         "gender": "female", 
-        "id": "8182131", 
         "name": "Althaia"
     }, 
     "8188299": {
         "gender": "male", 
-        "id": "8188299", 
         "name": "Euenos"
     }, 
     "8188298": {
         "gender": "undefined", 
-        "id": "8188298", 
         "name": "Euenorides"
     }, 
     "8188116": {
         "gender": "male", 
-        "id": "8188116", 
         "name": "Cycnos"
     }, 
     "8188117": {
         "gender": "undefined", 
-        "id": "8188117", 
         "name": "Cycnos"
     }, 
     "8190058": {
         "gender": "male", 
-        "id": "8190058", 
         "name": "Tantalos"
     }, 
     "8190056": {
         "gender": "undefined", 
-        "id": "8190056", 
         "name": "Talthybios"
     }, 
     "8188585": {
         "gender": "female", 
-        "id": "8188585", 
         "name": "Ino"
     }, 
     "8188119": {
         "gender": "female", 
-        "id": "8188119", 
         "name": "Cymo"
     }, 
     "8188297": {
         "gender": "female", 
-        "id": "8188297", 
         "name": "Eudora"
     }, 
     "8188296": {
         "gender": "female", 
-        "id": "8188296", 
         "name": "Eucrante"
     }, 
     "8189782": {
         "gender": "undefined", 
-        "id": "8189782", 
         "name": "Melanippe"
     }, 
     "8189785": {
         "gender": "male", 
-        "id": "8189785", 
         "name": "Melanippos"
     }, 
     "8189787": {
         "gender": "male", 
-        "id": "8189787", 
         "name": "Melas"
     }, 
     "8189788": {
         "gender": "male", 
-        "id": "8189788", 
         "name": "Melas"
     }, 
     "8188160": {
         "gender": "undefined", 
-        "id": "8188160", 
         "name": "Demoptolemos"
     }, 
     "8189828": {
         "gender": "female", 
-        "id": "8189828", 
         "name": "Metis"
     }, 
     "8189820": {
         "gender": "male", 
-        "id": "8189820", 
         "name": "Mestor"
     }, 
     "8189824": {
         "gender": "female", 
-        "id": "8189824", 
         "name": "Metaneira"
     }, 
     "8188250": {
         "gender": "female", 
-        "id": "8188250", 
         "name": "Epicaste"
     }, 
     "8188365": {
         "gender": "male", 
-        "id": "8188365", 
         "name": "Eurypylos"
     }, 
     "8188419": {
         "gender": "male", 
-        "id": "8188419", 
         "name": "Zeus"
     }, 
     "8188418": {
         "gender": "undefined", 
-        "id": "8188418", 
         "name": "Tisiphone"
     }, 
     "8188361": {
         "gender": "male", 
-        "id": "8188361", 
         "name": "Eurypylos"
     }, 
     "8188360": {
         "gender": "male", 
-        "id": "8188360", 
         "name": "Eurypylos"
     }, 
     "8190226": {
         "gender": "undefined", 
-        "id": "8190226", 
         "name": "the Wings of Daidalos"
     }, 
     "8194366": {
         "gender": "undefined", 
-        "id": "8194366", 
         "name": "Apia"
     }, 
     "8188410": {
         "gender": "undefined", 
-        "id": "8188410", 
         "name": "the Genitals of Ouranos"
     }, 
     "8188417": {
         "gender": "female", 
-        "id": "8188417", 
         "name": "Themis"
     }, 
     "8188416": {
         "gender": "female", 
-        "id": "8188416", 
         "name": "Theia"
     }, 
     "8360085": {
         "gender": "undefined", 
-        "id": "8360085", 
         "name": "Argeiphontes"
     }, 
     "8190250": {
         "gender": "undefined", 
-        "id": "8190250", 
         "name": "the Arcadian contingent at Troy"
     }, 
     "8188163": {
         "gender": "male", 
-        "id": "8188163", 
         "name": "Deucalion"
     }, 
     "8188162": {
         "gender": "female", 
-        "id": "8188162", 
         "name": "Dero"
     }, 
     "8188395": {
         "gender": "undefined", 
-        "id": "8188395", 
         "name": "Megaira"
     }, 
     "8188206": {
         "gender": "undefined", 
-        "id": "8188206", 
         "name": "Echion"
     }, 
     "8189357": {
         "gender": "male", 
-        "id": "8189357", 
         "name": "Prometheus"
     }, 
     "8188205": {
         "gender": "male", 
-        "id": "8188205", 
         "name": "Echion"
     }, 
     "8188202": {
         "gender": "female", 
-        "id": "8188202", 
         "name": "Echidna"
     }, 
     "8189306": {
         "gender": "male", 
-        "id": "8189306", 
         "name": "Polydeuces"
     }, 
     "8188168": {
         "gender": "female", 
-        "id": "8188168", 
         "name": "Dike"
     }
 }
