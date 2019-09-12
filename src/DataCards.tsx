@@ -351,7 +351,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
   getAlternativeNames(id: string) {
     if (this.hasKey(entities, id)) {
-      let hasAlternatives: boolean = false;
       let alternatives: string = "";
       if (entities[id]["Name (transliteration)"] !== "") {
         if (alternatives === "") {

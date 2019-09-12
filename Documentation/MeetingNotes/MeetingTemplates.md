@@ -28,5 +28,3 @@ In progress: &#9731;
 1. 
 
 
-
-``` All comments from Ben and Greta are in these code blocks ```
