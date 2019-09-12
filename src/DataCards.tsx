@@ -5,6 +5,7 @@ import datum from "./data/datum.json";
 import entities from "./data/entities.json";
 import genderData from "./data/genderData.json";
 import { exportDefaultSpecifier } from "@babel/types";
+import Pluralize from "pluralize";
 
 type DatumProps = {};
 type DatumState = {
@@ -16,7 +17,8 @@ type relationshipInfo = {
   MOTHER: entityInfo[];
   FATHER: entityInfo[];
   SIBLINGS: entityInfo[];
-  WIVESHUSBANDS: entityInfo[];
+  WIVES: entityInfo[];
+  HUSBANDS: entityInfo[];
   CHILDREN: entityInfo[];
 };
 type entityInfo = {
@@ -60,13 +62,14 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     // Agamemnon is 8182035
     // Use Clytaimnestra example, 8188055
     this.state = {
-      id: "8188175",
+      id: "8188055",
       name: "",
       relationships: {
         MOTHER: [],
         FATHER: [],
         SIBLINGS: [],
-        WIVESHUSBANDS: [],
+        WIVES: [],
+        HUSBANDS: [],
         CHILDREN: []
       }
     };
@@ -142,7 +145,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       MOTHER: [],
       FATHER: [],
       SIBLINGS: [],
-      WIVESHUSBANDS: [],
+      WIVES: [],
+      HUSBANDS: [],
       CHILDREN: []
     };
     connections.forEach(datum => {
@@ -168,12 +172,22 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         datum.verb === "is twin of"
       ) {
         relationships.SIBLINGS.push(d);
-      } else if (
-        datum.verb === "is wife of" ||
-        datum.verb === "is husband of" ||
-        datum.verb === "marries"
-      ) {
-        relationships.WIVESHUSBANDS.push(d);
+      } else if (datum.verb === "is wife of") {
+        relationships.WIVES.push(d);
+      } else if (datum.verb === "is husband of") {
+        relationships.HUSBANDS.push(d);
+      } else if (datum.verb === "marries") {
+        if (
+          this.hasKey(genderData, datum.targetID) &&
+          genderData[datum.targetID].gender === "female"
+        ) {
+          relationships.WIVES.push(d);
+        } else if (
+          this.hasKey(genderData, datum.targetID) &&
+          genderData[datum.targetID].gender === "male"
+        ) {
+          relationships.HUSBANDS.push(d);
+        }
       }
     });
 
@@ -201,7 +215,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       that.state.relationships.MOTHER.length === 0 &&
       that.state.relationships.FATHER.length === 0 &&
       that.state.relationships.SIBLINGS.length === 0 &&
-      that.state.relationships.WIVESHUSBANDS.length === 0 &&
+      that.state.relationships.WIVES.length === 0 &&
+      that.state.relationships.HUSBANDS.length === 0 &&
       that.state.relationships.CHILDREN.length === 0
     );
   }
@@ -242,7 +257,19 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       verb === "is husband of" ||
       verb === "marries"
     ) {
-      return "marries"; //Do not need specificity here (?)
+      if (
+        this.hasKey(genderData, dirObject) &&
+        genderData[dirObject].gender === "female"
+      ) {
+        return "is wife of";
+      } else if (
+        this.hasKey(genderData, dirObject) &&
+        genderData[dirObject].gender === "male"
+      ) {
+        return "is husband of";
+      } else {
+        return "marries"; // TODO: No way to deal with undefined partner genders yet.
+      }
     } else {
       console.log(
         "Unsure of this connection, or connection is not relevant for the datacards-",
@@ -274,9 +301,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               paddingRight: "1rem"
             }}
           >
-            {relationship === "WIVESHUSBANDS"
-              ? "Wives / Husbands: "
-              : relationship + ": "}
+            {relationship + ": "}
           </div>
           <div style={{ float: "left" }}>
             {that.state.relationships[relationship].map(entity => {
@@ -335,7 +360,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           alternatives =
             alternatives + ", " + entities[id]["Name (transliteration)"];
         }
-        console.log("1");
       }
       if (entities[id]["Name (Latinized)"] !== "") {
         if (alternatives === "") {
@@ -343,7 +367,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         } else {
           alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
         }
-        console.log("2");
       }
       if (entities[id]["Name in Latin texts"] !== "") {
         if (alternatives === "") {
@@ -352,7 +375,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           alternatives =
             alternatives + ", " + entities[id]["Name in Latin texts"];
         }
-        console.log("3");
       }
       if (entities[id]["Alternative names"] !== "") {
         if (alternatives === "") {
@@ -361,7 +383,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           alternatives =
             alternatives + ", " + entities[id]["Alternative names"];
         }
-        console.log("4");
       }
       if (alternatives === "") {
         return alternatives;
