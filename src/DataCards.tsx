@@ -62,7 +62,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     // Agamemnon is 8182035
     // Use Clytaimnestra example, 8188055
     this.state = {
-      id: "8188055",
+      id: "8188175",
       name: "",
       relationships: {
         MOTHER: [],
@@ -301,7 +301,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               paddingRight: "1rem"
             }}
           >
-            {relationship + ": "}
+            {this.state.relationships[relationship].length === 1
+              ? Pluralize.singular(relationship) + ": "
+              : relationship + ": "}
           </div>
           <div style={{ float: "left" }}>
             {that.state.relationships[relationship].map(entity => {
@@ -331,8 +333,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                       fontSize: "0.8rem"
                     }}
                   >
-                    {/* Note change "eng" to "grc" to toggle between English and Greek */}
-
                     {entity.passageStart +
                       (entity.passageEnd === ""
                         ? ""
