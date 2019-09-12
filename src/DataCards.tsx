@@ -404,7 +404,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     return (
       <div
         style={{
-          margin: "3rem 6rem 3rem 6rem",
+          margin: "1rem 6rem 3rem 6rem",
           padding: "3rem",
           display: "flow-root",
           border: "solid 1px black"

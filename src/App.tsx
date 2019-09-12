@@ -1,11 +1,15 @@
 import React from "react";
-import DataCards from "./DataCards";
 import "./App.css";
+import Header from "./Header";
+import Search from "./Search";
+import DataCards from "./DataCards";
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      <DataCards></DataCards>{" "}
+      <Header></Header>
+      <Search></Search>
+      <DataCards></DataCards>
     </React.Fragment>
   );
 };
