@@ -43,3 +43,22 @@ with open(entitiesJsonFilePath, "w") as jsonFile:
     jsonFile.write(json.dumps(data, indent=4))
     print("Parsed entities.csv to entities.json")
 
+
+
+#-------------------
+# Parse Gender file
+genderDataCsvFilePath = "../data/genderData-new.csv"
+genderDataJsonFilePath = "../data/genderData.json"
+
+# Read from and parse existing genderData.csv file
+data = {}
+with open(genderDataCsvFilePath) as csvFile:
+    csvReader = csv.DictReader(csvFile)
+    for csvRow in csvReader:
+        data[csvRow["\xef\xbb\xbfID"]] = {"gender": csvRow["gender"], "name": csvRow["name"]}
+
+# Write contents to a JSON file - genderData.json
+with open(genderDataJsonFilePath, "w") as jsonFile:
+    jsonFile.write(json.dumps(data, indent=4))
+    print("Parsed genderData.csv to genderData.json")
+

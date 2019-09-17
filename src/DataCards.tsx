@@ -6,26 +6,29 @@ import entities from "./data/entities.json";
 import genderData from "./data/genderData.json";
 import { exportDefaultSpecifier } from "@babel/types";
 import Pluralize from "pluralize";
+import { ENGINE_METHOD_CIPHERS } from "constants";
 
-type DatumProps = {};
+type DatumProps = {
+  subjectID: string;
+};
 type DatumState = {
   id: string;
   name: string;
   relationships: relationshipInfo;
 };
 type relationshipInfo = {
-  MOTHER: entityInfo[];
-  FATHER: entityInfo[];
+  MOTHERS: entityInfo[];
+  FATHERS: entityInfo[];
   SIBLINGS: entityInfo[];
   WIVES: entityInfo[];
   HUSBANDS: entityInfo[];
   CHILDREN: entityInfo[];
 };
+type passageInfo = { start: string; end: string };
 type entityInfo = {
   target: string;
   targetID: string;
-  passageStart: string;
-  passageEnd: string;
+  passage: passageInfo[];
 };
 
 /* TODO:
@@ -62,11 +65,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     // Agamemnon is 8182035
     // Use Clytaimnestra example, 8188055
     this.state = {
-      id: "8188175",
+      id: "8182035",
       name: "",
       relationships: {
-        MOTHER: [],
-        FATHER: [],
+        MOTHERS: [],
+        FATHERS: [],
         SIBLINGS: [],
         WIVES: [],
         HUSBANDS: [],
@@ -102,24 +105,27 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       target: string;
       targetID: string;
       verb: string;
-      passageStart: string;
-      passageEnd: string;
+      passage: passageInfo[];
     }[] = [];
 
-    // Populate all family connections
+    // Populate "connections" array with all family connections
     Object.values(datum).forEach(function(datumRow) {
       if (
         datumRow["Direct Object ID"] === id &&
         familyDatums.includes(datumRow.Verb)
       ) {
         // i.e. X <verb> Y where Y is your name
+        let passageInfo: passageInfo[] = [
+          {
+            start: datumRow["Passage: start"],
+            end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+          }
+        ];
         connections.push({
           target: datumRow["Subject"],
           targetID: datumRow["Subject ID"],
           verb: datumRow.Verb,
-          passageStart: datumRow["Passage: start"],
-          passageEnd:
-            datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+          passage: passageInfo
         });
       }
       if (
@@ -128,13 +134,17 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       ) {
         // Add the logic reversals here
         // i.e. Y <verb> X where Y is your name
+        let passageInfo: passageInfo[] = [
+          {
+            start: datumRow["Passage: start"],
+            end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+          }
+        ];
         connections.push({
           target: datumRow["Direct Object"],
           targetID: datumRow["Direct Object ID"],
           verb: that.reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
-          passageStart: datumRow["Passage: start"],
-          passageEnd:
-            datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+          passage: passageInfo
         });
       }
     });
@@ -142,8 +152,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     // Sort family relationships into their relevant relationship state categories
     //TODO: deal with duplicates
     let relationships: relationshipInfo = {
-      MOTHER: [],
-      FATHER: [],
+      MOTHERS: [],
+      FATHERS: [],
       SIBLINGS: [],
       WIVES: [],
       HUSBANDS: [],
@@ -153,40 +163,115 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       let d: entityInfo = {
         target: datum.target,
         targetID: datum.targetID,
-        passageStart: datum.passageStart,
-        passageEnd: datum.passageEnd
+        passage: datum.passage
       };
+
+      //Assign thenm to their relevant categories
       if (datum.verb === "is mother of") {
-        relationships.MOTHER.push(d);
+        // Address duplicates: same person, different passages
+        let wasDuplicate = false;
+        relationships.MOTHERS.forEach(mother => {
+          if (mother.targetID === d.targetID) {
+            mother.passage.push(d.passage[0]);
+            wasDuplicate = true;
+          }
+        });
+        if (!wasDuplicate) {
+          relationships.MOTHERS.push(d);
+        }
       } else if (datum.verb === "is father of") {
-        relationships.FATHER.push(d);
+        // Address duplicates: same person, different passages
+        let wasDuplicate = false;
+        relationships.FATHERS.forEach(father => {
+          if (father.targetID === d.targetID) {
+            father.passage.push(d.passage[0]);
+            wasDuplicate = true;
+          }
+        });
+        if (!wasDuplicate) {
+          relationships.FATHERS.push(d);
+        }
       } else if (
         datum.verb === "is son of" ||
         datum.verb === "is daughter of" ||
         datum.verb === "is child of"
       ) {
-        relationships.CHILDREN.push(d);
+        let wasDuplicate = false;
+        relationships.CHILDREN.forEach(children => {
+          if (children.targetID === d.targetID) {
+            children.passage.push(d.passage[0]);
+            wasDuplicate = true;
+          }
+        });
+        if (!wasDuplicate) {
+          relationships.CHILDREN.push(d);
+        }
       } else if (
         datum.verb === "is sister of" ||
         datum.verb === "is brother of" ||
         datum.verb === "is twin of"
       ) {
-        relationships.SIBLINGS.push(d);
+        let wasDuplicate = false;
+        relationships.SIBLINGS.forEach(siblings => {
+          if (siblings.targetID === d.targetID) {
+            siblings.passage.push(d.passage[0]);
+            wasDuplicate = true;
+          }
+        });
+        if (!wasDuplicate) {
+          relationships.SIBLINGS.push(d);
+        }
       } else if (datum.verb === "is wife of") {
-        relationships.WIVES.push(d);
+        let wasDuplicate = false;
+        relationships.WIVES.forEach(wives => {
+          if (wives.targetID === d.targetID) {
+            wives.passage.push(d.passage[0]);
+            wasDuplicate = true;
+          }
+        });
+        if (!wasDuplicate) {
+          relationships.WIVES.push(d);
+        }
       } else if (datum.verb === "is husband of") {
-        relationships.HUSBANDS.push(d);
+        let wasDuplicate = false;
+        relationships.HUSBANDS.forEach(husbands => {
+          if (husbands.targetID === d.targetID) {
+            husbands.passage.push(d.passage[0]);
+            wasDuplicate = true;
+          }
+        });
+        if (!wasDuplicate) {
+          relationships.HUSBANDS.push(d);
+        }
       } else if (datum.verb === "marries") {
         if (
           this.hasKey(genderData, datum.targetID) &&
           genderData[datum.targetID].gender === "female"
         ) {
-          relationships.WIVES.push(d);
+          let wasDuplicate = false;
+          relationships.WIVES.forEach(wives => {
+            if (wives.targetID === d.targetID) {
+              wives.passage.push(d.passage[0]);
+              wasDuplicate = true;
+            }
+          });
+          if (!wasDuplicate) {
+            relationships.WIVES.push(d);
+          }
         } else if (
           this.hasKey(genderData, datum.targetID) &&
           genderData[datum.targetID].gender === "male"
         ) {
-          relationships.HUSBANDS.push(d);
+          let wasDuplicate = false;
+          relationships.FATHERS.forEach(fathers => {
+            if (fathers.targetID === d.targetID) {
+              fathers.passage.push(d.passage[0]);
+              wasDuplicate = true;
+            }
+          });
+          if (!wasDuplicate) {
+            relationships.FATHERS.push(d);
+          }
         }
       }
     });
@@ -212,8 +297,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   checkNoRelations() {
     let that = this;
     return (
-      that.state.relationships.MOTHER.length === 0 &&
-      that.state.relationships.FATHER.length === 0 &&
+      that.state.relationships.MOTHERS.length === 0 &&
+      that.state.relationships.FATHERS.length === 0 &&
       that.state.relationships.SIBLINGS.length === 0 &&
       that.state.relationships.WIVES.length === 0 &&
       that.state.relationships.HUSBANDS.length === 0 &&
@@ -315,29 +400,40 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                   >
                     {entity.target}
                   </div>
-                  ,{" "}
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href={
-                      "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:" +
-                      entity.passageStart.split(" ")[2] +
-                      (entity.passageEnd === ""
-                        ? ""
-                        : "-" + entity.passageEnd.split(" ")[2]) +
-                      "/?right=perseus-eng2"
-                    }
-                    style={{
-                      color: "grey",
-                      fontStyle: "italic",
-                      fontSize: "0.8rem"
-                    }}
-                  >
-                    {entity.passageStart +
-                      (entity.passageEnd === ""
-                        ? ""
-                        : "-" + entity.passageEnd.split(" ")[2])}
-                  </a>
+                  {entity.passage.map(passage => {
+                    return (
+                      <span>
+                        ,{" "}
+                        {console.log(
+                          "This is the passage",
+                          passage.start,
+                          passage.end
+                        )}
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={
+                            "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:" +
+                            passage.start.split(" ")[2] +
+                            (passage.end === ""
+                              ? ""
+                              : "-" + passage.end.split(" ")[2]) +
+                            "/?right=perseus-eng2"
+                          }
+                          style={{
+                            color: "grey",
+                            fontStyle: "italic",
+                            fontSize: "0.8rem"
+                          }}
+                        >
+                          {passage.start +
+                            (passage.end === ""
+                              ? ""
+                              : "-" + passage.end.split(" ")[2])}
+                        </a>
+                      </span>
+                    );
+                  })}
                 </div>
               );
             })}

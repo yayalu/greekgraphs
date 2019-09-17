@@ -4,14 +4,27 @@ import Header from "./Header";
 import Search from "./Search";
 import DataCards from "./DataCards";
 
-const App: React.FC = () => {
-  return (
-    <React.Fragment>
-      <Header></Header>
-      <Search></Search>
-      <DataCards></DataCards>
-    </React.Fragment>
-  );
-};
+class App extends React.Component<{}, {}> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      subjectID: ""
+    };
+  }
+
+  changeEntity(ID: string) {
+    this.setState({ subjectID: ID });
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <Header></Header>
+        {/*<Search targetID={this.changeEntity}></Search> */}
+        <DataCards subjectID=""></DataCards>
+      </React.Fragment>
+    );
+  }
+}
 
 export default App;

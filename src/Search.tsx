@@ -2,7 +2,9 @@ import React from "react";
 import "./App.css";
 import entities from "./data/entities.json";
 
-type SearchProps = {};
+type SearchProps = {
+  targetID: string;
+};
 type SearchState = {
   searchInput: string;
 };
@@ -16,9 +18,11 @@ class Search extends React.Component<SearchProps, SearchState> {
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
   }
 
-  getMatches(input: string) {
+  getMatches(oginput: string) {
     // Rudimentary name-exact search algorithm, to update with search-by-subject-ID, as well as mistyping of certain names
     let matches: string[] = [];
+    let inputLC = oginput.toLowerCase();
+    let input = inputLC.charAt(0).toUpperCase() + inputLC.slice(1);
     Object.values(entities).forEach(entity => {
       if (
         entity["Name (Smith & Trzaskoma)"] === input ||
@@ -34,9 +38,13 @@ class Search extends React.Component<SearchProps, SearchState> {
   }
 
   onSearchSubmit(event: any) {
-    if (event.keyCode == 13) {
+    if (event.keyCode === 13) {
       this.setState({ searchInput: event.target.value });
     }
+  }
+
+  handleClickName(key: any) {
+    // this.props.targetID(key);
   }
 
   /* Addresses typescript indexing objects error */
@@ -53,12 +61,11 @@ class Search extends React.Component<SearchProps, SearchState> {
           onKeyDown={this.onSearchSubmit}
         ></input>
         <div>
-          {" "}
           {this.state.searchInput === ""
             ? ""
-            : this.getMatches(this.state.searchInput).map((key, value) => {
+            : this.getMatches(this.state.searchInput).map(key => {
                 return (
-                  <div>
+                  <div onClick={() => this.handleClickName(key)}>
                     {this.hasKey(entities, key) ? entities[key]["Name"] : ""}
                   </div>
                 );
