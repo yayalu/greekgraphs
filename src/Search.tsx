@@ -1,21 +1,25 @@
 import React from "react";
 import "./App.css";
 import entities from "./data/entities.json";
+import { Redirect } from "react-router-dom";
 
-type SearchProps = {
-  targetID: string;
-};
+type SearchProps = {};
 type SearchState = {
-  searchInput: string;
+  redirect: boolean;
+  targetID: string;
 };
 
 class Search extends React.Component<SearchProps, SearchState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      searchInput: ""
+      redirect: false,
+      targetID: ""
     };
-    this.onSearchSubmit = this.onSearchSubmit.bind(this);
+    // this.onSearchSubmit = this.onSearchSubmit.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleSearchKeyDown = this.handleSearchKeyDown.bind(this);
+    this.getDescriptors = this.getDescriptors.bind(this);
   }
 
   getMatches(oginput: string) {
@@ -37,14 +41,60 @@ class Search extends React.Component<SearchProps, SearchState> {
     return matches;
   }
 
-  onSearchSubmit(event: any) {
-    if (event.keyCode === 13) {
-      this.setState({ searchInput: event.target.value });
+  matchCurrentInput = (currentInput: string, item: any) => {
+    //const yourLogic = item.someAdditionalValue;
+    console.log("Item value", item);
+    return item.label.toUpperCase().includes(currentInput.toUpperCase());
+    // yourLogic.substr(0, currentInput.length).toUpperCase() == currentInput.toUpperCase()
+  };
+
+  getDescriptors(id: string) {
+    if (this.hasKey(entities, id)) {
+      let alternatives = "";
+      if (entities[id]["Name (transliteration)"] !== "") {
+        alternatives = alternatives + entities[id]["Name (transliteration)"];
+      }
+      if (entities[id]["Name (Latinized)"] !== "") {
+        alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
+      }
+      if (entities[id]["Name in Latin texts"] !== "") {
+        alternatives =
+          alternatives + ", " + entities[id]["Name in Latin texts"];
+      }
+      if (entities[id]["Alternative names"] !== "") {
+        alternatives = alternatives + ", " + entities[id]["Alternative names"];
+      }
+
+      let descriptorSplit = entities[id]["Name"].split("(");
+      let descriptor = descriptorSplit[1].substr(
+        0,
+        descriptorSplit[1].length - 1
+      );
+      let name = entities[id]["Name (Smith & Trzaskoma)"];
+      if (alternatives === "") {
+        return id + ": " + name + ", " + descriptor;
+      } else {
+        return id + ": " + name + alternatives + ", " + descriptor;
+      }
     }
   }
 
-  handleClickName(key: any) {
-    // this.props.targetID(key);
+  pageRedirect = () => {
+    console.log("redirecting to", this.state.targetID);
+    if (this.state.redirect) {
+      return <Redirect to={"/datacards?id=" + this.state.targetID} />;
+    }
+  };
+
+  handleSearch() {
+    let entities = document.getElementById("input") as HTMLInputElement;
+    this.setState({ redirect: true, targetID: entities.value.split(":")[0] });
+  }
+
+  handleSearchKeyDown(event: any) {
+    if (event.which === 13 || event.keyCode === 13) {
+      this.handleSearch();
+    }
   }
 
   /* Addresses typescript indexing objects error */
@@ -53,48 +103,80 @@ class Search extends React.Component<SearchProps, SearchState> {
   }
 
   render() {
+    /* const entitiesArray = Object.values(entities).map(entity => {
+      return {
+        // what to show to the user
+        label: entity.ID + ": " + this.getDescriptors(entity.ID),
+        // key to identify the item within the array
+        key: entity.ID
+      };
+    }); */
     return (
-      <div style={{ margin: "1rem 0 0 6rem" }}>
+      <React.Fragment>
+        {/* <h3 style={{ textAlign: "center" }}>SEARCH</h3> */}
+        {this.pageRedirect()}
+        <div
+          style={{
+            margin: "1rem 0 1rem 0",
+            textAlign: "center"
+          }}
+        >
+          {/* <DataListInput
+          placeholder={"Search by entity name..."}
+          items={entitiesArray}
+          onSelect={this.pageRedirect}
+          match={this.matchCurrentInput}
+        /> */}
+          <input
+            // type="search"
+            placeholder="Search by entity name"
+            id="input"
+            list="entities"
+            onKeyDown={this.handleSearchKeyDown}
+            style={{ width: "50%", textAlign: "center", fontSize: "1rem" }}
+          ></input>
+          <datalist id="entities" style={{ maxHeight: "100px" }}>
+            {Object.values(entities).map(entity => {
+              return <option value={this.getDescriptors(entity.ID)}></option>;
+            })}
+          </datalist>
+          <button
+            onClick={this.handleSearch}
+            style={{
+              height: "24px",
+              margin: 0,
+              padding: 0,
+              fontWeight: "bold"
+            }}
+          >
+            --->
+          </button>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Search;
+
+/* 
+      <div style={{ margin: "1rem 0 1rem 0", textAlign: "center" }}>
+        {this.pageRedirect()}
         <input
           type="search"
-          placeholder="Search by name"
+          placeholder="Search by entity name"
           onKeyDown={this.onSearchSubmit}
+          style={{ width: "30%" }}
         ></input>
         <div>
           {this.state.searchInput === ""
             ? ""
             : this.getMatches(this.state.searchInput).map(key => {
                 return (
-                  <div onClick={() => this.handleClickName(key)}>
+                  <div key={key} onClick={() => this.handleClickName(key)}>
                     {this.hasKey(entities, key) ? entities[key]["Name"] : ""}
                   </div>
                 );
               })}
         </div>
-      </div>
-
-      /* class="dropdown">
-        <button onclick="myFunction()" class="dropbtn">
-          Dropdown
-        </button>
-        <div id="myDropdown" class="dropdown-content">
-          <input
-            type="text"
-            placeholder="Search.."
-            id="myInput"
-            onkeyup="filterFunction()"
-          />
-          <a href="#about">About</a>
-          <a href="#base">Base</a>
-          <a href="#blog">Blog</a>
-          <a href="#contact">Contact</a>
-          <a href="#custom">Custom</a>
-          <a href="#support">Support</a>
-          <a href="#tools">Tools</a>
-        </div>
-      </div>*/
-    );
-  }
-}
-
-export default Search;
+      </div> */

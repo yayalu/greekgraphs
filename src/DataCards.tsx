@@ -4,17 +4,22 @@ import "./DataCards.scss";
 import datum from "./data/datum.json";
 import entities from "./data/entities.json";
 import genderData from "./data/genderData.json";
-import { exportDefaultSpecifier } from "@babel/types";
 import Pluralize from "pluralize";
-import { ENGINE_METHOD_CIPHERS } from "constants";
+import queryString from "querystring";
 
 type DatumProps = {
-  subjectID: string;
+  location: {
+    search: string;
+  };
+  history: {
+    push: ({}) => null;
+  };
 };
 type DatumState = {
   id: string;
   name: string;
   relationships: relationshipInfo;
+  validSearch: boolean;
 };
 type relationshipInfo = {
   MOTHERS: entityInfo[];
@@ -74,7 +79,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         WIVES: [],
         HUSBANDS: [],
         CHILDREN: []
-      }
+      },
+      validSearch: false
     };
     this.getNameFromID = this.getNameFromID.bind(this);
     this.checkNoRelations = this.checkNoRelations.bind(this);
@@ -89,7 +95,31 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   /*******************/
 
   componentDidMount() {
-    this.updateComponent(this.state.id);
+    const params = queryString.parse(this.props.location.search.slice(1));
+    const id = params.id as string;
+    if (!params.id) {
+      // Handle bad url
+      //@ts-ignore
+      this.setState({ validSearch: false });
+    } else {
+      //Substitute with ID
+      // this.updateComponent(this.state.id);
+      this.updateComponent(id);
+    }
+  }
+
+  componentDidUpdate() {
+    const params = queryString.parse(this.props.location.search.slice(1));
+    const id = params.id as string;
+    if (!params.id) {
+      // Handle bad url
+      //@ts-ignore
+      this.setState({ validSearch: false });
+    } else if (this.state.id !== id) {
+      //Substitute with ID
+      // this.updateComponent(this.state.id);
+      this.updateComponent(id);
+    }
   }
 
   updateComponent(id: string) {
@@ -277,7 +307,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     });
 
     // Modify the relationship and name
-    this.setState({ id, relationships, name });
+    this.setState({ id, relationships, name, validSearch: true });
   }
 
   /********************/
@@ -367,7 +397,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
   handleNameClicked(targetID: string) {
     /* TODO: Fix this rudimentary solution - data cards to links not volatile state */
-    this.updateComponent(targetID);
+    this.props.history.push("/datacards?id=" + targetID);
   }
 
   getDataPoints(relationship: string) {
@@ -498,27 +528,37 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
   render() {
     return (
-      <div
-        style={{
-          margin: "1rem 6rem 3rem 6rem",
-          padding: "3rem",
-          display: "flow-root",
-          border: "solid 1px black"
-        }}
-      >
-        <div id="datacard-heading">{this.state.name}</div>
-        <div id="datacard-alternativenames">
-          {this.getAlternativeNames(this.state.id)}
+      <React.Fragment>
+        <div
+          className={this.state.validSearch ? "no-display" : ""}
+          style={{ margin: "1rem 6rem 3rem 6rem", padding: "3rem" }}
+        >
+          No profiles have been selected. Try using the Search function.
         </div>
-        {/* If no data is available for the subject */}
-        <div className={this.checkNoRelations() ? "" : "no-display"}>
-          No relationship data is available for {this.state.name}.
+        <div className={this.state.validSearch ? "" : "no-display"}>
+          <div
+            style={{
+              margin: "1rem 6rem 3rem 6rem",
+              padding: "3rem",
+              display: "flow-root",
+              border: "solid 1px black"
+            }}
+          >
+            <div id="datacard-heading">{this.state.name}</div>
+            <div id="datacard-alternativenames">
+              {this.getAlternativeNames(this.state.id)}
+            </div>
+            {/* If no data is available for the subject */}
+            <div className={this.checkNoRelations() ? "" : "no-display"}>
+              No relationship data is available for {this.state.name}.
+            </div>
+            {/* If data is available for the subject */}
+            {Object.keys(this.state.relationships).map(key => {
+              return <div key={key}>{this.getDataPoints(key)}</div>;
+            })}
+          </div>
         </div>
-        {/* If data is available for the subject */}
-        {Object.keys(this.state.relationships).map(key => {
-          return <div>{this.getDataPoints(key)}</div>;
-        })}
-      </div>
+      </React.Fragment>
     );
   }
 }

@@ -3,6 +3,13 @@ import "./App.css";
 import Header from "./Header";
 import Search from "./Search";
 import DataCards from "./DataCards";
+import {
+  HashRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Redirect
+} from "react-router-dom";
 
 class App extends React.Component<{}, {}> {
   constructor(props: any) {
@@ -18,11 +25,22 @@ class App extends React.Component<{}, {}> {
 
   render() {
     return (
-      <React.Fragment>
-        <Header></Header>
-        {/*<Search targetID={this.changeEntity}></Search> */}
-        <DataCards subjectID=""></DataCards>
-      </React.Fragment>
+      <div
+        style={{ backgroundColor: "#eeeeee", height: "100%", width: "100%" }}
+      >
+        <Router>
+          <Link to="/">
+            <Header></Header>
+          </Link>
+          <Search></Search>
+          <Switch>
+            {/* <Route exact path="/" component={Home} /> */}
+            <Route path="/search" component={Search} />
+            <Route path="/datacards" component={DataCards} />
+            <Route component={() => <Redirect to="/" />} />
+          </Switch>
+        </Router>
+      </div>
     );
   }
 }
