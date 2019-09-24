@@ -104,6 +104,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else {
       //Substitute with ID
       // this.updateComponent(this.state.id);
+      console.log("mounted");
       this.updateComponent(id);
     }
   }
@@ -118,166 +119,147 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else if (this.state.id !== id) {
       //Substitute with ID
       // this.updateComponent(this.state.id);
+      console.log("updated");
       this.updateComponent(id);
     }
   }
 
   updateComponent(id: string) {
     const that = this;
-    /* Preliminary information (i.e. name) about the entity */
-    let name = this.getNameFromID(id);
+    if (that.hasKey(entities, id)) {
+      /* Preliminary information (i.e. name) about the entity */
+      let name = this.getNameFromID(id);
 
-    /*******************/
-    /* Find all relationships */
-    /*******************/
+      /*******************/
+      /* Find all relationships */
+      /*******************/
 
-    var connections: {
-      target: string;
-      targetID: string;
-      verb: string;
-      passage: passageInfo[];
-    }[] = [];
+      var connections: {
+        target: string;
+        targetID: string;
+        verb: string;
+        passage: passageInfo[];
+      }[] = [];
 
-    // Populate "connections" array with all family connections
-    Object.values(datum).forEach(function(datumRow) {
-      if (
-        datumRow["Direct Object ID"] === id &&
-        familyDatums.includes(datumRow.Verb)
-      ) {
-        // i.e. X <verb> Y where Y is your name
-        let passageInfo: passageInfo[] = [
-          {
-            start: datumRow["Passage: start"],
-            end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
-          }
-        ];
-        connections.push({
-          target: datumRow["Subject"],
-          targetID: datumRow["Subject ID"],
-          verb: datumRow.Verb,
-          passage: passageInfo
-        });
-      }
-      if (
-        datumRow["Subject ID"] === id &&
-        familyDatums.includes(datumRow.Verb)
-      ) {
-        // Add the logic reversals here
-        // i.e. Y <verb> X where Y is your name
-        let passageInfo: passageInfo[] = [
-          {
-            start: datumRow["Passage: start"],
-            end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
-          }
-        ];
-        connections.push({
-          target: datumRow["Direct Object"],
-          targetID: datumRow["Direct Object ID"],
-          verb: that.reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
-          passage: passageInfo
-        });
-      }
-    });
-
-    // Sort family relationships into their relevant relationship state categories
-    //TODO: deal with duplicates
-    let relationships: relationshipInfo = {
-      MOTHERS: [],
-      FATHERS: [],
-      SIBLINGS: [],
-      WIVES: [],
-      HUSBANDS: [],
-      CHILDREN: []
-    };
-    connections.forEach(datum => {
-      let d: entityInfo = {
-        target: datum.target,
-        targetID: datum.targetID,
-        passage: datum.passage
-      };
-
-      //Assign thenm to their relevant categories
-      if (datum.verb === "is mother of") {
-        // Address duplicates: same person, different passages
-        let wasDuplicate = false;
-        relationships.MOTHERS.forEach(mother => {
-          if (mother.targetID === d.targetID) {
-            mother.passage.push(d.passage[0]);
-            wasDuplicate = true;
-          }
-        });
-        if (!wasDuplicate) {
-          relationships.MOTHERS.push(d);
-        }
-      } else if (datum.verb === "is father of") {
-        // Address duplicates: same person, different passages
-        let wasDuplicate = false;
-        relationships.FATHERS.forEach(father => {
-          if (father.targetID === d.targetID) {
-            father.passage.push(d.passage[0]);
-            wasDuplicate = true;
-          }
-        });
-        if (!wasDuplicate) {
-          relationships.FATHERS.push(d);
-        }
-      } else if (
-        datum.verb === "is son of" ||
-        datum.verb === "is daughter of" ||
-        datum.verb === "is child of"
-      ) {
-        let wasDuplicate = false;
-        relationships.CHILDREN.forEach(children => {
-          if (children.targetID === d.targetID) {
-            children.passage.push(d.passage[0]);
-            wasDuplicate = true;
-          }
-        });
-        if (!wasDuplicate) {
-          relationships.CHILDREN.push(d);
-        }
-      } else if (
-        datum.verb === "is sister of" ||
-        datum.verb === "is brother of" ||
-        datum.verb === "is twin of"
-      ) {
-        let wasDuplicate = false;
-        relationships.SIBLINGS.forEach(siblings => {
-          if (siblings.targetID === d.targetID) {
-            siblings.passage.push(d.passage[0]);
-            wasDuplicate = true;
-          }
-        });
-        if (!wasDuplicate) {
-          relationships.SIBLINGS.push(d);
-        }
-      } else if (datum.verb === "is wife of") {
-        let wasDuplicate = false;
-        relationships.WIVES.forEach(wives => {
-          if (wives.targetID === d.targetID) {
-            wives.passage.push(d.passage[0]);
-            wasDuplicate = true;
-          }
-        });
-        if (!wasDuplicate) {
-          relationships.WIVES.push(d);
-        }
-      } else if (datum.verb === "is husband of") {
-        let wasDuplicate = false;
-        relationships.HUSBANDS.forEach(husbands => {
-          if (husbands.targetID === d.targetID) {
-            husbands.passage.push(d.passage[0]);
-            wasDuplicate = true;
-          }
-        });
-        if (!wasDuplicate) {
-          relationships.HUSBANDS.push(d);
-        }
-      } else if (datum.verb === "marries") {
+      // Populate "connections" array with all family connections
+      Object.values(datum).forEach(function(datumRow) {
         if (
-          this.hasKey(genderData, datum.targetID) &&
-          genderData[datum.targetID].gender === "female"
+          datumRow["Direct Object ID"] === id &&
+          familyDatums.includes(datumRow.Verb)
         ) {
+          // i.e. X <verb> Y where Y is your name
+          let passageInfo: passageInfo[] = [
+            {
+              start: datumRow["Passage: start"],
+              end:
+                datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+            }
+          ];
+          connections.push({
+            target: datumRow["Subject"],
+            targetID: datumRow["Subject ID"],
+            verb: datumRow.Verb,
+            passage: passageInfo
+          });
+        }
+        if (
+          datumRow["Subject ID"] === id &&
+          familyDatums.includes(datumRow.Verb)
+        ) {
+          // Add the logic reversals here
+          // i.e. Y <verb> X where Y is your name
+          let passageInfo: passageInfo[] = [
+            {
+              start: datumRow["Passage: start"],
+              end:
+                datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+            }
+          ];
+          connections.push({
+            target: datumRow["Direct Object"],
+            targetID: datumRow["Direct Object ID"],
+            verb: that.reversedVerb(
+              datumRow.Verb,
+              datumRow["Direct Object ID"]
+            ),
+            passage: passageInfo
+          });
+        }
+      });
+
+      // Sort family relationships into their relevant relationship state categories
+      //TODO: deal with duplicates
+      let relationships: relationshipInfo = {
+        MOTHERS: [],
+        FATHERS: [],
+        SIBLINGS: [],
+        WIVES: [],
+        HUSBANDS: [],
+        CHILDREN: []
+      };
+      connections.forEach(datum => {
+        let d: entityInfo = {
+          target: datum.target,
+          targetID: datum.targetID,
+          passage: datum.passage
+        };
+
+        //Assign thenm to their relevant categories
+        if (datum.verb === "is mother of") {
+          // Address duplicates: same person, different passages
+          let wasDuplicate = false;
+          relationships.MOTHERS.forEach(mother => {
+            if (mother.targetID === d.targetID) {
+              mother.passage.push(d.passage[0]);
+              wasDuplicate = true;
+            }
+          });
+          if (!wasDuplicate) {
+            relationships.MOTHERS.push(d);
+          }
+        } else if (datum.verb === "is father of") {
+          // Address duplicates: same person, different passages
+          let wasDuplicate = false;
+          relationships.FATHERS.forEach(father => {
+            if (father.targetID === d.targetID) {
+              father.passage.push(d.passage[0]);
+              wasDuplicate = true;
+            }
+          });
+          if (!wasDuplicate) {
+            relationships.FATHERS.push(d);
+          }
+        } else if (
+          datum.verb === "is son of" ||
+          datum.verb === "is daughter of" ||
+          datum.verb === "is child of"
+        ) {
+          let wasDuplicate = false;
+          relationships.CHILDREN.forEach(children => {
+            if (children.targetID === d.targetID) {
+              children.passage.push(d.passage[0]);
+              wasDuplicate = true;
+            }
+          });
+          if (!wasDuplicate) {
+            relationships.CHILDREN.push(d);
+          }
+        } else if (
+          datum.verb === "is sister of" ||
+          datum.verb === "is brother of" ||
+          datum.verb === "is twin of"
+        ) {
+          let wasDuplicate = false;
+          relationships.SIBLINGS.forEach(siblings => {
+            if (siblings.targetID === d.targetID) {
+              siblings.passage.push(d.passage[0]);
+              wasDuplicate = true;
+            }
+          });
+          if (!wasDuplicate) {
+            relationships.SIBLINGS.push(d);
+          }
+        } else if (datum.verb === "is wife of") {
           let wasDuplicate = false;
           relationships.WIVES.forEach(wives => {
             if (wives.targetID === d.targetID) {
@@ -288,26 +270,52 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           if (!wasDuplicate) {
             relationships.WIVES.push(d);
           }
-        } else if (
-          this.hasKey(genderData, datum.targetID) &&
-          genderData[datum.targetID].gender === "male"
-        ) {
+        } else if (datum.verb === "is husband of") {
           let wasDuplicate = false;
-          relationships.FATHERS.forEach(fathers => {
-            if (fathers.targetID === d.targetID) {
-              fathers.passage.push(d.passage[0]);
+          relationships.HUSBANDS.forEach(husbands => {
+            if (husbands.targetID === d.targetID) {
+              husbands.passage.push(d.passage[0]);
               wasDuplicate = true;
             }
           });
           if (!wasDuplicate) {
-            relationships.FATHERS.push(d);
+            relationships.HUSBANDS.push(d);
+          }
+        } else if (datum.verb === "marries") {
+          if (
+            this.hasKey(genderData, datum.targetID) &&
+            genderData[datum.targetID].gender === "female"
+          ) {
+            let wasDuplicate = false;
+            relationships.WIVES.forEach(wives => {
+              if (wives.targetID === d.targetID) {
+                wives.passage.push(d.passage[0]);
+                wasDuplicate = true;
+              }
+            });
+            if (!wasDuplicate) {
+              relationships.WIVES.push(d);
+            }
+          } else if (
+            this.hasKey(genderData, datum.targetID) &&
+            genderData[datum.targetID].gender === "male"
+          ) {
+            let wasDuplicate = false;
+            relationships.FATHERS.forEach(fathers => {
+              if (fathers.targetID === d.targetID) {
+                fathers.passage.push(d.passage[0]);
+                wasDuplicate = true;
+              }
+            });
+            if (!wasDuplicate) {
+              relationships.FATHERS.push(d);
+            }
           }
         }
-      }
-    });
-
+      });
+      this.setState({ id, relationships, name, validSearch: true });
+    }
     // Modify the relationship and name
-    this.setState({ id, relationships, name, validSearch: true });
   }
 
   /********************/
@@ -359,14 +367,14 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       ) {
         return "is father of";
       } else {
-        return "is parent of"; // TODO: No way to deal with undefined parent genders yet.
+        return "is parent of";
       }
     } else if (
       verb === "is sister of" ||
       verb === "is brother of" ||
       verb === "is twin of"
     ) {
-      return "is sister of"; // TODO: Fix using sister as siblings placeholder since data cards is not specific on siblings gender
+      return "is sister of";
     } else if (
       verb === "is wife of" ||
       verb === "is husband of" ||
@@ -383,7 +391,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       ) {
         return "is husband of";
       } else {
-        return "marries"; // TODO: No way to deal with undefined partner genders yet.
+        return "marries";
       }
     } else {
       console.log(
@@ -396,7 +404,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   }
 
   handleNameClicked(targetID: string) {
-    /* TODO: Fix this rudimentary solution - data cards to links not volatile state */
     this.props.history.push("/datacards?id=" + targetID);
   }
 
@@ -531,7 +538,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       <React.Fragment>
         <div
           className={this.state.validSearch ? "no-display" : ""}
-          style={{ margin: "1rem 6rem 3rem 6rem", padding: "3rem" }}
+          style={{ textAlign: "center", padding: "3rem" }}
         >
           No profiles have been selected. Try using the Search function.
         </div>

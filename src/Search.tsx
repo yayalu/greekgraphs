@@ -80,7 +80,6 @@ class Search extends React.Component<SearchProps, SearchState> {
   }
 
   pageRedirect = () => {
-    console.log("redirecting to", this.state.targetID);
     if (this.state.redirect) {
       return <Redirect to={"/datacards?id=" + this.state.targetID} />;
     }
@@ -88,7 +87,9 @@ class Search extends React.Component<SearchProps, SearchState> {
 
   handleSearch() {
     let entities = document.getElementById("input") as HTMLInputElement;
-    this.setState({ redirect: true, targetID: entities.value.split(":")[0] });
+    if (entities.value !== "") {
+      this.setState({ redirect: true, targetID: entities.value.split(":")[0] });
+    }
   }
 
   handleSearchKeyDown(event: any) {
