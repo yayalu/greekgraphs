@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import entities from "./data/entities.json";
 import { Redirect } from "react-router-dom";
+import arrow from "./images/arrow.svg";
 
 type SearchProps = {};
 type SearchState = {
@@ -141,17 +142,13 @@ class Search extends React.Component<SearchProps, SearchState> {
               return <option value={this.getDescriptors(entity.ID)}></option>;
             })}
           </datalist>
-          <button
-            onClick={this.handleSearch}
-            style={{
-              height: "24px",
-              margin: 0,
-              padding: 0,
-              fontWeight: "bold"
-            }}
-          >
-            --->
-          </button>
+          <div>
+            <img
+              src={arrow}
+              onClick={this.handleSearch}
+              className="search-arrow"
+            ></img>
+          </div>
         </div>
       </React.Fragment>
     );
@@ -159,25 +156,3 @@ class Search extends React.Component<SearchProps, SearchState> {
 }
 
 export default Search;
-
-/* 
-      <div style={{ margin: "1rem 0 1rem 0", textAlign: "center" }}>
-        {this.pageRedirect()}
-        <input
-          type="search"
-          placeholder="Search by entity name"
-          onKeyDown={this.onSearchSubmit}
-          style={{ width: "30%" }}
-        ></input>
-        <div>
-          {this.state.searchInput === ""
-            ? ""
-            : this.getMatches(this.state.searchInput).map(key => {
-                return (
-                  <div key={key} onClick={() => this.handleClickName(key)}>
-                    {this.hasKey(entities, key) ? entities[key]["Name"] : ""}
-                  </div>
-                );
-              })}
-        </div>
-      </div> */

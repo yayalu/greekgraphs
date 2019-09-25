@@ -104,7 +104,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else {
       //Substitute with ID
       // this.updateComponent(this.state.id);
-      console.log("mounted");
       this.updateComponent(id);
     }
   }
@@ -119,7 +118,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else if (this.state.id !== id) {
       //Substitute with ID
       // this.updateComponent(this.state.id);
-      console.log("updated");
       this.updateComponent(id);
     }
   }
@@ -441,11 +439,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                     return (
                       <span>
                         ,{" "}
-                        {console.log(
-                          "This is the passage",
-                          passage.start,
-                          passage.end
-                        )}
                         <a
                           target="_blank"
                           rel="noopener noreferrer"
