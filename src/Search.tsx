@@ -144,6 +144,7 @@ class Search extends React.Component<SearchProps, SearchState> {
           </datalist>
           <div>
             <img
+              alt="Submit search"
               src={arrow}
               onClick={this.handleSearch}
               className="search-arrow"
