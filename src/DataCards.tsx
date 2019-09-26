@@ -6,6 +6,7 @@ import entities from "./data/entities.json";
 import genderData from "./data/genderData.json";
 import Pluralize from "pluralize";
 import queryString from "querystring";
+import EntityGraph from "./EntityGraph";
 
 type DatumProps = {
   location: {
@@ -558,6 +559,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             })}
           </div>
         </div>
+        <EntityGraph id={this.state.targetID}></EntityGraph>
       </React.Fragment>
     );
   }
