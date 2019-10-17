@@ -50,6 +50,10 @@ class Search extends React.Component<SearchProps, SearchState> {
   };
 
   getDescriptors(id: string) {
+    /* 
+    
+    For a more comprehensive search:
+
     if (this.hasKey(entities, id)) {
       let alternatives = "";
       if (entities[id]["Name (transliteration)"] !== "") {
@@ -77,6 +81,29 @@ class Search extends React.Component<SearchProps, SearchState> {
       } else {
         return id + ": " + name + alternatives + ", " + descriptor;
       }
+    } 
+    
+    */
+
+    if (this.hasKey(entities, id)) {
+      let alternatives: string = "";
+      if (entities[id]["Name (transliteration)"] !== "") {
+        alternatives =
+          alternatives + ", " + entities[id]["Name (transliteration)"];
+      }
+      if (entities[id]["Name (Latinized)"] !== "") {
+        alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
+      }
+      if (entities[id]["Name in Latin texts"] !== "") {
+        alternatives =
+          alternatives + ", " + entities[id]["Name in Latin texts"];
+      }
+      if (entities[id]["Alternative names"] !== "") {
+        alternatives = alternatives + ", " + entities[id]["Alternative names"];
+      }
+      return (
+        id + ": " + entities[id]["Name (Smith & Trzaskoma)"] + alternatives
+      );
     }
   }
 

@@ -13,8 +13,10 @@
     "pluralize": "^8.0.0",
     "querystring": "^0.2.0",
     "react": "^16.9.0",
+    "react-dagre-d3": "0.0.2",
     "react-datalist-input": "^1.2.12",
     "react-dom": "^16.9.0",
+    "react-native-d3-tree-graph": "^1.0.12",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.1.1",
     "typescript": "3.5.3"

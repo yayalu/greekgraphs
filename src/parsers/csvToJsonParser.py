@@ -62,3 +62,27 @@ with open(genderDataJsonFilePath, "w") as jsonFile:
     jsonFile.write(json.dumps(data, indent=4))
     print("Parsed genderData.csv to genderData.json")
 
+
+
+#------------------
+# Parse Passages file
+passagesCsvFilePath = "../data/passages.csv"
+passagesJsonFilePath = "../data/passages.json"
+
+# Read from and parse existing datum.csv file
+data = {}
+with open(passagesCsvFilePath) as csvFile:
+    csvReader = csv.DictReader(csvFile)
+    index = 1
+    
+    for csvRow in csvReader:
+        # id = csvRow["\xef\xbb\xbfnodegoat ID"]
+        data[index] = csvRow
+        index = index+1
+
+# Write contents to a JSON file - datum.json
+with open(passagesJsonFilePath, "w") as jsonFile:
+    jsonFile.write(json.dumps(data, indent=4))
+    print("Parsed passages.csv to passages.csv")
+
+
