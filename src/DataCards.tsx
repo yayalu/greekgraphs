@@ -439,7 +439,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                   {entity.passage.map(passage => {
                     return (
                       <span>
-                        ,{" "}
+                        <span style={{ color: "#ffffff00" }}>, </span>
                         <a
                           target="_blank"
                           rel="noopener noreferrer"
@@ -453,7 +453,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                           }
                           style={{
                             color: "grey",
-                            fontStyle: "italic",
                             fontSize: "0.8rem"
                           }}
                         >
@@ -559,7 +558,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             })}
           </div>
         </div>
-        <EntityGraph id={this.state.targetID}></EntityGraph>
+        {/* <EntityGraph id={this.state.targetID}></EntityGraph> */}
       </React.Fragment>
     );
   }
