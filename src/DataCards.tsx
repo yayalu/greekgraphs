@@ -367,7 +367,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
       return (
         <span>
-          {"  "}
+          {"  ("}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -377,11 +377,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               fontSize: "0.8rem"
             }}
           >
-            {"(" + author + ", "}
+            {author + ", "}
             <span style={{ fontStyle: "italic" }}>{title}</span> {start}
             {start !== end && end !== "" ? "-" + end : ""}
-            {")"}
           </a>
+          {")"}
         </span>
       );
     }
