@@ -23,31 +23,34 @@ class Search extends React.Component<SearchProps, SearchState> {
     this.getDescriptors = this.getDescriptors.bind(this);
   }
 
-  getMatches(oginput: string) {
+  /* getMatches(oginput: string) {
     // Rudimentary name-exact search algorithm, to update with search-by-subject-ID, as well as mistyping of certain names
     let matches: string[] = [];
     let inputLC = oginput.toLowerCase();
     let input = inputLC.charAt(0).toUpperCase() + inputLC.slice(1);
     Object.values(entities).forEach(entity => {
       if (
-        entity["Name (Smith & Trzaskoma)"] === input ||
-        entity["Name (transliteration)"] === input ||
-        entity["Name (Latinized)"] === input ||
-        entity["Name in Latin texts"] === input ||
-        entity["Alternative names"] === input
+        entity["Type of entity"] === "Agent" ||
+        entity["Type of entity"] === "Collective"
       ) {
-        matches.push(entity["ID"]);
+        if (
+          entity["Name (Smith & Trzaskoma)"] === input ||
+          entity["Name (transliteration)"] === input ||
+          entity["Name (Latinized)"] === input ||
+          entity["Name in Latin texts"] === input ||
+          entity["Alternative names"] === input
+        ) {
+          matches.push(entity["ID"]);
+        }
       }
     });
     return matches;
-  }
+  } 
 
   matchCurrentInput = (currentInput: string, item: any) => {
-    //const yourLogic = item.someAdditionalValue;
-    console.log("Item value", item);
     return item.label.toUpperCase().includes(currentInput.toUpperCase());
-    // yourLogic.substr(0, currentInput.length).toUpperCase() == currentInput.toUpperCase()
   };
+  */
 
   getDescriptors(id: string) {
     /* 
