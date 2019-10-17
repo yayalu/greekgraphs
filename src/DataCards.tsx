@@ -590,6 +590,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           </div>
         </div>
         {/* <EntityGraph id={this.state.targetID}></EntityGraph> */}
+        <EntityGraph id={this.state.id}></EntityGraph>
       </React.Fragment>
     );
   }
