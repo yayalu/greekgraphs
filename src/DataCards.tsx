@@ -4,6 +4,7 @@ import "./DataCards.scss";
 import datum from "./data/datum.json";
 import entities from "./data/entities.json";
 import genderData from "./data/genderData.json";
+import passages from "./data/passages.json";
 import Pluralize from "pluralize";
 import queryString from "querystring";
 import EntityGraph from "./EntityGraph";
@@ -30,7 +31,12 @@ type relationshipInfo = {
   HUSBANDS: entityInfo[];
   CHILDREN: entityInfo[];
 };
-type passageInfo = { start: string; end: string };
+type passageInfo = {
+  start: string;
+  startID: string;
+  end: string;
+  endID: string;
+};
 type entityInfo = {
   target: string;
   targetID: string;
@@ -150,8 +156,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           let passageInfo: passageInfo[] = [
             {
               start: datumRow["Passage: start"],
+              startID: datumRow["Passage: start ID"],
               end:
-                datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+                datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
+              endID: datumRow["Passage: end ID"]
             }
           ];
           connections.push({
@@ -170,8 +178,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           let passageInfo: passageInfo[] = [
             {
               start: datumRow["Passage: start"],
+              startID: datumRow["Passage: start ID"],
               end:
-                datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"]
+                datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
+              endID: datumRow["Passage: end ID"]
             }
           ];
           connections.push({
@@ -331,6 +341,52 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     }
   }
 
+  getPassageLink(passage: any) {
+    let id = passage.startID;
+    if (this.hasKey(passages, id)) {
+      let author: string = passages[id].Author;
+      let title: string = passages[id].Title;
+      let start: string = passages[id].Passage;
+      let end: string = passage.endID;
+
+      // Dealing with multiple URNs
+      let URN: string = "";
+      let URNsplit = passages[id]["CTS URN"].split(", ");
+      if (URNsplit.length >= 2) {
+        URN = URNsplit[1];
+      } else {
+        URN = passages[id]["CTS URN"];
+      }
+
+      URN = "https://scaife.perseus.org/reader/" + URN;
+      if (passage.endID !== "" && this.hasKey(passages, end)) {
+        end = passages[end].Passage;
+        URN = URN + "-" + end;
+      }
+      URN = URN + "/?right=perseus-eng2";
+
+      return (
+        <span>
+          {"  "}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={URN}
+            style={{
+              color: "grey",
+              fontSize: "0.8rem"
+            }}
+          >
+            {"(" + author + ", "}
+            <span style={{ fontStyle: "italic" }}>{title}</span> {start}
+            {start !== end && end !== "" ? "-" + end : ""}
+            {")"}
+          </a>
+        </span>
+      );
+    }
+  }
+
   checkNoRelations() {
     let that = this;
     return (
@@ -437,32 +493,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                     {entity.target}
                   </div>
                   {entity.passage.map(passage => {
-                    return (
-                      <span>
-                        <span style={{ color: "#ffffff00" }}>{", "}</span>
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={
-                            "https://scaife.perseus.org/reader/urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:" +
-                            passage.start.split(" ")[2] +
-                            (passage.end === ""
-                              ? ""
-                              : "-" + passage.end.split(" ")[2]) +
-                            "/?right=perseus-eng2"
-                          }
-                          style={{
-                            color: "grey",
-                            fontSize: "0.8rem"
-                          }}
-                        >
-                          {passage.start +
-                            (passage.end === ""
-                              ? ""
-                              : "-" + passage.end.split(" ")[2])}
-                        </a>
-                      </span>
-                    );
+                    return this.getPassageLink(passage);
                   })}
                 </div>
               );

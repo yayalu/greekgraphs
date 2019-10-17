@@ -52,12 +52,10 @@ passagesJsonFilePath = "../data/passages.json"
 data = {}
 with open(passagesCsvFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)
-    index = 1
     
     for csvRow in csvReader:
-        # id = csvRow["\xef\xbb\xbfnodegoat ID"]
-        data[index] = csvRow
-        index = index+1
+        id = csvRow["\xef\xbb\xbfID"]
+        data[id] = csvRow
 
 # Write contents to a JSON file - datum.json
 with open(passagesJsonFilePath, "w") as jsonFile:
