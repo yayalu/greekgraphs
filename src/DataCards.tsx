@@ -439,7 +439,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                   {entity.passage.map(passage => {
                     return (
                       <span>
-                        <span style={{ color: "#ffffff00" }}>, </span>
+                        <span style={{ color: "#ffffff00" }}>{", "}</span>
                         <a
                           target="_blank"
                           rel="noopener noreferrer"
