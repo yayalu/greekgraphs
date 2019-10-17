@@ -469,7 +469,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       that.state.relationships[relationship].length !== 0
     ) {
       return (
-        <div style={{ margin: "0 0 2rem 0", clear: "both" }}>
+        <div style={{ clear: "both" }}>
           <div
             style={{
               fontWeight: "bold",
