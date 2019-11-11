@@ -579,6 +579,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             <div id="datacard-alternativenames">
               {this.getAlternativeNames(this.state.id)}
             </div>
+            <div id="datacard-mantoID">MANTO ID: {this.state.id}</div>
             {/* If no data is available for the subject */}
             <div className={this.checkNoRelations() ? "" : "no-display"}>
               No relationship data is available for {this.state.name}.
@@ -589,11 +590,12 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             })}
           </div>
         </div>
-        {/* <EntityGraph id={this.state.targetID}></EntityGraph> */}
+        {/* 
         <EntityGraph
           id={this.state.id}
           relationships={this.state.relationships}
         ></EntityGraph>
+        */}
       </React.Fragment>
     );
   }

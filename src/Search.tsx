@@ -3,6 +3,7 @@ import "./App.css";
 import entities from "./data/entities.json";
 import { Redirect } from "react-router-dom";
 import arrow from "./images/arrow.svg";
+import SelectSearch from "react-select-search";
 
 type SearchProps = {};
 type SearchState = {
@@ -52,62 +53,36 @@ class Search extends React.Component<SearchProps, SearchState> {
   };
   */
 
-  getDescriptors(id: string) {
-    /* 
-    
-    For a more comprehensive search:
-
-    if (this.hasKey(entities, id)) {
-      let alternatives = "";
-      if (entities[id]["Name (transliteration)"] !== "") {
-        alternatives = alternatives + entities[id]["Name (transliteration)"];
+  getDescriptors() {
+    let descriptorsList: any[] = [];
+    for (let id in entities) {
+      if (this.hasKey(entities, id)) {
+        let alternatives: string = "";
+        if (entities[id]["Name (transliteration)"] !== "") {
+          alternatives =
+            alternatives + ", " + entities[id]["Name (transliteration)"];
+        }
+        if (entities[id]["Name (Latinized)"] !== "") {
+          alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
+        }
+        if (entities[id]["Name in Latin texts"] !== "") {
+          alternatives =
+            alternatives + ", " + entities[id]["Name in Latin texts"];
+        }
+        if (entities[id]["Alternative names"] !== "") {
+          alternatives =
+            alternatives + ", " + entities[id]["Alternative names"];
+        }
+        let inputDesc =
+          entities[id]["Name (Smith & Trzaskoma)"] +
+          alternatives +
+          ": " +
+          entities[id]["Identifying information"];
+        descriptorsList.push({ value: id, name: inputDesc });
       }
-      if (entities[id]["Name (Latinized)"] !== "") {
-        alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
-      }
-      if (entities[id]["Name in Latin texts"] !== "") {
-        alternatives =
-          alternatives + ", " + entities[id]["Name in Latin texts"];
-      }
-      if (entities[id]["Alternative names"] !== "") {
-        alternatives = alternatives + ", " + entities[id]["Alternative names"];
-      }
-
-      let descriptorSplit = entities[id]["Name"].split("(");
-      let descriptor = descriptorSplit[1].substr(
-        0,
-        descriptorSplit[1].length - 1
-      );
-      let name = entities[id]["Name (Smith & Trzaskoma)"];
-      if (alternatives === "") {
-        return id + ": " + name + ", " + descriptor;
-      } else {
-        return id + ": " + name + alternatives + ", " + descriptor;
-      }
-    } 
-    
-    */
-
-    if (this.hasKey(entities, id)) {
-      let alternatives: string = "";
-      if (entities[id]["Name (transliteration)"] !== "") {
-        alternatives =
-          alternatives + ", " + entities[id]["Name (transliteration)"];
-      }
-      if (entities[id]["Name (Latinized)"] !== "") {
-        alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
-      }
-      if (entities[id]["Name in Latin texts"] !== "") {
-        alternatives =
-          alternatives + ", " + entities[id]["Name in Latin texts"];
-      }
-      if (entities[id]["Alternative names"] !== "") {
-        alternatives = alternatives + ", " + entities[id]["Alternative names"];
-      }
-      return (
-        id + ": " + entities[id]["Name (Smith & Trzaskoma)"] + alternatives
-      );
     }
+    console.log(descriptorsList);
+    return descriptorsList;
   }
 
   pageRedirect = () => {
@@ -117,10 +92,10 @@ class Search extends React.Component<SearchProps, SearchState> {
   };
 
   handleSearch() {
-    let entities = document.getElementById("input") as HTMLInputElement;
+    /* let entities = document.getElementById("input") as HTMLInputElement;
     if (entities.value !== "") {
       this.setState({ redirect: true, targetID: entities.value.split(":")[0] });
-    }
+    } */
   }
 
   handleSearchKeyDown(event: any) {
@@ -159,27 +134,32 @@ class Search extends React.Component<SearchProps, SearchState> {
           onSelect={this.pageRedirect}
           match={this.matchCurrentInput}
         /> */}
-          <input
+          {/* <input
             // type="search"
-            placeholder="Search by entity name"
+            placeholder="Search by name"
             id="input"
             list="entities"
             onKeyDown={this.handleSearchKeyDown}
             style={{ width: "50%", textAlign: "center", fontSize: "1rem" }}
-          ></input>
-          <datalist id="entities" style={{ maxHeight: "100px" }}>
-            {Object.values(entities).map(entity => {
+          ></input> */}
+          <SelectSearch
+            options={this.getDescriptors()}
+            value="sv"
+            name="language"
+            placeholder="Search by name"
+          />
+
+          {/* Object.values(entities).map(entity => {
               return <option value={this.getDescriptors(entity.ID)}></option>;
-            })}
-          </datalist>
-          <div>
+            }) */}
+          {/* <div>
             <img
               alt="Submit search"
               src={arrow}
               onClick={this.handleSearch}
               className="search-arrow"
-            ></img>
-          </div>
+          ></img>
+          </div> */}
         </div>
       </React.Fragment>
     );
