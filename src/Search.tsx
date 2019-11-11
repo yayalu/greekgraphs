@@ -3,7 +3,6 @@ import "./App.css";
 import entities from "./data/entities.json";
 import { Redirect } from "react-router-dom";
 import arrow from "./images/arrow.svg";
-import SelectSearch from "react-select-search";
 
 type SearchProps = {};
 type SearchState = {
@@ -24,65 +23,30 @@ class Search extends React.Component<SearchProps, SearchState> {
     this.getDescriptors = this.getDescriptors.bind(this);
   }
 
-  /* getMatches(oginput: string) {
-    // Rudimentary name-exact search algorithm, to update with search-by-subject-ID, as well as mistyping of certain names
-    let matches: string[] = [];
-    let inputLC = oginput.toLowerCase();
-    let input = inputLC.charAt(0).toUpperCase() + inputLC.slice(1);
-    Object.values(entities).forEach(entity => {
-      if (
-        entity["Type of entity"] === "Agent" ||
-        entity["Type of entity"] === "Collective"
-      ) {
-        if (
-          entity["Name (Smith & Trzaskoma)"] === input ||
-          entity["Name (transliteration)"] === input ||
-          entity["Name (Latinized)"] === input ||
-          entity["Name in Latin texts"] === input ||
-          entity["Alternative names"] === input
-        ) {
-          matches.push(entity["ID"]);
-        }
+  getDescriptors(id: string) {
+    if (this.hasKey(entities, id)) {
+      let alternatives: string = "";
+      if (entities[id]["Name (transliteration)"] !== "") {
+        alternatives =
+          alternatives + ", " + entities[id]["Name (transliteration)"];
       }
-    });
-    return matches;
-  } 
-
-  matchCurrentInput = (currentInput: string, item: any) => {
-    return item.label.toUpperCase().includes(currentInput.toUpperCase());
-  };
-  */
-
-  getDescriptors() {
-    let descriptorsList: any[] = [];
-    for (let id in entities) {
-      if (this.hasKey(entities, id)) {
-        let alternatives: string = "";
-        if (entities[id]["Name (transliteration)"] !== "") {
-          alternatives =
-            alternatives + ", " + entities[id]["Name (transliteration)"];
-        }
-        if (entities[id]["Name (Latinized)"] !== "") {
-          alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
-        }
-        if (entities[id]["Name in Latin texts"] !== "") {
-          alternatives =
-            alternatives + ", " + entities[id]["Name in Latin texts"];
-        }
-        if (entities[id]["Alternative names"] !== "") {
-          alternatives =
-            alternatives + ", " + entities[id]["Alternative names"];
-        }
-        let inputDesc =
-          entities[id]["Name (Smith & Trzaskoma)"] +
-          alternatives +
-          ": " +
-          entities[id]["Identifying information"];
-        descriptorsList.push({ value: id, name: inputDesc });
+      if (entities[id]["Name (Latinized)"] !== "") {
+        alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
       }
+      if (entities[id]["Name in Latin texts"] !== "") {
+        alternatives =
+          alternatives + ", " + entities[id]["Name in Latin texts"];
+      }
+      if (entities[id]["Alternative names"] !== "") {
+        alternatives = alternatives + ", " + entities[id]["Alternative names"];
+      }
+      let inputText =
+        entities[id]["Name (Smith & Trzaskoma)"] +
+        alternatives +
+        ": " +
+        entities[id]["Identifying information"];
+      return inputText;
     }
-    console.log(descriptorsList);
-    return descriptorsList;
   }
 
   pageRedirect = () => {
@@ -92,10 +56,37 @@ class Search extends React.Component<SearchProps, SearchState> {
   };
 
   handleSearch() {
-    /* let entities = document.getElementById("input") as HTMLInputElement;
-    if (entities.value !== "") {
-      this.setState({ redirect: true, targetID: entities.value.split(":")[0] });
-    } */
+    let currentInput = document.getElementById("input") as HTMLInputElement;
+    if (currentInput.value !== "") {
+      //Search based on name and identifying information - super inefficient. TODO: fix this
+      for (let id in entities) {
+        if (this.hasKey(entities, id)) {
+          if (
+            entities[id]["Identifying information"] ===
+            currentInput.value.split(": ")[1]
+          ) {
+            let currentInputName = currentInput.value
+              .split(": ")[0]
+              .split(",")[0]
+              .trim();
+            console.log(currentInputName);
+
+            if (
+              currentInputName === entities[id]["Name (Smith & Trzaskoma)"] ||
+              currentInputName === entities[id]["Name (transliteration)"] ||
+              currentInputName === entities[id]["Name (Latinized)"] ||
+              currentInputName === entities[id]["Name in Latin texts"] ||
+              currentInputName === entities[id]["Alternative names"]
+            ) {
+              this.setState({
+                redirect: true,
+                targetID: id
+              });
+            }
+          }
+        }
+      }
+    }
   }
 
   handleSearchKeyDown(event: any) {
@@ -134,32 +125,27 @@ class Search extends React.Component<SearchProps, SearchState> {
           onSelect={this.pageRedirect}
           match={this.matchCurrentInput}
         /> */}
-          {/* <input
+          <input
             // type="search"
             placeholder="Search by name"
             id="input"
             list="entities"
             onKeyDown={this.handleSearchKeyDown}
             style={{ width: "50%", textAlign: "center", fontSize: "1rem" }}
-          ></input> */}
-          <SelectSearch
-            options={this.getDescriptors()}
-            value="sv"
-            name="language"
-            placeholder="Search by name"
-          />
-
-          {/* Object.values(entities).map(entity => {
+          ></input>
+          <datalist id="entities" style={{ maxHeight: "100px" }}>
+            {Object.values(entities).map(entity => {
               return <option value={this.getDescriptors(entity.ID)}></option>;
-            }) */}
-          {/* <div>
+            })}
+          </datalist>
+          <div>
             <img
               alt="Submit search"
               src={arrow}
               onClick={this.handleSearch}
               className="search-arrow"
-          ></img>
-          </div> */}
+            ></img>
+          </div>
         </div>
       </React.Fragment>
     );
