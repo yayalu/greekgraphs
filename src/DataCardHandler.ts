@@ -88,7 +88,7 @@ export const updateComponent = (id: string) => {
         }
       ];
       connections.push({
-        target: datumRow["Subject"],
+        target: entities[datumRow["Subject ID"]]["Name (Smith & Trzaskoma)"],
         targetID: datumRow["Subject ID"],
         verb: datumRow.Verb,
         passage: passageInfo
@@ -106,7 +106,8 @@ export const updateComponent = (id: string) => {
         }
       ];
       connections.push({
-        target: datumRow["Direct Object"],
+        target:
+          entities[datumRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
         targetID: datumRow["Direct Object ID"],
         verb: reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
         passage: passageInfo
@@ -125,6 +126,7 @@ export const updateComponent = (id: string) => {
     CHILDREN: []
   };
   connections.forEach(datum => {
+    console.log(datum.target);
     let d: entityInfo = {
       target: datum.target,
       targetID: datum.targetID,
