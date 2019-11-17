@@ -234,6 +234,16 @@ export const updateComponent = (id: string) => {
       }
     }
   });
+
+  /* Alphabetize the relationships */
+  relationships.MOTHERS = alphabetize(relationships.MOTHERS);
+  relationships.FATHERS = alphabetize(relationships.FATHERS);
+  relationships.WIVES = alphabetize(relationships.WIVES);
+  relationships.HUSBANDS = alphabetize(relationships.HUSBANDS);
+  relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
+  relationships.CHILDREN = alphabetize(relationships.CHILDREN);
+
+  /* Return alphabetized, complete list of relationships */
   return {
     id: id,
     relationships: relationships,
@@ -244,6 +254,19 @@ export const updateComponent = (id: string) => {
   // Modify the relationship and name
 };
 
+/* Alphabetize the relationship */
+const alphabetize = (relation: any[]) => {
+  if (relation.length === 0) {
+    return [];
+  } else {
+    relation.sort(function(a, b) {
+      var relationA = a.target.toUpperCase();
+      var relationB = b.target.toUpperCase();
+      return relationA < relationB ? -1 : relationA > relationB ? 1 : 0;
+    });
+  }
+  return relation;
+};
 /* Use the entity CSV instead when receive it */
 const getNameFromID = (id: string) => {
   return entities[id]["Name (Smith & Trzaskoma)"];
