@@ -3,6 +3,7 @@ import "./App.css";
 import entities from "./data/entities.json";
 import { Redirect } from "react-router-dom";
 import arrow from "./images/arrow.svg";
+import ReactGA from "react-ga";
 
 type SearchProps = {};
 type SearchState = {
@@ -56,6 +57,10 @@ class Search extends React.Component<SearchProps, SearchState> {
   };
 
   handleSearch() {
+    ReactGA.event({
+      category: "Search",
+      action: "User searched for an entity using the search bar"
+    });
     let currentInput = document.getElementById("input") as HTMLInputElement;
     if (currentInput.value !== "") {
       //Search based on name and identifying information - super inefficient. TODO: fix this

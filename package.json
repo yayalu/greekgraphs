@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/google.analytics": "0.0.40",
     "@types/jest": "24.0.17",
     "@types/node": "12.7.2",
     "@types/pluralize": "0.0.29",
@@ -20,6 +21,7 @@
     "react-dagre-d3": "0.0.2",
     "react-datalist-input": "^1.2.12",
     "react-dom": "^16.10.2",
+    "react-ga": "^2.7.0",
     "react-konva": "^16.10.1-0",
     "react-native-d3-tree-graph": "^1.0.12",
     "react-router-dom": "^5.0.1",

@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "./Header";
 import Search from "./Search";
 import DataCards from "./DataCards";
+import ReactGA from "react-ga";
 import {
   HashRouter as Router,
   Route,
@@ -21,6 +22,11 @@ class App extends React.Component<{}, {}> {
 
   changeEntity(ID: string) {
     this.setState({ subjectID: ID });
+  }
+
+  initializeReactGA() {
+    ReactGA.initialize("UA-151993194-1");
+    ReactGA.pageview("/homepage");
   }
 
   render() {

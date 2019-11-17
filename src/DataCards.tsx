@@ -8,6 +8,7 @@ import passages from "./data/passages.json";
 import Pluralize from "pluralize";
 import queryString from "querystring";
 import EntityGraph from "./EntityGraph";
+import ReactGA from "react-ga";
 
 type DatumProps = {
   location: {
@@ -459,6 +460,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   }
 
   handleNameClicked(targetID: string) {
+    ReactGA.event({
+      category: "NameClicked",
+      action: "User clicked on a name within the data card"
+    });
     this.props.history.push("/datacards?id=" + targetID);
   }
 
