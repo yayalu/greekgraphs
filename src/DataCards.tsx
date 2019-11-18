@@ -25,6 +25,8 @@ type DatumState = {
   id: string;
   name: string;
   relationships: relationshipInfo;
+  members: any[];
+  type: string;
   validSearch: boolean;
 };
 
@@ -47,6 +49,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         HUSBANDS: [],
         CHILDREN: []
       },
+      members: [],
+      type: "",
       validSearch: false
     };
     /* this.getNameFromID = this.getNameFromID.bind(this);
@@ -126,7 +130,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               paddingRight: "1rem"
             }}
           >
-            {console.log(this.state.relationships[relationship])}
             {this.state.relationships[relationship].length === 1 &&
             this.state.relationships[relationship][0].type !== "Collective"
               ? Pluralize.singular(relationship) + ": "
@@ -156,6 +159,43 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     }
   }
 
+  getCollectiveMembers() {
+    let that = this;
+    if (that.state.members.length !== 0) {
+      return (
+        <div style={{ marginTop: "3rem", textAlign: "center" }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              textDecoration: "underline",
+              marginBottom: "0.5rem"
+            }}
+          >
+            MEMBERS:
+          </div>
+          {that.state.members.map(member => {
+            return (
+              <div style={{ margin: "0" }}>
+                <span
+                  className="collective-button"
+                  onClick={() => this.handleNameClicked(member.targetID)}
+                >
+                  {member.target}
+                </span>
+                {member.passage.map(passage => {
+                  return this.getPassageLink(passage);
+                })}
+              </div>
+            );
+          })}
+        </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
   /*******************/
   /* SETUP FUNCTIONS */
   /*******************/
@@ -174,7 +214,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       this.setState({
         id: newState.id,
         relationships: newState.relationships,
+        members: newState.members,
         name: newState.name,
+        type: newState.type,
         validSearch: newState.validSearch
       });
     }
@@ -194,7 +236,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       this.setState({
         id: newState.id,
         relationships: newState.relationships,
+        members: newState.members,
         name: newState.name,
+        type: newState.type,
         validSearch: newState.validSearch
       });
     }
@@ -239,6 +283,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             {Object.keys(this.state.relationships).map(key => {
               return <div key={key}>{this.getDataPoints(key)}</div>;
             })}
+            <div>{this.getCollectiveMembers()}</div>
           </div>
         </div>
         {/* 

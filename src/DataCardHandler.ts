@@ -43,7 +43,8 @@ let familyDatums = [
   "is grandparent of",
   "is grandson of",
   "is granddaughter of",
-  "is grandchild of"
+  "is grandchild of",
+  "is part of"
 ];
 
 /***************************
@@ -52,7 +53,9 @@ let familyDatums = [
 
 export const updateComponent = (id: string) => {
   /* Preliminary information (i.e. name) about the entity */
-  let name = getNameFromID(id);
+  let name = entities[id]["Name (Smith & Trzaskoma)"];
+  let type = entities[id]["Type of entity"];
+  let members: any[] = [];
 
   /*******************/
   /* Find all relationships */
@@ -235,6 +238,9 @@ export const updateComponent = (id: string) => {
           relationships.FATHERS.push(d);
         }
       }
+      // address collectives
+    } else if (datum.verb === "is part of") {
+      members.push(d);
     }
   });
 
@@ -245,12 +251,15 @@ export const updateComponent = (id: string) => {
   relationships.HUSBANDS = alphabetize(relationships.HUSBANDS);
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.CHILDREN = alphabetize(relationships.CHILDREN);
+  members = alphabetize(members);
 
   /* Return alphabetized, complete list of relationships */
   return {
     id: id,
     relationships: relationships,
     name: name,
+    members: members,
+    type: type,
     validSearch: true
   };
 
@@ -269,11 +278,6 @@ const alphabetize = (relation: any[]) => {
     });
   }
   return relation;
-};
-
-/* Use the entity CSV instead when receive it */
-const getNameFromID = (id: string) => {
-  return entities[id]["Name (Smith & Trzaskoma)"];
 };
 
 export const checkNoRelations = (relationships: any) => {
