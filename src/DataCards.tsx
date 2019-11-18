@@ -126,7 +126,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               paddingRight: "1rem"
             }}
           >
-            {this.state.relationships[relationship].length === 1
+            {console.log(this.state.relationships[relationship])}
+            {this.state.relationships[relationship].length === 1 &&
+            this.state.relationships[relationship][0].type !== "Collective"
               ? Pluralize.singular(relationship) + ": "
               : relationship + ": "}
           </div>

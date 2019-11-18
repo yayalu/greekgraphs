@@ -2,10 +2,19 @@ import datum from "./data/datum.json";
 import entities from "./data/entities.json";
 import genderData from "./data/genderData.json";
 
-/* Addresses typescript indexing objects error */
-/* const hasKey<O>(obj: O, key: keyof any): key is keyof O => {{
-  return key in obj;
-}}*/
+type passageInfo = {
+  start: string;
+  startID: string;
+  end: string;
+  endID: string;
+};
+
+type entityInfo = {
+  target: string;
+  targetID: string;
+  passage: passageInfo[];
+  type: string;
+};
 
 export type relationshipInfo = {
   MOTHERS: entityInfo[];
@@ -15,22 +24,6 @@ export type relationshipInfo = {
   HUSBANDS: entityInfo[];
   CHILDREN: entityInfo[];
 };
-
-type passageInfo = {
-  start: string;
-  startID: string;
-  end: string;
-  endID: string;
-};
-type entityInfo = {
-  target: string;
-  targetID: string;
-  passage: passageInfo[];
-};
-
-/* TODO:
-Get gender from subject ID
-*/
 
 let familyDatums = [
   "is father of",
@@ -87,6 +80,14 @@ export const updateComponent = (id: string) => {
           endID: datumRow["Passage: end ID"]
         }
       ];
+      // genderizes marriage for simplicity
+      if (datumRow.Verb === "marries") {
+        if (genderData[datumRow["Subject ID"]].gender === "female") {
+          datumRow.Verb = "is wife of";
+        } else if (genderData[datumRow["Subject ID"]].gender === "male") {
+          datumRow.Verb = "is husband of";
+        }
+      }
       connections.push({
         target: entities[datumRow["Subject ID"]]["Name (Smith & Trzaskoma)"],
         targetID: datumRow["Subject ID"],
@@ -126,11 +127,11 @@ export const updateComponent = (id: string) => {
     CHILDREN: []
   };
   connections.forEach(datum => {
-    console.log(datum.target);
     let d: entityInfo = {
       target: datum.target,
       targetID: datum.targetID,
-      passage: datum.passage
+      passage: datum.passage,
+      type: entities[datum.targetID]["Type of entity"]
     };
 
     //Assign thenm to their relevant categories
@@ -269,6 +270,7 @@ const alphabetize = (relation: any[]) => {
   }
   return relation;
 };
+
 /* Use the entity CSV instead when receive it */
 const getNameFromID = (id: string) => {
   return entities[id]["Name (Smith & Trzaskoma)"];
@@ -297,13 +299,16 @@ const reversedVerb = (verb: string, dirObject: string) => {
     verb === "is daughter of" ||
     verb === "is child of"
   ) {
-    if (genderData[dirObject].gender === "female") {
-      return "is mother of";
-    } else if (genderData[dirObject].gender === "male") {
-      return "is father of";
-    } else {
-      return "is parent of";
-    }
+    if (dirObject !== "9587654") {
+      // deal with inconsistency in data - Danaos is missing
+      if (genderData[dirObject].gender === "female") {
+        return "is mother of";
+      } else if (genderData[dirObject].gender === "male") {
+        return "is father of";
+      } else {
+        return "is parent of";
+      }
+    } else return "is father of";
   } else if (
     verb === "is sister of" ||
     verb === "is brother of" ||
@@ -324,7 +329,7 @@ const reversedVerb = (verb: string, dirObject: string) => {
     }
   } else {
     console.log(
-      "Unsure of this connection, or connection is not relevant for the datacards-",
+      "Unsure of this connection, or connection is not relevant for the datacards.",
       verb,
       dirObject
     );
