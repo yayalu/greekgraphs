@@ -286,12 +286,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             <div>{this.getCollectiveMembers()}</div>
           </div>
         </div>
-        {/* 
+
         <EntityGraph
           id={this.state.id}
           relationships={this.state.relationships}
         ></EntityGraph>
-        */}
       </React.Fragment>
     );
   }
