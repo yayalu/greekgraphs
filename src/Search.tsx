@@ -74,7 +74,6 @@ class Search extends React.Component<SearchProps, SearchState> {
               .split(": ")[0]
               .split(",")[0]
               .trim();
-            console.log(currentInputName);
 
             if (
               currentInputName === entities[id]["Name (Smith & Trzaskoma)"] ||
