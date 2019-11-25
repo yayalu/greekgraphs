@@ -1,4 +1,5 @@
 import entities from "./data/entities.json";
+import { updateComponent } from "./DataCardHandler";
 
 /*
 
@@ -13,10 +14,16 @@ export type relationshipInfo = {
 
 */
 
-export const getGraph = (id: string, relationships: any) => {
+export const getGraph = (depth: number, id: string, relationships: any) => {
   let Graph = require("@dagrejs/graphlib").Graph;
   let g = new Graph();
 
+  getAllLinks(g, depth, id, relationships);
+  /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
+  console.log("Final edges", g.edges());
+};
+
+const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
   g.setNode(id, entities[id]["Name (Smith & Trzaskoma)"]);
 
   if (relationships.MOTHERS.length !== 0) {
@@ -32,7 +39,7 @@ export const getGraph = (id: string, relationships: any) => {
     console.log(relationships.FATHERS);
     for (let i = 0; i < relationships.FATHERS.length; i++) {
       let r = relationships.FATHERS[i];
-      g.setNode(r.targetID, r.target);
+      g.setNode(r.targetID, r);
       g.setEdge(r.targetID, id, "father");
     }
   }
@@ -73,6 +80,18 @@ export const getGraph = (id: string, relationships: any) => {
     }
   }
 
-  /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
-  console.log("Edges", g.edges());
+  let edges = g.edges();
+  console.log(depth);
+  if (depth > 1) {
+    for (let i = 0; i < edges.length; i++) {
+      // Does this actually update g?
+      // Recursive call to getAllLinks()
+      getAllLinks(
+        g,
+        depth - 1,
+        edges[i].v,
+        updateComponent(edges[i].v).relationships
+      );
+    }
+  }
 };
