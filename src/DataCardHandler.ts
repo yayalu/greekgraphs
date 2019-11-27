@@ -254,7 +254,24 @@ export const updateComponent = (id: string) => {
       }
       // address collectives
     } else if (datum.verb === "is part of") {
-      members.push(d);
+      let memberDuplicate = false;
+      members.forEach(member => {
+        if (member.targetID === d.targetID) {
+          memberDuplicate = true;
+          let passageDuplicate = false;
+          for (let i = 0; i < member.passage.length; i++) {
+            if (member.passage[i] === d.passage[0]) {
+              passageDuplicate = true;
+            }
+          }
+          if (!passageDuplicate) {
+            member.passage.push(d.passage[0]);
+          }
+        }
+      });
+      if (!memberDuplicate) {
+        members.push(d);
+      }
     }
   });
 
