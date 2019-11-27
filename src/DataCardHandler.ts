@@ -20,6 +20,7 @@ export type relationshipInfo = {
   MOTHERS: entityInfo[];
   FATHERS: entityInfo[];
   SIBLINGS: entityInfo[];
+  TWIN: entityInfo[];
   WIVES: entityInfo[];
   HUSBANDS: entityInfo[];
   CHILDREN: entityInfo[];
@@ -35,6 +36,7 @@ let familyDatums = [
   "is sister of",
   "is brother of",
   "is twin of",
+  "is older than",
   "is wife of",
   "is husband of",
   "marries",
@@ -125,6 +127,7 @@ export const updateComponent = (id: string) => {
     MOTHERS: [],
     FATHERS: [],
     SIBLINGS: [],
+    TWIN: [],
     WIVES: [],
     HUSBANDS: [],
     CHILDREN: []
@@ -180,7 +183,7 @@ export const updateComponent = (id: string) => {
     } else if (
       datum.verb === "is sister of" ||
       datum.verb === "is brother of" ||
-      datum.verb === "is twin of"
+      datum.verb === "is older than"
     ) {
       let wasDuplicate = false;
       relationships.SIBLINGS.forEach(siblings => {
@@ -191,6 +194,17 @@ export const updateComponent = (id: string) => {
       });
       if (!wasDuplicate) {
         relationships.SIBLINGS.push(d);
+      }
+    } else if (datum.verb === "is twin of") {
+      let wasDuplicate = false;
+      relationships.TWIN.forEach(twin => {
+        if (twin.targetID === d.targetID) {
+          twin.passage.push(d.passage[0]);
+          wasDuplicate = true;
+        }
+      });
+      if (!wasDuplicate) {
+        relationships.TWIN.push(d);
       }
     } else if (datum.verb === "is wife of") {
       let wasDuplicate = false;
@@ -250,6 +264,7 @@ export const updateComponent = (id: string) => {
   relationships.WIVES = alphabetize(relationships.WIVES);
   relationships.HUSBANDS = alphabetize(relationships.HUSBANDS);
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
+  relationships.TWIN = alphabetize(relationships.TWIN);
   relationships.CHILDREN = alphabetize(relationships.CHILDREN);
   members = alphabetize(members);
 
@@ -285,6 +300,7 @@ export const checkNoRelations = (relationships: any) => {
     relationships.MOTHERS.length === 0 &&
     relationships.FATHERS.length === 0 &&
     relationships.SIBLINGS.length === 0 &&
+    relationships.TWIN.length === 0 &&
     relationships.WIVES.length === 0 &&
     relationships.HUSBANDS.length === 0 &&
     relationships.CHILDREN.length === 0
@@ -303,22 +319,28 @@ const reversedVerb = (verb: string, dirObject: string) => {
     verb === "is daughter of" ||
     verb === "is child of"
   ) {
-    if (dirObject !== "9587654") {
-      // deal with inconsistency in data - Danaos is missing
-      if (genderData[dirObject].gender === "female") {
-        return "is mother of";
-      } else if (genderData[dirObject].gender === "male") {
-        return "is father of";
-      } else {
-        return "is parent of";
-      }
-    } else return "is father of";
+    if (genderData[dirObject].gender === "female") {
+      return "is mother of";
+    } else if (genderData[dirObject].gender === "male") {
+      return "is father of";
+    } else {
+      return "is parent of";
+    }
+  } else if (verb === "is twin of") {
+    return "is twin of";
   } else if (
     verb === "is sister of" ||
     verb === "is brother of" ||
-    verb === "is twin of"
+    verb === "is older than"
   ) {
-    return "is sister of";
+    if (genderData[dirObject].gender === "female") {
+      return "is sister of";
+    } else if (genderData[dirObject].gender === "male") {
+      return "is brother of";
+    } else {
+      console.log("Gender-undefined sibling relationship");
+      return "";
+    }
   } else if (
     verb === "is wife of" ||
     verb === "is husband of" ||
