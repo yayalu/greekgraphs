@@ -27,41 +27,50 @@ export type relationshipInfo = {
 };
 
 let familyDatums = [
+  /* Parent */
   "is father of",
   "is mother of",
   "is parent of",
+  /* Child */
   "is child of",
   "is son of",
   "is daughter of",
+  /* Sibling */
   "is sister of",
   "is brother of",
   "is twin of",
   "is older than",
+  /* Spouse */
   "is wife of",
   "is husband of",
   "marries",
   "gives in marriage [dir. obj.] [ind. obj.]",
+  /* Ancestors - currently unused
   "is grandfather of",
   "is grandmother of",
   "is grandparent of",
   "is grandson of",
   "is granddaughter of",
   "is grandchild of",
+  */
+
+  /* Member of collective */
   "is part of"
 ];
 
-/***************************
- * HELPER FUNCTIONS
- ***************************/
-
+/******************************************************************************************/
+/* Returns the data card geneology information, interfaces with DataCards.tsx                
+/******************************************************************************************/
 export const updateComponent = (id: string) => {
   let connections = getAllConnections(id);
   return sortConnectionsIntoRelationships(id, connections);
 };
 
-/*******************/
-/* Find all relationships */
-/*******************/
+/******************************************************************************************/
+/* Find all relationships                                                                 */
+/* -------------------------------------------------------------------------------------- */
+/* This function changes all datums (X <verb> Y, Y <verb> X, Z <verb> Y X) to Y <verb> X. */
+/******************************************************************************************/
 const getAllConnections = (id: string) => {
   var connections: {
     target: string;
@@ -70,12 +79,10 @@ const getAllConnections = (id: string) => {
     passage: passageInfo[];
   }[] = [];
 
-  // Populate "connections" array with all family connections
   Object.values(datum).forEach(function(datumRow) {
-    /*******************/
-    /* If you are the direct object X, e.g. (Y (verb) X)
-    /*******************/
-
+    /*********************************************************/
+    /* If you are the direct object X, e.g. (Y (verb) X)     */
+    /*********************************************************/
     if (
       datumRow["Direct Object ID"] === id &&
       familyDatums.includes(datumRow.Verb)
@@ -88,14 +95,17 @@ const getAllConnections = (id: string) => {
           endID: datumRow["Passage: end ID"]
         }
       ];
-      // genderizes marriage for simplicity
-      if (datumRow.Verb === "marries") {
+
+      // Genderized marriage for simplicity (WIFE vs HUSBAND in data card)
+      if (genderData[datumRow["Subject ID"]] && datumRow.Verb === "marries") {
         if (genderData[datumRow["Subject ID"]].gender === "female") {
           datumRow.Verb = "is wife of";
         } else if (genderData[datumRow["Subject ID"]].gender === "male") {
           datumRow.Verb = "is husband of";
         }
       }
+
+      // Push connections to the list of connections
       connections.push({
         target: entities[datumRow["Subject ID"]]["Name (Smith & Trzaskoma)"],
         targetID: datumRow["Subject ID"],
@@ -104,9 +114,9 @@ const getAllConnections = (id: string) => {
       });
     }
 
-    /*******************/
-    /* If you are the subject X, e.g. (X (verb) Y)
-    /*******************/
+    /*********************************************************/
+    /* If you are the subject X, e.g. (X (verb) Y)           */
+    /*********************************************************/
     if (datumRow["Subject ID"] === id && familyDatums.includes(datumRow.Verb)) {
       let passageInfo: passageInfo[] = [
         {
@@ -116,6 +126,8 @@ const getAllConnections = (id: string) => {
           endID: datumRow["Passage: end ID"]
         }
       ];
+
+      // Push connections to the list of connections
       connections.push({
         target:
           entities[datumRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
@@ -125,9 +137,9 @@ const getAllConnections = (id: string) => {
       });
     }
 
-    /*******************/
+    /*********************************************************/
     /* If you are the indirect object X, e.g. (Z (verb) Y X)
-    /*******************/
+    /*********************************************************/
 
     // TODO: Fix this for using Indirect Object ID not name
     if (
@@ -154,8 +166,13 @@ const getAllConnections = (id: string) => {
   return connections;
 };
 
+/******************************************************************************************/
+/* Sort relationships                                                                     */
+/* -------------------------------------------------------------------------------------- */
+/* This function sorts all of the found connections into existing geneological categories */
+/******************************************************************************************/
 const sortConnectionsIntoRelationships = (id: string, connections: any) => {
-  /* Preliminary information (i.e. name) about the entity */
+  /* Preliminary info about the entity */
   let name = entities[id]["Name (Smith & Trzaskoma)"];
   let type = entities[id]["Type of entity"];
   let members: any[] = [];
@@ -168,8 +185,11 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     HUSBANDS: [],
     CHILDREN: []
   };
-  // Sort family relationships into their relevant relationship state categories
+
   connections.forEach(datum => {
+    // For each of the connections already found,
+    // build the associated entity object, and
+    // populate with existing information
     let d: entityInfo = {
       target: datum.target,
       targetID: datum.targetID,
@@ -177,150 +197,90 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       type: entities[datum.targetID]["Type of entity"]
     };
 
-    //Assign thenm to their relevant categories
+    /* Categorising the connections, also checking for duplicates */
+
+    // X is your MOTHER
     if (datum.verb === "is mother of") {
-      // Address duplicates: same person, different passages
-      let wasDuplicate = false;
-      relationships.MOTHERS.forEach(mother => {
-        if (mother.targetID === d.targetID) {
-          mother.passage.push(d.passage[0]);
-          wasDuplicate = true;
-        }
-      });
-      if (!wasDuplicate) {
-        relationships.MOTHERS.push(d);
-      }
-    } else if (datum.verb === "is father of") {
-      // Address duplicates: same person, different passages
-      let wasDuplicate = false;
-      relationships.FATHERS.forEach(father => {
-        if (father.targetID === d.targetID) {
-          father.passage.push(d.passage[0]);
-          wasDuplicate = true;
-        }
-      });
-      if (!wasDuplicate) {
-        relationships.FATHERS.push(d);
-      }
-    } else if (
+      // If passage is a duplicate / already exists
+      // for this entity, or  in the list of connections
+      relationships.MOTHERS = checkAndRemoveDuplicates(
+        relationships.MOTHERS,
+        d
+      );
+    }
+
+    // X is your FATHER
+    else if (datum.verb === "is father of") {
+      relationships.FATHERS = checkAndRemoveDuplicates(
+        relationships.FATHERS,
+        d
+      );
+    }
+
+    // X is your CHILD
+    else if (
       datum.verb === "is son of" ||
       datum.verb === "is daughter of" ||
       datum.verb === "is child of"
     ) {
-      let wasDuplicate = false;
-      relationships.CHILDREN.forEach(children => {
-        if (children.targetID === d.targetID) {
-          children.passage.push(d.passage[0]);
-          wasDuplicate = true;
-        }
-      });
-      if (!wasDuplicate) {
-        relationships.CHILDREN.push(d);
-      }
-    } else if (
+      relationships.CHILDREN = checkAndRemoveDuplicates(
+        relationships.CHILDREN,
+        d
+      );
+    }
+
+    // X is your SIBLING
+    else if (
       datum.verb === "is sister of" ||
       datum.verb === "is brother of" ||
       datum.verb === "is older than"
     ) {
-      let wasDuplicate = false;
-      relationships.SIBLINGS.forEach(siblings => {
-        if (siblings.targetID === d.targetID) {
-          siblings.passage.push(d.passage[0]);
-          wasDuplicate = true;
-        }
-      });
-      if (!wasDuplicate) {
-        relationships.SIBLINGS.push(d);
-      }
-    } else if (datum.verb === "is twin of") {
-      let wasDuplicate = false;
-      relationships.TWIN.forEach(twin => {
-        if (twin.targetID === d.targetID) {
-          twin.passage.push(d.passage[0]);
-          wasDuplicate = true;
-        }
-      });
-      if (!wasDuplicate) {
-        relationships.TWIN.push(d);
-      }
+      relationships.SIBLINGS = checkAndRemoveDuplicates(
+        relationships.SIBLINGS,
+        d
+      );
+    }
+
+    // X is your TWIN
+    else if (datum.verb === "is twin of") {
+      relationships.TWIN = checkAndRemoveDuplicates(relationships.TWIN, d);
+
+      // X is your WIFE / HUSBAND
     } else if (datum.verb === "is wife of") {
-      let wasDuplicate = false;
-      relationships.WIVES.forEach(wives => {
-        if (wives.targetID === d.targetID) {
-          wives.passage.push(d.passage[0]);
-          wasDuplicate = true;
-        }
-      });
-      if (!wasDuplicate) {
-        relationships.WIVES.push(d);
-      }
+      relationships.WIVES = checkAndRemoveDuplicates(relationships.WIVES, d);
     } else if (datum.verb === "is husband of") {
-      let wasDuplicate = false;
-      relationships.HUSBANDS.forEach(husbands => {
-        if (husbands.targetID === d.targetID) {
-          husbands.passage.push(d.passage[0]);
-          wasDuplicate = true;
-        }
-      });
-      if (!wasDuplicate) {
-        relationships.HUSBANDS.push(d);
-      }
+      relationships.HUSBANDS = checkAndRemoveDuplicates(
+        relationships.HUSBANDS,
+        d
+      );
     } else if (datum.verb === "marries") {
       if (genderData) {
         if (genderData[datum.targetID].gender === "female") {
-          let wasDuplicate = false;
-          relationships.WIVES.forEach(wives => {
-            if (wives.targetID === d.targetID) {
-              wives.passage.push(d.passage[0]);
-              wasDuplicate = true;
-            }
-          });
-          if (!wasDuplicate) {
-            relationships.WIVES.push(d);
-          }
+          relationships.WIVES = checkAndRemoveDuplicates(
+            relationships.WIVES,
+            d
+          );
         } else if (genderData[datum.targetID].gender === "male") {
-          let wasDuplicate = false;
-          relationships.FATHERS.forEach(fathers => {
-            if (fathers.targetID === d.targetID) {
-              fathers.passage.push(d.passage[0]);
-              wasDuplicate = true;
-            }
-          });
-          if (!wasDuplicate) {
-            relationships.FATHERS.push(d);
-          }
+          relationships.HUSBANDS = checkAndRemoveDuplicates(
+            relationships.HUSBANDS,
+            d
+          );
         }
       }
-      // address collectives
+
+      // X is a MEMBER of a collective
     } else if (datum.verb === "is part of") {
-      let memberDuplicate = false;
-      members.forEach(member => {
-        if (member.targetID === d.targetID) {
-          memberDuplicate = true;
-          let passageDuplicate = false;
-          for (let i = 0; i < member.passage.length; i++) {
-            if (member.passage[i] === d.passage[0]) {
-              passageDuplicate = true;
-            }
-          }
-          if (!passageDuplicate) {
-            member.passage.push(d.passage[0]);
-          }
-        }
-      });
-      if (!memberDuplicate) {
-        members.push(d);
-      }
+      members = checkAndRemoveDuplicates(members, d);
     }
   });
 
   /* Alphabetize the relationships */
   relationships.MOTHERS = alphabetize(relationships.MOTHERS);
   relationships.FATHERS = alphabetize(relationships.FATHERS);
-  relationships.WIVES = alphabetize(relationships.WIVES);
-  relationships.HUSBANDS = alphabetize(relationships.HUSBANDS);
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.TWIN = alphabetize(relationships.TWIN);
+  relationships.WIVES = alphabetize(relationships.WIVES);
+  relationships.HUSBANDS = alphabetize(relationships.HUSBANDS);
   relationships.CHILDREN = alphabetize(relationships.CHILDREN);
   members = alphabetize(members);
 
@@ -335,7 +295,37 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   };
 };
 
-/* Alphabetize the relationship */
+/******************************************************************************************/
+/* Check passage and entity duplicates                                                    */
+/* -------------------------------------------------------------------------------------- */
+/* This function removes duplicate datums (incl. after reversal) and duplicate passages   */
+/* for the same connected entity                                                          */
+/******************************************************************************************/
+const checkAndRemoveDuplicates = (entities: any[], d: entityInfo) => {
+  let entityDuplicate = false;
+  entities.forEach(e => {
+    if (e.targetID === d.targetID) {
+      entityDuplicate = true;
+      let passageDuplicate = false;
+      e.passage.forEach(p => {
+        if (p === d.passage[0]) {
+          passageDuplicate = true;
+        }
+      });
+      if (!passageDuplicate) {
+        e.passage.push(d.passage[0]);
+      }
+    }
+  });
+  if (!entityDuplicate) {
+    entities.push(d);
+  }
+  return entities;
+};
+
+/******************************************************************************************/
+/* Alphabetize the list of names in each category                                         */
+/******************************************************************************************/
 const alphabetize = (relation: any[]) => {
   if (relation.length === 0) {
     return [];
@@ -349,6 +339,101 @@ const alphabetize = (relation: any[]) => {
   return relation;
 };
 
+/******************************************************************************************/
+/* Datum reversals                                                   */
+/* -------------------------------------------------------------------------------------- */
+/* This function flips the verb so that X can become the direct object,                   */
+/* without compromising the validity of the datum                                         */
+/*                                                                                        */
+/* e.g. X <is mother of> Y, where Y is <male>                                             */
+/* => returns verb <is son of>, to let X become the direct object (Y is son of X)         */
+/******************************************************************************************/
+const reversedVerb = (verb: string, dirObject: string) => {
+  if (genderData[dirObject]) {
+    // PARENT -> CHILD
+    if (
+      verb === "is mother of" ||
+      verb === "is father of" ||
+      verb === "is parent of"
+    ) {
+      // Uses generic "is child of" since data cards do not show gender specificity for children
+      return "is child of";
+    }
+
+    // CHILD -> PARENT
+    else if (
+      verb === "is son of" ||
+      verb === "is daughter of" ||
+      verb === "is child of"
+    ) {
+      if (genderData[dirObject].gender === "female") {
+        return "is mother of";
+      } else if (genderData[dirObject].gender === "male") {
+        return "is father of";
+      } else {
+        // Placeholder since "is parent of" is not currently used in data cards
+        return "";
+      }
+    }
+
+    // TWIN -> TWIN
+    else if (verb === "is twin of") {
+      return "is twin of";
+    }
+
+    // SIBLING -> SIBLING
+    else if (
+      verb === "is sister of" ||
+      verb === "is brother of" ||
+      verb === "is older than"
+    ) {
+      if (genderData[dirObject].gender === "female") {
+        return "is sister of";
+      } else if (genderData[dirObject].gender === "male") {
+        return "is brother of";
+      } else {
+        // Placeholder since gender-unspecified siblings (e.g. "is sibling of")
+        // does not exist in datum.csv
+        return "";
+      }
+    }
+
+    // WIFE -> HUSBAND
+    // HUSBAND -> WIFE
+    // No cases of homosexual relationships in the mythology
+    else if (
+      verb === "is wife of" ||
+      verb === "is husband of" ||
+      verb === "marries"
+    ) {
+      if (genderData[dirObject].gender === "female") {
+        return "is wife of";
+      } else if (genderData[dirObject].gender === "male") {
+        return "is husband of";
+      } else {
+        // Placeholder since "marries" is not currently used in data cards
+        return "marries";
+      }
+    } else {
+      console.log(
+        "Unsure of the " +
+          verb +
+          " " +
+          dirObject +
+          " connection, or connection is not relevant for the datacards.",
+        verb,
+        dirObject
+      );
+      return "";
+    }
+  } else {
+    return "Gender of " + dirObject + " does not exist in database";
+  }
+};
+
+/******************************************************************************************/
+/* Check if no relations exist for this entity (used in DataCards.tsx)                    */
+/******************************************************************************************/
 export const checkNoRelations = (relationships: any) => {
   return (
     relationships.MOTHERS.length === 0 &&
@@ -361,100 +446,31 @@ export const checkNoRelations = (relationships: any) => {
   );
 };
 
-const reversedVerb = (verb: string, dirObject: string) => {
-  if (genderData[dirObject]) {
-    if (
-      verb === "is mother of" ||
-      verb === "is father of" ||
-      verb === "is parent of"
-    ) {
-      return "is child of"; // Uses generic "is child of" at the moment since data cards do not need gender specificity for children
-    } else if (
-      verb === "is son of" ||
-      verb === "is daughter of" ||
-      verb === "is child of"
-    ) {
-      if (genderData[dirObject].gender === "female") {
-        return "is mother of";
-      } else if (genderData[dirObject].gender === "male") {
-        return "is father of";
-      } else {
-        return "is parent of";
-      }
-    } else if (verb === "is twin of") {
-      return "is twin of";
-    } else if (
-      verb === "is sister of" ||
-      verb === "is brother of" ||
-      verb === "is older than"
-    ) {
-      if (genderData[dirObject].gender === "female") {
-        return "is sister of";
-      } else if (genderData[dirObject].gender === "male") {
-        return "is brother of";
-      } else {
-        console.log("Gender-undefined sibling relationship");
-        return "";
-      }
-    } else if (
-      verb === "is wife of" ||
-      verb === "is husband of" ||
-      verb === "marries"
-    ) {
-      if (genderData[dirObject].gender === "female") {
-        return "is wife of";
-      } else if (genderData[dirObject].gender === "male") {
-        return "is husband of";
-      } else {
-        return "marries";
-      }
-    } else {
-      console.log(
-        "Unsure of this connection, or connection is not relevant for the datacards.",
-        verb,
-        dirObject
-      );
-      return "";
-    }
-  } else {
-    return "undefined";
-  }
-};
-
+/******************************************************************************************/
+/* Return all alternative names for entity (used in DataCards.tsx)                        */
+/******************************************************************************************/
 export const getAlternativeNames = (id: string) => {
   let alternatives: string = "";
-  if (entities[id]["Name (transliteration)"] !== "") {
-    if (alternatives === "") {
-      alternatives = entities[id]["Name (transliteration)"];
-    } else {
-      alternatives =
-        alternatives + ", " + entities[id]["Name (transliteration)"];
-    }
-  }
-  if (entities[id]["Name (Latinized)"] !== "") {
-    if (alternatives === "") {
-      alternatives = entities[id]["Name (Latinized)"];
-    } else {
-      alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
-    }
-  }
-  if (entities[id]["Name in Latin texts"] !== "") {
-    if (alternatives === "") {
-      alternatives = entities[id]["Name in Latin texts"];
-    } else {
-      alternatives = alternatives + ", " + entities[id]["Name in Latin texts"];
-    }
-  }
-  if (entities[id]["Alternative names"] !== "") {
-    if (alternatives === "") {
-      alternatives = entities[id]["Alternative names"];
-    } else {
-      alternatives = alternatives + ", " + entities[id]["Alternative names"];
-    }
-  }
+  alternatives += getNameString("Name (transliteration)", alternatives, id);
+  alternatives += getNameString("Name (Latinized)", alternatives, id);
+  alternatives += getNameString("Name in Latin texts", alternatives, id);
+  alternatives += getNameString("Alternative names", alternatives, id);
+
   if (alternatives === "") {
     return alternatives;
   } else {
     return "(Also known as: " + alternatives + ")";
   }
+};
+
+const getNameString = (parameter: string, stringSoFar: string, id: string) => {
+  let s = "";
+  if (entities[id][parameter] !== "") {
+    if (stringSoFar === "") {
+      s = entities[id][parameter];
+    } else {
+      s = stringSoFar + ", " + entities[id][parameter];
+    }
+  }
+  return s;
 };
