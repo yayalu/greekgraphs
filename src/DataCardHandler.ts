@@ -80,87 +80,97 @@ const getAllConnections = (id: string) => {
   }[] = [];
 
   Object.values(datum).forEach(function(datumRow) {
-    /*********************************************************/
-    /* If you are the direct object X, e.g. (Y (verb) X)     */
-    /*********************************************************/
-    if (
-      datumRow["Direct Object ID"] === id &&
-      familyDatums.includes(datumRow.Verb)
-    ) {
-      let passageInfo: passageInfo[] = [
-        {
-          start: datumRow["Passage: start"],
-          startID: datumRow["Passage: start ID"],
-          end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
-          endID: datumRow["Passage: end ID"]
-        }
-      ];
+    // TODO: Fix this temporary solution for entities not existing in entities.csv
+    if (entities[datumRow["Subject ID"]]) {
+      /*********************************************************/
+      /* If you are the direct object X, e.g. (Y (verb) X)     */
+      /*********************************************************/
+      if (
+        datumRow["Direct Object ID"] === id &&
+        familyDatums.includes(datumRow.Verb)
+      ) {
+        let passageInfo: passageInfo[] = [
+          {
+            start: datumRow["Passage: start"],
+            startID: datumRow["Passage: start ID"],
+            end:
+              datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
+            endID: datumRow["Passage: end ID"]
+          }
+        ];
 
-      // Genderized marriage for simplicity (WIFE vs HUSBAND in data card)
-      if (genderData[datumRow["Subject ID"]] && datumRow.Verb === "marries") {
-        if (genderData[datumRow["Subject ID"]].gender === "female") {
-          datumRow.Verb = "is wife of";
-        } else if (genderData[datumRow["Subject ID"]].gender === "male") {
-          datumRow.Verb = "is husband of";
+        // Genderized marriage for simplicity (WIFE vs HUSBAND in data card)
+        // TODO: Fix this temporary solution for gender data not existing for entity
+        if (genderData[datumRow["Subject ID"]] && datumRow.Verb === "marries") {
+          if (genderData[datumRow["Subject ID"]].gender === "female") {
+            datumRow.Verb = "is wife of";
+          } else if (genderData[datumRow["Subject ID"]].gender === "male") {
+            datumRow.Verb = "is husband of";
+          }
         }
+
+        // Push connections to the list of connections
+        connections.push({
+          target: entities[datumRow["Subject ID"]]["Name (Smith & Trzaskoma)"],
+          targetID: datumRow["Subject ID"],
+          verb: datumRow.Verb,
+          passage: passageInfo
+        });
       }
 
-      // Push connections to the list of connections
-      connections.push({
-        target: entities[datumRow["Subject ID"]]["Name (Smith & Trzaskoma)"],
-        targetID: datumRow["Subject ID"],
-        verb: datumRow.Verb,
-        passage: passageInfo
-      });
-    }
+      /*********************************************************/
+      /* If you are the subject X, e.g. (X (verb) Y)           */
+      /*********************************************************/
+      if (
+        datumRow["Subject ID"] === id &&
+        familyDatums.includes(datumRow.Verb)
+      ) {
+        let passageInfo: passageInfo[] = [
+          {
+            start: datumRow["Passage: start"],
+            startID: datumRow["Passage: start ID"],
+            end:
+              datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
+            endID: datumRow["Passage: end ID"]
+          }
+        ];
 
-    /*********************************************************/
-    /* If you are the subject X, e.g. (X (verb) Y)           */
-    /*********************************************************/
-    if (datumRow["Subject ID"] === id && familyDatums.includes(datumRow.Verb)) {
-      let passageInfo: passageInfo[] = [
-        {
-          start: datumRow["Passage: start"],
-          startID: datumRow["Passage: start ID"],
-          end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
-          endID: datumRow["Passage: end ID"]
-        }
-      ];
+        // Push connections to the list of connections
+        connections.push({
+          target:
+            entities[datumRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
+          targetID: datumRow["Direct Object ID"],
+          verb: reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
+          passage: passageInfo
+        });
+      }
 
-      // Push connections to the list of connections
-      connections.push({
-        target:
-          entities[datumRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
-        targetID: datumRow["Direct Object ID"],
-        verb: reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
-        passage: passageInfo
-      });
-    }
-
-    /*********************************************************/
-    /* If you are the indirect object X, e.g. (Z (verb) Y X)
+      /*********************************************************/
+      /* If you are the indirect object X, e.g. (Z (verb) Y X)
     /*********************************************************/
 
-    // TODO: Fix this for using Indirect Object ID not name
-    if (
-      datumRow["Indirect Object (to/for)"] === id &&
-      familyDatums.includes(datumRow.Verb)
-    ) {
-      let passageInfo: passageInfo[] = [
-        {
-          start: datumRow["Passage: start"],
-          startID: datumRow["Passage: start ID"],
-          end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
-          endID: datumRow["Passage: end ID"]
-        }
-      ];
-      connections.push({
-        target:
-          entities[datumRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
-        targetID: datumRow["Direct Object ID"],
-        verb: reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
-        passage: passageInfo
-      });
+      // TODO: Fix this for using Indirect Object ID not name
+      if (
+        datumRow["Indirect Object (to/for)"] === id &&
+        familyDatums.includes(datumRow.Verb)
+      ) {
+        let passageInfo: passageInfo[] = [
+          {
+            start: datumRow["Passage: start"],
+            startID: datumRow["Passage: start ID"],
+            end:
+              datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
+            endID: datumRow["Passage: end ID"]
+          }
+        ];
+        connections.push({
+          target:
+            entities[datumRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
+          targetID: datumRow["Direct Object ID"],
+          verb: reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
+          passage: passageInfo
+        });
+      }
     }
   });
   return connections;
@@ -349,6 +359,7 @@ const alphabetize = (relation: any[]) => {
 /* => returns verb <is son of>, to let X become the direct object (Y is son of X)         */
 /******************************************************************************************/
 const reversedVerb = (verb: string, dirObject: string) => {
+  // TODO: Fix this temporary solution for gender data not existing for entity
   if (genderData[dirObject]) {
     // PARENT -> CHILD
     if (
