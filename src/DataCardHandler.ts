@@ -318,7 +318,10 @@ const checkAndRemoveDuplicates = (entities: any[], d: entityInfo) => {
       entityDuplicate = true;
       let passageDuplicate = false;
       e.passage.forEach(p => {
-        if (p === d.passage[0]) {
+        if (
+          p.startID === d.passage[0].startID &&
+          p.endID === d.passage[0].endID
+        ) {
           passageDuplicate = true;
         }
       });
@@ -326,6 +329,7 @@ const checkAndRemoveDuplicates = (entities: any[], d: entityInfo) => {
         e.passage.push(d.passage[0]);
       }
     }
+    console.log(e.passage);
   });
   if (!entityDuplicate) {
     entities.push(d);
