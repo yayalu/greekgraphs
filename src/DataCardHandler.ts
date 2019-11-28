@@ -40,6 +40,7 @@ let familyDatums = [
   "is wife of",
   "is husband of",
   "marries",
+  "gives in marriage [dir. obj.] [ind. obj.]",
   "is grandfather of",
   "is grandmother of",
   "is grandparent of",
@@ -72,11 +73,14 @@ export const updateComponent = (id: string) => {
 
   // Populate "connections" array with all family connections
   Object.values(datum).forEach(function(datumRow) {
+    /*******************/
+    /* If you are the direct object X, e.g. (Y (verb) X)
+    /*******************/
+
     if (
       datumRow["Direct Object ID"] === id &&
       familyDatums.includes(datumRow.Verb)
     ) {
-      // i.e. X <verb> Y where Y is your name
       let passageInfo: passageInfo[] = [
         {
           start: datumRow["Passage: start"],
@@ -100,9 +104,37 @@ export const updateComponent = (id: string) => {
         passage: passageInfo
       });
     }
+
+    /*******************/
+    /* If you are the subject X, e.g. (X (verb) Y)
+    /*******************/
     if (datumRow["Subject ID"] === id && familyDatums.includes(datumRow.Verb)) {
-      // Add the logic reversals here
-      // i.e. Y <verb> X where Y is your name
+      let passageInfo: passageInfo[] = [
+        {
+          start: datumRow["Passage: start"],
+          startID: datumRow["Passage: start ID"],
+          end: datumRow["Passage: end"] === "" ? "" : datumRow["Passage: end"],
+          endID: datumRow["Passage: end ID"]
+        }
+      ];
+      connections.push({
+        target:
+          entities[datumRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
+        targetID: datumRow["Direct Object ID"],
+        verb: reversedVerb(datumRow.Verb, datumRow["Direct Object ID"]),
+        passage: passageInfo
+      });
+    }
+
+    /*******************/
+    /* If you are the indirect object X, e.g. (Z (verb) Y X)
+    /*******************/
+
+    // TODO: Fix this for using Indirect Object ID not name
+    if (
+      datumRow["Indirect Object (to/for)"] === id &&
+      familyDatums.includes(datumRow.Verb)
+    ) {
       let passageInfo: passageInfo[] = [
         {
           start: datumRow["Passage: start"],
