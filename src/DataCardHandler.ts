@@ -284,6 +284,13 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     }
   });
 
+  /* Check for any indirect siblings in the datums */
+  relationships.SIBLINGS = getIndirectSiblings(
+    relationships.MOTHERS,
+    relationships.FATHERS,
+    relationships.SIBLINGS
+  );
+
   /* Alphabetize the relationships */
   relationships.MOTHERS = alphabetize(relationships.MOTHERS);
   relationships.FATHERS = alphabetize(relationships.FATHERS);
@@ -329,7 +336,6 @@ const checkAndRemoveDuplicates = (entities: any[], d: entityInfo) => {
         e.passage.push(d.passage[0]);
       }
     }
-    console.log(e.passage);
   });
   if (!entityDuplicate) {
     entities.push(d);
@@ -351,6 +357,11 @@ const alphabetize = (relation: any[]) => {
     });
   }
   return relation;
+};
+
+/******* */
+export const getGender = (id: string) => {
+  return genderData[id].gender;
 };
 
 /******************************************************************************************/
@@ -444,6 +455,36 @@ const reversedVerb = (verb: string, dirObject: string) => {
   } else {
     return "Gender of " + dirObject + " does not exist in database";
   }
+};
+
+/******************************************************************************************/
+/* Populate an array of siblings based on matching parents                                */
+/* -------------------------------------------------------------------------------------- */
+/* This function checks through the list of datums and pushes to the list of siblings:    */
+/*                                                                                        */
+/* e.g. X is <child> of A, X is <child> of B, Y is <child> of A, Y is <child> of B        */
+/******************************************************************************************/
+const getIndirectSiblings = (
+  mothers: any[],
+  fathers: any[],
+  siblings: any[]
+) => {
+  /* let potentialsiblings: {id: string, mother: string, father: string};
+  Object.values(datum).forEach(function(datumRow) {
+    let s: potentialsiblings = [];
+    // Firstly, determine where Y is <child> of A,B
+    if ((datumRow.Verb === "is daughter of" || datumRow.Verb === "is son of" || datumRow.Verb === "is child of")) {
+      mothers.forEach(e => {
+        if (e.targetId === datumRow["Direct Object ID"]) {
+          s.mother.push(targetId);
+        }
+      });
+    }
+    
+
+  }; */
+
+  return siblings;
 };
 
 /******************************************************************************************/

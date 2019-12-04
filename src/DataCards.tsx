@@ -9,7 +9,8 @@ import {
   relationshipInfo,
   updateComponent,
   checkNoRelations,
-  getAlternativeNames
+  getAlternativeNames,
+  getGender
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
 
@@ -272,14 +273,20 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               {getAlternativeNames(this.state.id)}
             </div>
             <div id="datacard-mantoID">MANTO ID: {this.state.id}</div>
+            <div
+              id="datacard-alternativenames"
+              className={
+                getGender(this.state.id) === "undefined" ? "no-display" : ""
+              }
+            >
+              Gender: {getGender(this.state.id)}
+            </div>
             {/* If no data is available for the subject */}
             <div
               className={
                 checkNoRelations(this.state.relationships) ? "" : "no-display"
               }
-            >
-              No relationship data is available for {this.state.name}.
-            </div>
+            ></div>
             {/* If data is available for the subject */}
             {Object.keys(this.state.relationships).map(key => {
               return <div key={key}>{this.getDataPoints(key)}</div>;
