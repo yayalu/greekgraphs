@@ -125,8 +125,6 @@ const getAllConnections = (id: string) => {
         ];
 
         // Push connections to the list of connections
-
-        console.log(entities[tieRow["Direct Object ID"]]);
         connections.push({
           target:
             entities[tieRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
@@ -411,7 +409,10 @@ const reversedVerb = (verb: string, dirObject: string) => {
       // Placeholder since "marries" is not currently used in data cards
       return "marries";
     }
-  } else {
+  }
+
+  // TODO: Deal with IS MEMBER OF verb here.
+  else {
     console.log(
       "Unsure of the " +
         verb +

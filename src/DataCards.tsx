@@ -40,7 +40,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     // Agamemnon is 8182035
     // Use Clytaimnestra example, 8188055
     this.state = {
-      id: "8182035",
+      id: "8182035", // placeholder
       name: "",
       relationships: {
         MOTHERS: [],
@@ -118,7 +118,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     this.props.history.push("/datacards?id=" + targetID);
   }
 
-  getDataPoints(relationship: string) {
+  getDataPoints(relationship: string, showPassage: boolean) {
     let that = this;
     if (that.state.relationships[relationship].length !== 0) {
       return (
@@ -144,11 +144,20 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                     className="entity-button"
                     onClick={() => this.handleNameClicked(entity.targetID)}
                   >
-                    {entity.target}
+                    {entity !== that.state.relationships[relationship][0] ? (
+                      <span>OR </span>
+                    ) : (
+                      ""
+                    )}
+                    <span style={{ textDecoration: "underline" }}>
+                      {entity.target}
+                    </span>
                   </div>
-                  {entity.passage.map(passage => {
-                    return this.getPassageLink(passage);
-                  })}
+                  {showPassage
+                    ? entity.passage.map(passage => {
+                        return this.getPassageLink(passage);
+                      })
+                    : ""}
                 </div>
               );
             })}
@@ -288,7 +297,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             ></div>
             {/* If data is available for the subject */}
             {Object.keys(this.state.relationships).map(key => {
-              return <div key={key}>{this.getDataPoints(key)}</div>;
+              if (key === "MOTHERS" || key === "FATHERS" || key === "SPOUSES") {
+                return <div key={key}>{this.getDataPoints(key, true)}</div>;
+              } else {
+                return <div key={key}>{this.getDataPoints(key, false)}</div>;
+              }
             })}
             <div>{this.getCollectiveMembers()}</div>
           </div>
