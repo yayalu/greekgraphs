@@ -13,6 +13,9 @@ type entityInfo = {
   targetID: string;
   passage: passageInfo[];
   type: string;
+  autochthony?: boolean;
+  mother_parthenogenesis?: boolean;
+  father_parthenogenesis?: boolean;
 };
 
 export type relationshipInfo = {
@@ -50,7 +53,12 @@ let familyTies = [
 
   /* Member of collective */
   "is part of",
-  "is member of"
+  "is member of",
+
+  /* Unusual relationships */
+  "is mother by parthenogenesis of",
+  "is father by parthenogenesis of",
+  "is born by autochthony [in/on/at]"
 ];
 
 /******************************************************************************************/
@@ -95,11 +103,7 @@ const getAllConnections = (id: string) => {
 
         // TODO: Fix this temporary solution for gender data not existing for entity
         if (getGender(tieRow["Subject ID"]) && tieRow.Verb === "marries") {
-          if (getGender(tieRow["Subject ID"]).gender === "female") {
-            tieRow.Verb = "is wife of";
-          } else if (getGender(tieRow["Subject ID"]).gender === "male") {
-            tieRow.Verb = "is husband of";
-          }
+          tieRow.Verb = "is spouse of";
         }
 
         // Push connections to the list of connections
@@ -125,13 +129,22 @@ const getAllConnections = (id: string) => {
         ];
 
         // Push connections to the list of connections
-        connections.push({
-          target:
-            entities[tieRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
-          targetID: tieRow["Direct Object ID"],
-          verb: reversedVerb(tieRow.Verb, tieRow["Direct Object ID"]),
-          passage: passageInfo
-        });
+        if (tieRow.Verb === "is born by autochthony [in/on/at]") {
+          connections.push({
+            target: "",
+            targetID: "",
+            verb: "is born by autochthony [in/on/at]",
+            passage: passageInfo
+          });
+        } else {
+          connections.push({
+            target:
+              entities[tieRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
+            targetID: tieRow["Direct Object ID"],
+            verb: reversedVerb(tieRow.Verb, tieRow["Direct Object ID"]),
+            passage: passageInfo
+          });
+        }
       }
 
       /*********************************************************/
@@ -139,7 +152,7 @@ const getAllConnections = (id: string) => {
     /*********************************************************/
 
       // TODO: Fix this for using Indirect Object ID not name
-      if (
+      /* if (
         tieRow["Indirect Object (to/for)"] === id &&
         familyTies.includes(tieRow.Verb)
       ) {
@@ -158,7 +171,7 @@ const getAllConnections = (id: string) => {
           verb: reversedVerb(tieRow.Verb, tieRow["Direct Object ID"]),
           passage: passageInfo
         });
-      }
+      }*/
     }
   });
   return connections;
@@ -191,7 +204,10 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       target: tie.target,
       targetID: tie.targetID,
       passage: tie.passage,
-      type: entities[tie.targetID]["Type of entity"]
+      type:
+        tie.verb === "is born by autochthony [in/on/at]"
+          ? ""
+          : entities[tie.targetID]["Type of entity"]
     };
 
     /* Categorising the connections, also checking for duplicates */
@@ -206,6 +222,22 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       );
     }
 
+    // X is your MOTHER by parthenogenesis
+    else if (tie.verb === "is mother by parthenogenesis of") {
+      let m: entityInfo = {
+        target: tie.target,
+        targetID: tie.targetID,
+        passage: tie.passage,
+        type: entities[tie.targetID]["Type of entity"],
+        mother_parthenogenesis: true
+      };
+
+      relationships.MOTHERS = checkAndRemoveDuplicates(
+        relationships.MOTHERS,
+        m
+      );
+    }
+
     // X is your FATHER
     else if (tie.verb === "is father of") {
       relationships.FATHERS = checkAndRemoveDuplicates(
@@ -214,12 +246,23 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       );
     }
 
+    // X is your FATHER by parthenogenesis
+    else if (tie.verb === "is father by parthenogenesis of") {
+      let f: entityInfo = {
+        target: tie.target,
+        targetID: tie.targetID,
+        passage: tie.passage,
+        type: entities[tie.targetID]["Type of entity"],
+        father_parthenogenesis: true
+      };
+      relationships.FATHERS = checkAndRemoveDuplicates(
+        relationships.FATHERS,
+        f
+      );
+    }
+
     // X is your CHILD
-    else if (
-      tie.verb === "is son of" ||
-      tie.verb === "is daughter of" ||
-      tie.verb === "is child of"
-    ) {
+    else if (tie.verb === "is child of") {
       relationships.CHILDREN = checkAndRemoveDuplicates(
         relationships.CHILDREN,
         d
@@ -227,11 +270,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     }
 
     // X is your SIBLING
-    else if (
-      tie.verb === "is sister of" ||
-      tie.verb === "is brother of" ||
-      tie.verb === "is older than"
-    ) {
+    else if (tie.verb === "is sibling of" || tie.verb === "is older than") {
       relationships.SIBLINGS = checkAndRemoveDuplicates(
         relationships.SIBLINGS,
         d
@@ -252,6 +291,20 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     // X is a MEMBER of a collective
     else if (tie.verb === "is part of") {
       members = checkAndRemoveDuplicates(members, d);
+    }
+    // X is born by autochthony
+    else if (tie.verb === "is born by autochthony [in/on/at]") {
+      let a: entityInfo = {
+        target: "",
+        targetID: "",
+        passage: tie.passage,
+        type: entities[id]["Type of entity"],
+        autochthony: true
+      };
+      relationships.FATHERS = checkAndRemoveDuplicates(
+        relationships.FATHERS,
+        a
+      );
     }
   });
 
@@ -346,21 +399,13 @@ export const getGender = (id: string) => {
 const reversedVerb = (verb: string, dirObject: string) => {
   // TODO: Fix this temporary solution for gender data not existing for entity
   // PARENT -> CHILD
-  if (
-    verb === "is mother of" ||
-    verb === "is father of" ||
-    verb === "is parent of"
-  ) {
+  if (verb === "is parent of") {
     // Uses generic "is child of" since data cards do not show gender specificity for children
     return "is child of";
   }
 
   // CHILD -> PARENT
-  else if (
-    verb === "is son of" ||
-    verb === "is daughter of" ||
-    verb === "is child of"
-  ) {
+  else if (verb === "is child of") {
     if (getGender(dirObject) === "Female") {
       return "is mother of";
     } else if (getGender(dirObject) === "Male") {
@@ -377,38 +422,15 @@ const reversedVerb = (verb: string, dirObject: string) => {
   }
 
   // SIBLING -> SIBLING
-  else if (
-    verb === "is sister of" ||
-    verb === "is brother of" ||
-    verb === "is older than"
-  ) {
-    if (getGender(dirObject) === "Female") {
-      return "is sister of";
-    } else if (getGender(dirObject) === "Male") {
-      return "is brother of";
-    } else {
-      // Placeholder since gender-unspecified siblings (e.g. "is sibling of")
-      // does not exist in ties.csv
-      return "";
-    }
+  else if (verb === "is sibling of" || verb === "is older than") {
+    return "is sibling of";
   }
 
   // WIFE -> HUSBAND
   // HUSBAND -> WIFE
   // No cases of homosexual relationships in the mythology
-  else if (
-    verb === "is wife of" ||
-    verb === "is husband of" ||
-    verb === "marries"
-  ) {
-    if (getGender(dirObject) === "Female") {
-      return "is wife of";
-    } else if (getGender(dirObject) === "Male") {
-      return "is husband of";
-    } else {
-      // Placeholder since "marries" is not currently used in data cards
-      return "marries";
-    }
+  else if (verb === "is spouse of" || verb === "marries") {
+    return "is spouse of";
   }
 
   // TODO: Deal with IS MEMBER OF verb here.

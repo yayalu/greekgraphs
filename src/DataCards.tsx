@@ -140,24 +140,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             {that.state.relationships[relationship].map(entity => {
               return (
                 <div style={{ margin: "0" }}>
-                  <div
-                    className="entity-button"
-                    onClick={() => this.handleNameClicked(entity.targetID)}
-                  >
-                    {entity !== that.state.relationships[relationship][0] ? (
-                      <span>OR </span>
-                    ) : (
-                      ""
-                    )}
-                    <span style={{ textDecoration: "underline" }}>
-                      {entity.target}
-                    </span>
-                  </div>
-                  {showPassage
-                    ? entity.passage.map(passage => {
-                        return this.getPassageLink(passage);
-                      })
-                    : ""}
+                  {this.checkUnusualRelationship(
+                    entity,
+                    relationship,
+                    showPassage
+                  )}
                 </div>
               );
             })}
@@ -166,6 +153,82 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       );
     } else {
       return null;
+    }
+  }
+
+  checkUnusualRelationship(
+    entity: any,
+    relationship: any,
+    showPassage: boolean
+  ) {
+    let that = this;
+    console.log("entity", entity, "relationship", relationship);
+
+    if (
+      (relationship === "MOTHERS" && entity.mother_parthenogenesis) ||
+      (relationship === "FATHERS" && entity.father_parthenogenesis)
+    ) {
+      return (
+        <span>
+          <div
+            className="entity-button"
+            onClick={() => this.handleNameClicked(entity.targetID)}
+          >
+            {entity !== that.state.relationships[relationship][0] ? (
+              <span>OR </span>
+            ) : (
+              ""
+            )}
+            <span style={{ textDecoration: "underline" }}>{entity.target}</span>
+          </div>
+          <span> by pathenogenesis </span>
+          {showPassage
+            ? entity.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })
+            : ""}
+        </span>
+      );
+    } else if (relationship === "FATHERS" && entity.autochthony) {
+      return (
+        <span>
+          {entity !== that.state.relationships[relationship][0] ? (
+            <span>OR </span>
+          ) : (
+            ""
+          )}
+          <span>By autochthony </span>
+          {showPassage
+            ? entity.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })
+            : ""}
+        </span>
+      );
+    } else {
+      return (
+        <span>
+          <div
+            className="entity-button"
+            onClick={() => this.handleNameClicked(entity.targetID)}
+          >
+            {entity !== that.state.relationships[relationship][0] &&
+            relationship !== "CHILDREN" &&
+            relationship !== "SIBLINGS" &&
+            relationship !== "SPOUSES" ? (
+              <span>OR </span>
+            ) : (
+              ""
+            )}
+            <span style={{ textDecoration: "underline" }}>{entity.target}</span>
+          </div>
+          {showPassage
+            ? entity.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })
+            : ""}
+        </span>
+      );
     }
   }
 
