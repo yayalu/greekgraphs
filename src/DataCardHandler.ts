@@ -20,8 +20,7 @@ export type relationshipInfo = {
   FATHERS: entityInfo[];
   SIBLINGS: entityInfo[];
   TWIN: entityInfo[];
-  WIVES: entityInfo[];
-  HUSBANDS: entityInfo[];
+  SPOUSES: entityInfo[];
   CHILDREN: entityInfo[];
 };
 
@@ -94,9 +93,6 @@ const getAllConnections = (id: string) => {
           }
         ];
 
-        console.log(entities[tieRow["Subject ID"]]["Agent/Coll.: gender"]);
-
-        // Genderized marriage for simplicity (WIFE vs HUSBAND in data card)
         // TODO: Fix this temporary solution for gender data not existing for entity
         if (getGender(tieRow["Subject ID"]) && tieRow.Verb === "marries") {
           if (getGender(tieRow["Subject ID"]).gender === "female") {
@@ -129,6 +125,8 @@ const getAllConnections = (id: string) => {
         ];
 
         // Push connections to the list of connections
+
+        console.log(entities[tieRow["Direct Object ID"]]);
         connections.push({
           target:
             entities[tieRow["Direct Object ID"]]["Name (Smith & Trzaskoma)"],
@@ -183,8 +181,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     FATHERS: [],
     SIBLINGS: [],
     TWIN: [],
-    WIVES: [],
-    HUSBANDS: [],
+    SPOUSES: [],
     CHILDREN: []
   };
 
@@ -246,32 +243,21 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     // X is your TWIN
     else if (tie.verb === "is twin of") {
       relationships.TWIN = checkAndRemoveDuplicates(relationships.TWIN, d);
-
-      // X is your WIFE / HUSBAND
-    } else if (tie.verb === "is wife of") {
-      relationships.WIVES = checkAndRemoveDuplicates(relationships.WIVES, d);
-    } else if (tie.verb === "is husband of") {
-      relationships.HUSBANDS = checkAndRemoveDuplicates(
-        relationships.HUSBANDS,
+    }
+    // X is your WIFE / HUSBAND
+    else if (tie.verb === "is spouse of" || tie.verb === "marries") {
+      relationships.SPOUSES = checkAndRemoveDuplicates(
+        relationships.SPOUSES,
         d
       );
-    } else if (tie.verb === "marries") {
-      if (getGender(tie.targetID) === "Female") {
-        relationships.WIVES = checkAndRemoveDuplicates(relationships.WIVES, d);
-      } else if (getGender(tie.targetID) === "Male") {
-        relationships.HUSBANDS = checkAndRemoveDuplicates(
-          relationships.HUSBANDS,
-          d
-        );
-      }
-
-      // X is a MEMBER of a collective
-    } else if (tie.verb === "is part of") {
+    }
+    // X is a MEMBER of a collective
+    else if (tie.verb === "is part of") {
       members = checkAndRemoveDuplicates(members, d);
     }
   });
 
-  /* Check for any indirect siblings in the ties */
+  /* TODO: Check for any indirect siblings in the ties */
   relationships.SIBLINGS = getIndirectSiblings(
     relationships.MOTHERS,
     relationships.FATHERS,
@@ -283,8 +269,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.FATHERS = alphabetize(relationships.FATHERS);
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.TWIN = alphabetize(relationships.TWIN);
-  relationships.WIVES = alphabetize(relationships.WIVES);
-  relationships.HUSBANDS = alphabetize(relationships.HUSBANDS);
+  relationships.SPOUSES = alphabetize(relationships.SPOUSES);
   relationships.CHILDREN = alphabetize(relationships.CHILDREN);
   members = alphabetize(members);
 
@@ -479,8 +464,7 @@ export const checkNoRelations = (relationships: any) => {
     relationships.FATHERS.length === 0 &&
     relationships.SIBLINGS.length === 0 &&
     relationships.TWIN.length === 0 &&
-    relationships.WIVES.length === 0 &&
-    relationships.HUSBANDS.length === 0 &&
+    relationships.SPOUSES.length === 0 &&
     relationships.CHILDREN.length === 0
   );
 };

@@ -53,7 +53,7 @@ data = {}
 with open(entitiesCsvFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)
     for csvRow in csvReader:
-        if (csvRow["Type of entity"] == "Agent" or csvRow["Type of entity"] == "Collective"):
+        if (csvRow["Type of entity"] == "Agent" or csvRow["Type of entity"] == "Collective (misc.)" or csvRow["Type of entity"] == "Collective (genealogical)" or csvRow["Type of entity"] == "Collective (Episodic)"):
             data[csvRow["\xef\xbb\xbfID"]] = csvRow
 
 # Write contents to a JSON file - entities.json
