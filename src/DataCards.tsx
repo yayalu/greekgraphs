@@ -162,7 +162,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     showPassage: boolean
   ) {
     let that = this;
-    console.log("entity", entity, "relationship", relationship);
 
     if (
       (relationship === "MOTHERS" && entity.mother_parthenogenesis) ||
