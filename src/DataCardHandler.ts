@@ -443,10 +443,13 @@ const alphabetize = (relation: any[]) => {
   return relation;
 };
 
-const alphabetizeChildren = (relation: any[]) => {
+const alphabetizeChildren = (relation: childrenInfo[]) => {
   if (relation.length === 0) {
     return [];
   } else {
+    relation.forEach(r => {
+      r.child = alphabetize(r.child);
+    });
     relation.sort(function(a, b) {
       var relationA = a.otherParentID;
       var relationB = b.otherParentID;
