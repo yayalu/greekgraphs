@@ -228,7 +228,6 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   };
 
   let childrenTemp: entityInfo[] = [];
-
   connections.forEach(tie => {
     // For each of the connections already found,
     // build the associated entity object, and
@@ -351,11 +350,11 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.TWIN = alphabetize(relationships.TWIN);
   relationships.SPOUSES = alphabetize(relationships.SPOUSES);
-  // relationships.CHILDREN = alphabetize(relationships.CHILDREN);
   members = alphabetize(members);
 
   // Currently very inefficient, but finds the other parent of the child
   relationships.CHILDREN = getOtherParents(id, childrenTemp);
+  relationships.CHILDREN = alphabetizeChildren(relationships.CHILDREN);
 
   /* Return alphabetized, complete list of relationships */
   return {
@@ -400,29 +399,31 @@ const checkAndRemoveDuplicates = (entities: any[], d: entityInfo) => {
 };
 
 const checkAndRemoveParentDuplicates = (
-  parentID: string,
-  newChild: entityInfo,
-  children: childrenInfo[]
+  parentID: string, //parent
+  newChild: entityInfo, //child entity info
+  children: childrenInfo[] //parentsGrouped - existing parents list
 ) => {
+  // This function removes duplicates but also groups children by the "other" parent
+  // returns childrenInfo object: {child: <list of associated children>, otherParentID}
   let parentDuplicate = false;
   let childDuplicate = false;
   children.forEach(c => {
     if (c.otherParentID === parentID) {
       parentDuplicate = true;
       for (let i = 0; i < c.child.length; i++) {
-        if ((c.child[i].targetID = newChild.targetID)) {
+        if (c.child[i].targetID === newChild.targetID) {
           childDuplicate = true;
         }
       }
       if (!childDuplicate) {
         c.child.push(newChild);
-        return children;
       }
     }
-    if (!parentDuplicate) {
-      children.push({ child: [newChild], otherParentID: parentID });
-    }
   });
+  if (!parentDuplicate) {
+    children.push({ child: [newChild], otherParentID: parentID });
+  }
+
   return children;
 };
 
@@ -442,6 +443,19 @@ const alphabetize = (relation: any[]) => {
   return relation;
 };
 
+const alphabetizeChildren = (relation: any[]) => {
+  if (relation.length === 0) {
+    return [];
+  } else {
+    relation.sort(function(a, b) {
+      var relationA = a.otherParentID;
+      var relationB = b.otherParentID;
+      return relationA < relationB ? -1 : relationA > relationB ? 1 : 0;
+    });
+  }
+  return relation;
+};
+
 /******************************************************************************************/
 /* TODO: Fix this very VERY inefficient method of finding the other parent                */
 /******************************************************************************************/
@@ -452,6 +466,7 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
     Object.values(ties).forEach(function(tieRow) {
       // rudimentary solution for entities causing errors
       if (mainGender === "Female") {
+        // Y is CHILD of Z, where Y is child of X and X != Z
         if (
           tieRow["Subject ID"] === c.targetID &&
           tieRow["Verb"] === "is child of" &&
@@ -467,7 +482,9 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
               parentsGrouped
             );
           }
-        } else if (
+        }
+        // Z is FATHER of Y, where Y is child of X and X != Z
+        else if (
           tieRow["Direct Object ID"] === c.targetID &&
           tieRow["Verb"] === "is father of" &&
           tieRow["Subject ID"] !== id
@@ -486,6 +503,7 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
       }
       // rudimentary solution for entities causing errors
       if (mainGender === "Male") {
+        // Y is CHILD of Z, where Y is child of X and X != Z
         if (
           tieRow["Subject ID"] === c.targetID &&
           tieRow["Verb"] === "is child of" &&
@@ -501,7 +519,9 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
               parentsGrouped
             );
           }
-        } else if (
+        }
+        // Z is MOTHER of Y, where Y is child of X and X != Z
+        else if (
           tieRow["Direct Object ID"] === c.targetID &&
           tieRow["Verb"] === "is mother of" &&
           tieRow["Subject ID"] !== id
@@ -521,7 +541,6 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
     });
   });
   // TODO: FIX PARENTS NOT SHOWING UP
-  console.log("Parents", parentsGrouped);
   return parentsGrouped;
 };
 

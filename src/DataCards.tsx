@@ -204,6 +204,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             : ""}
         </span>
       );
+    } else if (relationship === "CHILDREN") {
+      // Add children stuff here
     } else {
       return (
         <span>
