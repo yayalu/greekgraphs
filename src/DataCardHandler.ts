@@ -451,8 +451,8 @@ const alphabetizeChildren = (relation: childrenInfo[]) => {
       r.child = alphabetize(r.child);
     });
     relation.sort(function(a, b) {
-      var relationA = a.otherParentID;
-      var relationB = b.otherParentID;
+      var relationA = getName(entities[a.otherParentID]);
+      var relationB = getName(entities[b.otherParentID]);
       return relationA < relationB ? -1 : relationA > relationB ? 1 : 0;
     });
   }
