@@ -30,6 +30,12 @@
   float: left;
   padding-right: 10px;
 }
+.entity-child-button {
+  font-size: 0.9em;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  text-decoration: underline;
+}
 
 .collective-button {
   font-size: 0.9em;
@@ -38,4 +44,24 @@
   :hover {
     text-decoration: underline;
   }
+}
+
+.entity-child-wrapper {
+  float: left;
+  border-top: 2px dashed lightgrey;
+}
+
+.entity-child-grouping {
+  border-right: 2px dashed lightgrey;
+  border-bottom: 2px dashed lightgrey;
+  margin: 0rem 0rem 1rem 0;
+  padding: 1rem 1rem 0.5rem 0;
+  float: left;
+}
+
+.entity-parent-grouping {
+  font-style: italic;
+  color: grey;
+  float: left;
+  padding: 1rem 1rem 0.5rem 1rem;
 }

@@ -5,12 +5,14 @@ import queryString from "querystring";
 import passages from "./data/passages.json";
 import EntityGraph from "./EntityGraph";
 import ReactGA from "react-ga";
+import entities from "./data/entities.json";
 import {
   relationshipInfo,
   updateComponent,
   checkNoRelations,
   getAlternativeNames,
-  getGender
+  getGender,
+  getName
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
 
@@ -128,7 +130,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               fontWeight: "bold",
               textTransform: "uppercase",
               float: "left",
-              paddingRight: "1rem"
+              paddingRight: "1rem",
+              marginTop: "0.5rem"
             }}
           >
             {this.state.relationships[relationship].length === 1 &&
@@ -136,7 +139,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               ? Pluralize.singular(relationship) + ": "
               : relationship + ": "}
           </div>
-          <div style={{ float: "left" }}>
+          <div style={{ float: "left", marginTop: "0.5rem" }}>
             {that.state.relationships[relationship].map(entity => {
               return (
                 <div style={{ margin: "0" }}>
@@ -205,7 +208,25 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         </span>
       );
     } else if (relationship === "CHILDREN") {
-      // Add children stuff here
+      console.log("CHeck entity", entity);
+      return (
+        <div className="entity-child-wrapper">
+          <div className="entity-child-grouping">
+            {that.getChildParentGrouped(entity)}
+          </div>
+          <div className="entity-parent-grouping">
+            {console.log(getName(entities[entity.otherParentID]))}
+            with{" "}
+            <span
+              className="entity-child-button"
+              style={{ margin: 0 }}
+              onClick={() => this.handleNameClicked(entity.otherParentID)}
+            >
+              {getName(entities[entity.otherParentID])}
+            </span>
+          </div>
+        </div>
+      );
     } else {
       return (
         <span>
@@ -231,6 +252,19 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         </span>
       );
     }
+  }
+
+  getChildParentGrouped(group: any) {
+    return group.child.map(c => {
+      return (
+        <div
+          className="entity-child-button"
+          onClick={() => this.handleNameClicked(c.targetID)}
+        >
+          {c.target}
+        </div>
+      );
+    });
   }
 
   getCollectiveMembers() {

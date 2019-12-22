@@ -688,7 +688,8 @@ const getNameString = (parameter: string, stringSoFar: string, id: string) => {
 /******************************************************************************************/
 /* Get the entity's name                                                                  */
 /******************************************************************************************/
-const getName = (entityRow: any) => {
+export const getName = (entityRow: any) => {
+  console.log(entityRow);
   let possibleNames = [
     "Name (Smith & Trzaskoma)",
     "Name (transliteration)",
