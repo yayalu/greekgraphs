@@ -208,14 +208,12 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         </span>
       );
     } else if (relationship === "CHILDREN") {
-      console.log("CHeck entity", entity);
       return (
         <div className="entity-child-wrapper">
           <div className="entity-child-grouping">
             {that.getChildParentGrouped(entity)}
           </div>
           <div className="entity-parent-grouping">
-            {console.log(getName(entities[entity.otherParentID]))}
             with{" "}
             <span
               className="entity-child-button"
