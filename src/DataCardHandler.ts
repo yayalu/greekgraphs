@@ -740,7 +740,7 @@ const getIndirectSiblings = (
     ) {
       delete newsiblings[k];
     } else {
-      siblings.push(newsiblings[k].info);
+      siblings = checkAndRemoveDuplicates(siblings, newsiblings[k].info);
     }
   });
   return siblings;
