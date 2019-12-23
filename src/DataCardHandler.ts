@@ -339,6 +339,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
 
   /* TODO: Check for any indirect siblings in the ties */
   relationships.SIBLINGS = getIndirectSiblings(
+    id,
     relationships.MOTHERS,
     relationships.FATHERS,
     relationships.SIBLINGS
@@ -623,25 +624,125 @@ const reversedVerb = (verb: string, dirObject: string) => {
 /* e.g. X is <child> of A, X is <child> of B, Y is <child> of A, Y is <child> of B        */
 /******************************************************************************************/
 const getIndirectSiblings = (
+  id: string,
   mothers: any[],
   fathers: any[],
   siblings: any[]
 ) => {
-  /* let potentialsiblings: {id: string, mother: string, father: string};
-  Object.values(tie).forEach(function(tieRow) {
-    let s: potentialsiblings = [];
+  // CURRENTLY A VERY SLOW SOLUTION - OPTIMIZE IT LATER
+  // CHANGE TO POPULATING A DATABASE OF RELATIONS AND READING OFF THAT DATABASE
+  // RATHER THAN DYNAMICALLY GENERATING IT HERE (CHANGE TO O(N) NOT LEAVE AS O(N^3))
+  let newsiblings: {} = {};
+  Object.values(ties).forEach(function(tieRow) {
+    let testsibling = {
+      motherMatch: false,
+      fatherMatch: false,
+      info: {}
+    };
+    let passageInfo: passageInfo[] = [
+      {
+        start: tieRow["Passage: start"],
+        startID: tieRow["Passage: start ID"],
+        end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
+        endID: tieRow["Passage: end ID"]
+      }
+    ];
+    let testinfo: entityInfo = {
+      target: "",
+      targetID: "",
+      passage: passageInfo,
+      type: entities[id]["Type of entity"]
+    };
     // Firstly, determine where Y is <child> of A,B
-    if ((tieRow.Verb === "is daughter of" || tieRow.Verb === "is son of" || tieRow.Verb === "is child of")) {
-      mothers.forEach(e => {
-        if (e.targetId === tieRow["Direct Object ID"]) {
-          s.mother.push(targetId);
+    if (
+      tieRow.Verb === "is daughter of" ||
+      tieRow.Verb === "is son of" ||
+      tieRow.Verb === "is child of"
+    ) {
+      mothers.forEach(m => {
+        if (m.targetID === tieRow["Direct Object ID"]) {
+          testsibling.motherMatch = true;
+          testinfo.target = getName(entities[tieRow["Subject ID"]]);
+          testinfo.targetID = tieRow["Subject ID"];
+          testsibling.info = testinfo;
+          if (!(tieRow["Subject ID"] in newsiblings)) {
+            newsiblings[tieRow["Subject ID"]] = testsibling;
+          } else {
+            newsiblings[tieRow["Subject ID"]].motherMatch = true;
+          }
+        }
+      });
+      fathers.forEach(f => {
+        if (f.targetID === tieRow["Direct Object ID"]) {
+          testsibling.fatherMatch = true;
+          testinfo.target = getName(entities[tieRow["Subject ID"]]);
+          testinfo.targetID = tieRow["Subject ID"];
+          testsibling.info = testinfo;
+          if (!(tieRow["Subject ID"] in newsiblings)) {
+            newsiblings[tieRow["Subject ID"]] = testsibling;
+          } else {
+            newsiblings[tieRow["Subject ID"]].fatherMatch = true;
+          }
         }
       });
     }
-    
-
-  }; */
-
+    // Then, determine where A is mother of Y, or if parent of Y where A is female
+    if (
+      tieRow.Verb === "is mother of" ||
+      tieRow.Verb === "is divine mother of" ||
+      (tieRow.Verb === "is parent of" &&
+        entities[tieRow["Subject ID"]] &&
+        entities[tieRow["Subject ID"]]["Agent/Coll.: gender"] === "Female")
+    ) {
+      mothers.forEach(m => {
+        if (m.targetID === tieRow["Subject ID"]) {
+          testsibling.motherMatch = true;
+          testinfo.target = getName(entities[tieRow["Direct Object ID"]]);
+          testinfo.targetID = tieRow["Direct Object ID"];
+          testsibling.info = testinfo;
+          if (!(tieRow["Direct Object ID"] in newsiblings)) {
+            newsiblings[tieRow["Direct Object ID"]] = testsibling;
+          } else {
+            newsiblings[tieRow["Direct Object ID"]].motherMatch = true;
+          }
+        }
+      });
+    }
+    // Then, determine where A is father of Y, or if parent of Y where A is male
+    if (
+      tieRow.Verb === "is father of" ||
+      tieRow.Verb === "is divine father of" ||
+      (tieRow.Verb === "is parent of" &&
+        entities[tieRow["Subject ID"]] &&
+        entities[tieRow["Subject ID"]]["Agent/Coll.: gender"] === "Male")
+    ) {
+      fathers.forEach(f => {
+        if (f.targetID === tieRow["Subject ID"]) {
+          testsibling.fatherMatch = true;
+          testinfo.target = getName(entities[tieRow["Direct Object ID"]]);
+          testinfo.targetID = tieRow["Direct Object ID"];
+          testsibling.info = testinfo;
+          if (!(tieRow["Direct Object ID"] in newsiblings)) {
+            newsiblings[tieRow["Direct Object ID"]] = testsibling;
+          } else {
+            newsiblings[tieRow["Direct Object ID"]].fatherMatch = true;
+          }
+        }
+      });
+    }
+  });
+  let keys: any[] = Object.keys(newsiblings);
+  keys.forEach(k => {
+    if (
+      !newsiblings[k].motherMatch ||
+      !newsiblings[k].fatherMatch ||
+      k === id
+    ) {
+      delete newsiblings[k];
+    } else {
+      siblings.push(newsiblings[k].info);
+    }
+  });
   return siblings;
 };
 
