@@ -604,7 +604,7 @@ const reversedVerb = (verb: string, dirObject: string) => {
   // TODO: Deal with IS MEMBER OF verb here.
   else {
     console.log(
-      "Unsure of the " +
+      "Unsure of " +
         verb +
         " " +
         dirObject +
@@ -802,6 +802,7 @@ export const getName = (entityRow: any) => {
   ];
   for (let i = 0; i < possibleNames.length; i++) {
     if (
+      entityRow[possibleNames[i]] &&
       entityRow[possibleNames[i]] !== "" &&
       entityRow[possibleNames[i]] !== undefined
     ) {
