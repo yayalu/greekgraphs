@@ -31,6 +31,7 @@ type DatumState = {
   members: any[];
   type: string;
   validSearch: boolean;
+  alternativeName: { targetID: string; passage: any[] };
 };
 
 class DataCards extends React.Component<DatumProps, DatumState> {
@@ -54,7 +55,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       },
       members: [],
       type: "",
-      validSearch: false
+      validSearch: false,
+      alternativeName: { targetID: "", passage: [] }
     };
     /* this.getNameFromID = this.getNameFromID.bind(this);
     this.checkNoRelations = this.checkNoRelations.bind(this);
@@ -297,6 +299,44 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           })}
         </div>
       );
+    }
+  }
+
+  getAlternativePage() {
+    if (
+      this.state.alternativeName.targetID !== "" &&
+      this.state.alternativeName.passage !== []
+    ) {
+      return (
+        <div
+          id="datacard-alternativename"
+          className={
+            this.state.alternativeName.targetID === "" ||
+            this.state.alternativeName.passage === []
+              ? "no-display"
+              : ""
+          }
+        >
+          Alternative name for{" "}
+          {this.state.alternativeName.targetID === "" ? (
+            ""
+          ) : (
+            <span>
+              <span
+                className="entity-alt-button"
+                onClick={() =>
+                  this.handleNameClicked(this.state.alternativeName.targetID)
+                }
+              >
+                {getName(entities[this.state.alternativeName.targetID])}
+              </span>
+              {this.state.alternativeName.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })}
+            </span>
+          )}
+        </div>
+      );
     } else {
       return null;
     }
@@ -323,7 +363,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         members: newState.members,
         name: newState.name,
         type: newState.type,
-        validSearch: newState.validSearch
+        validSearch: newState.validSearch,
+        alternativeName: newState.alternativeName
       });
     }
   }
@@ -345,7 +386,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         members: newState.members,
         name: newState.name,
         type: newState.type,
-        validSearch: newState.validSearch
+        validSearch: newState.validSearch,
+        alternativeName: newState.alternativeName
       });
     }
   }
@@ -373,15 +415,13 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             }}
           >
             <div id="datacard-heading">{this.state.name}</div>
-            <div id="datacard-alternativenames">
+            <div id="datacard-othernames">
               {getAlternativeNames(this.state.id)}
             </div>
             <div id="datacard-mantoID">MANTO ID: {this.state.id}</div>
             <div
-              id="datacard-alternativenames"
-              className={
-                getGender(this.state.id) === "undefined" ? "no-display" : ""
-              }
+              id="datacard-othernames"
+              className={getGender(this.state.id) === "" ? "no-display" : ""}
             >
               Gender: {getGender(this.state.id)}
             </div>
@@ -391,6 +431,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                 checkNoRelations(this.state.relationships) ? "" : "no-display"
               }
             ></div>
+            {/* If current entity is an alternative name for an existing entity */}
+            <div>{this.getAlternativePage()}</div>
+
             {/* If data is available for the subject */}
             {Object.keys(this.state.relationships).map(key => {
               if (key === "MOTHERS" || key === "FATHERS" || key === "SPOUSES") {

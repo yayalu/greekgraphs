@@ -7,11 +7,16 @@
   margin-bottom: 0.8rem;
 }
 
-#datacard-alternativenames {
+#datacard-othernames {
   color: grey;
   font-style: italic;
   font-size: 1rem;
   text-align: center;
+}
+
+#datacard-alternativename {
+  font-size: 1rem;
+  margin-top: 1rem;
 }
 
 #datacard-mantoID {
@@ -34,6 +39,11 @@
   font-size: 0.9em;
   cursor: pointer;
   margin-bottom: 0.5rem;
+  text-decoration: underline;
+}
+
+.entity-alt-button {
+  cursor: pointer;
   text-decoration: underline;
 }
 

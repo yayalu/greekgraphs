@@ -33,6 +33,16 @@ export type relationshipInfo = {
   CHILDREN: childrenInfo[];
 };
 
+type returningInfo = {
+  id: string;
+  relationships: relationshipInfo;
+  name: string;
+  members: any[];
+  type: string;
+  validSearch: boolean;
+  alternativeName: { targetID: string; passage: passageInfo[] };
+};
+
 let familyTies = [
   /* Parent */
   "is father of",
@@ -71,7 +81,34 @@ let familyTies = [
 /******************************************************************************************/
 export const updateComponent = (id: string) => {
   let connections = getAllConnections(id);
-  return sortConnectionsIntoRelationships(id, connections);
+  if (
+    connections.length > 0 &&
+    connections[0].verb === "is alternative name for"
+  ) {
+    let empty: relationshipInfo = {
+      MOTHERS: [],
+      FATHERS: [],
+      SIBLINGS: [],
+      TWIN: [],
+      SPOUSES: [],
+      CHILDREN: []
+    };
+    let altNameConnection: returningInfo = {
+      id: id,
+      relationships: empty,
+      name: getName(entities[id]),
+      members: [],
+      type: entities[id]["Type of entity"],
+      validSearch: true,
+      alternativeName: {
+        targetID: connections[0].targetID,
+        passage: connections[0].passage
+      }
+    };
+    return altNameConnection;
+  } else {
+    return sortConnectionsIntoRelationships(id, connections);
+  }
 };
 
 /******************************************************************************************/
@@ -90,6 +127,34 @@ const getAllConnections = (id: string) => {
   Object.values(ties).forEach(function(tieRow) {
     // TODO: Fix this temporary solution for entities not existing in entities.csv
     if (entities[tieRow["Subject ID"]]) {
+      //check if the entity is just an "alternative name for"
+      //if so, ignore all geneological data gathered so far and just return connections = [{target: "", targetID: "", verb: "is alternative name for", passage:[]}]
+
+      if (
+        // tieRow["Direct Object ID"] &&
+        tieRow["Subject ID"] === id &&
+        tieRow["Verb"] === "is alternative name for"
+      ) {
+        let passageInfo: passageInfo[] = [
+          {
+            start: tieRow["Passage: start"],
+            startID: tieRow["Passage: start ID"],
+            end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
+            endID:
+              tieRow["Passage: end ID"] === "" ? "" : tieRow["Passage: end ID"]
+          }
+        ];
+        connections = [
+          {
+            target: "",
+            targetID: tieRow["Direct Object ID"],
+            verb: "is alternative name for",
+            passage: passageInfo
+          }
+        ];
+        return connections;
+      }
+
       /*********************************************************/
       /* If you are the direct object X, e.g. (Y (verb) X)     */
       /*********************************************************/
@@ -102,7 +167,8 @@ const getAllConnections = (id: string) => {
             start: tieRow["Passage: start"],
             startID: tieRow["Passage: start ID"],
             end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
-            endID: tieRow["Passage: end ID"]
+            endID:
+              tieRow["Passage: end ID"] === "" ? "" : tieRow["Passage: end ID"]
           }
         ];
 
@@ -357,14 +423,16 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.CHILDREN = alphabetizeChildren(relationships.CHILDREN);
 
   /* Return alphabetized, complete list of relationships */
-  return {
+  let connection: returningInfo = {
     id: id,
     relationships: relationships,
     name: name,
     members: members,
     type: type,
-    validSearch: true
+    validSearch: true,
+    alternativeName: { targetID: "", passage: [] }
   };
+  return connection;
 };
 
 /******************************************************************************************/
