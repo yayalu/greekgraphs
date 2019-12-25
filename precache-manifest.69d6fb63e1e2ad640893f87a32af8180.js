@@ -1,19 +1,19 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "c701efab87c4f2aad86c2bb05d3b41f0",
+    "revision": "0402cee4007053a6ef0e47fbc8b3c006",
     "url": "/greekgraphs/index.html"
   },
   {
-    "revision": "c050d5119685e9b52070",
-    "url": "/greekgraphs/static/css/main.d3b364ac.chunk.css"
+    "revision": "23f255ff1d8e8d376686",
+    "url": "/greekgraphs/static/css/main.b0122d2f.chunk.css"
   },
   {
     "revision": "2ee9c075df21ba8040ef",
     "url": "/greekgraphs/static/js/2.a7500e73.chunk.js"
   },
   {
-    "revision": "c050d5119685e9b52070",
-    "url": "/greekgraphs/static/js/main.8d40ec2f.chunk.js"
+    "revision": "23f255ff1d8e8d376686",
+    "url": "/greekgraphs/static/js/main.f3997827.chunk.js"
   },
   {
     "revision": "fe423b9a166ed3c5bbbf",
