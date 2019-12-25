@@ -14,7 +14,7 @@ class EntityGraph extends React.Component<GraphProps, GraphState> {
 
   render() {
     {
-      getGraph(1, this.props.id, this.props.relationships);
+      // getGraph(2, this.props.id, this.props.relationships);
     }
     return <div></div>;
   }

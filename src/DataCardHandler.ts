@@ -172,7 +172,6 @@ const getAllConnections = (id: string) => {
             endID: tieRow["Passage: end ID"]
           }
         ];
-        console.log("Indirect object to:", tieRow["Direct Object"]);
         connections.push({
           target: getName(entities[tieRow["Direct Object ID"]]),
           targetID: tieRow["Direct Object ID"],
@@ -318,7 +317,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       );
     }
     // X is a MEMBER of a collective
-    else if (tie.verb === "is part of") {
+    else if (tie.verb === "is part of" || tie.verb === "is member of") {
       members = checkAndRemoveDuplicates(members, d);
     }
     // X is born by autochthony
@@ -552,7 +551,12 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
 /* Get the gender of the entity                                                           */
 /******************************************************************************************/
 export const getGender = (id: string) => {
-  return entities[id]["Agent/Coll.: gender"];
+  if (id === "8188818") {
+    // Temporary fix for Is Child Of Crete issue
+    return "Female";
+  } else {
+    return entities[id]["Agent/Coll.: gender"];
+  }
 };
 
 /******************************************************************************************/
@@ -602,7 +606,10 @@ const reversedVerb = (verb: string, dirObject: string) => {
   }
 
   // TODO: Deal with IS MEMBER OF verb here.
-  else {
+  else if (verb === "is member of" || verb === "is part of") {
+    console.log("Trying to reverse", dirObject, "is member of");
+    return "";
+  } else {
     console.log(
       "Unsure of " +
         verb +
@@ -632,6 +639,8 @@ const getIndirectSiblings = (
   // CURRENTLY A VERY SLOW SOLUTION - OPTIMIZE IT LATER
   // CHANGE TO POPULATING A DATABASE OF RELATIONS AND READING OFF THAT DATABASE
   // RATHER THAN DYNAMICALLY GENERATING IT HERE (CHANGE TO O(N) NOT LEAVE AS O(N^3))
+  // ALTERNATIVELY: Use Nodegoat ID to determine those in the same datum ID, and then match those
+
   let newsiblings: {} = {};
   Object.values(ties).forEach(function(tieRow) {
     let testsibling = {
