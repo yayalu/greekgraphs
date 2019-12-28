@@ -131,141 +131,151 @@ const getAllConnections = (id: string) => {
       //if so, ignore all geneological data gathered so far and just return connections = [{target: "", targetID: "", verb: "is alternative name for", passage:[]}]
 
       if (
-        // tieRow["Direct Object ID"] &&
-        tieRow["Subject ID"] === id &&
-        tieRow["Verb"] === "is alternative name for"
+        tieRow["Verb"] === "is child of" &&
+        tieRow["Direct Object ID"] === "8188818"
       ) {
-        let passageInfo: passageInfo[] = [
-          {
-            start: tieRow["Passage: start"],
-            startID: tieRow["Passage: start ID"],
-            end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
-            endID:
-              tieRow["Passage: end ID"] === "" ? "" : tieRow["Passage: end ID"]
-          }
-        ];
-        connections = [
-          {
-            target: "",
-            targetID: tieRow["Direct Object ID"],
-            verb: "is alternative name for",
-            passage: passageInfo
-          }
-        ];
-        return connections;
-      }
-
-      /*********************************************************/
-      /* If you are the direct object X, e.g. (Y (verb) X)     */
-      /*********************************************************/
-      if (
-        tieRow["Direct Object ID"] === id &&
-        familyTies.includes(tieRow.Verb)
-      ) {
-        let passageInfo: passageInfo[] = [
-          {
-            start: tieRow["Passage: start"],
-            startID: tieRow["Passage: start ID"],
-            end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
-            endID:
-              tieRow["Passage: end ID"] === "" ? "" : tieRow["Passage: end ID"]
-          }
-        ];
-
-        // TODO: Fix this temporary solution for gender data not existing for entity
-        if (getGender(tieRow["Subject ID"]) && tieRow.Verb === "marries") {
-          tieRow.Verb = "is spouse of";
+        // Temporary fix for Is Child Of Crete issue
+      } else {
+        if (
+          tieRow["Subject ID"] === id &&
+          tieRow["Verb"] === "is alternative name for"
+        ) {
+          let passageInfo: passageInfo[] = [
+            {
+              start: tieRow["Passage: start"],
+              startID: tieRow["Passage: start ID"],
+              end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
+              endID:
+                tieRow["Passage: end ID"] === ""
+                  ? ""
+                  : tieRow["Passage: end ID"]
+            }
+          ];
+          connections = [
+            {
+              target: "",
+              targetID: tieRow["Direct Object ID"],
+              verb: "is alternative name for",
+              passage: passageInfo
+            }
+          ];
+          return connections;
         }
 
-        // Push connections to the list of connections
-        connections.push({
-          target: getName(entities[tieRow["Subject ID"]]),
-          targetID: tieRow["Subject ID"],
-          verb: tieRow.Verb,
-          passage: passageInfo
-        });
-      }
+        /*********************************************************/
+        /* If you are the direct object X, e.g. (Y (verb) X)     */
+        /*********************************************************/
+        if (
+          tieRow["Direct Object ID"] === id &&
+          familyTies.includes(tieRow.Verb)
+        ) {
+          let passageInfo: passageInfo[] = [
+            {
+              start: tieRow["Passage: start"],
+              startID: tieRow["Passage: start ID"],
+              end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
+              endID:
+                tieRow["Passage: end ID"] === ""
+                  ? ""
+                  : tieRow["Passage: end ID"]
+            }
+          ];
 
-      /*********************************************************/
-      /* If you are the subject X, e.g. (X (verb) Y)           */
-      /*********************************************************/
-      if (tieRow["Subject ID"] === id && familyTies.includes(tieRow.Verb)) {
-        let passageInfo: passageInfo[] = [
-          {
-            start: tieRow["Passage: start"],
-            startID: tieRow["Passage: start ID"],
-            end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
-            endID: tieRow["Passage: end ID"]
+          // TODO: Fix this temporary solution for gender data not existing for entity
+          if (getGender(tieRow["Subject ID"]) && tieRow.Verb === "marries") {
+            tieRow.Verb = "is spouse of";
           }
-        ];
 
-        // Push connections to the list of connections
-        if (tieRow.Verb === "is born by autochthony [in/on/at]") {
+          // Push connections to the list of connections
           connections.push({
-            target: "",
-            targetID: "",
-            verb: "is born by autochthony [in/on/at]",
+            target: getName(entities[tieRow["Subject ID"]]),
+            targetID: tieRow["Subject ID"],
+            verb: tieRow.Verb,
             passage: passageInfo
           });
-        } else {
-          //TODO: Find better fix for this Minos is child of Crete (object) issue
-          if (tieRow["Direct Object ID"] !== "8188818") {
+        }
+
+        /*********************************************************/
+        /* If you are the subject X, e.g. (X (verb) Y)           */
+        /*********************************************************/
+        if (tieRow["Subject ID"] === id && familyTies.includes(tieRow.Verb)) {
+          let passageInfo: passageInfo[] = [
+            {
+              start: tieRow["Passage: start"],
+              startID: tieRow["Passage: start ID"],
+              end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
+              endID: tieRow["Passage: end ID"]
+            }
+          ];
+
+          // Push connections to the list of connections
+          if (tieRow.Verb === "is born by autochthony [in/on/at]") {
             connections.push({
-              target: getName(entities[tieRow["Direct Object ID"]]),
-              targetID: tieRow["Direct Object ID"],
-              verb: reversedVerb(tieRow.Verb, tieRow["Direct Object ID"]),
+              target: "",
+              targetID: "",
+              verb: "is born by autochthony [in/on/at]",
               passage: passageInfo
             });
+          } else {
+            //TODO: Find better fix for this Minos is child of Crete (object) issue
+            if (tieRow["Direct Object ID"] !== "8188818") {
+              connections.push({
+                target: getName(entities[tieRow["Direct Object ID"]]),
+                targetID: tieRow["Direct Object ID"],
+                verb: reversedVerb(tieRow.Verb, tieRow["Direct Object ID"]),
+                passage: passageInfo
+              });
+            }
           }
         }
-      }
 
-      /***********************************************************************/
-      /* For "Gives in marriage:" - parent gives child in marriage to person */
-      /*************************************************************************/
+        /***********************************************************************/
+        /* For "Gives in marriage:" - parent gives child in marriage to person */
+        /*************************************************************************/
 
-      // If you are the indirect object X, e.g. (Z (verb) Y X)
-      if (
-        tieRow["Indirect Object (to/for) ID"] &&
-        tieRow["Indirect Object (to/for) ID"] === id &&
-        tieRow.Verb === "gives in marriage [dir. obj.] [ind. obj.]"
-      ) {
-        let passageInfo: passageInfo[] = [
-          {
-            start: tieRow["Passage: start"],
-            startID: tieRow["Passage: start ID"],
-            end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
-            endID: tieRow["Passage: end ID"]
-          }
-        ];
-        connections.push({
-          target: getName(entities[tieRow["Direct Object ID"]]),
-          targetID: tieRow["Direct Object ID"],
-          verb: "is spouse of",
-          passage: passageInfo
-        });
-      }
+        // If you are the indirect object X, e.g. (Z (verb) Y X)
+        if (
+          tieRow["Indirect Object (to/for) ID"] &&
+          tieRow["Indirect Object (to/for) ID"] === id &&
+          tieRow.Verb === "gives in marriage [dir. obj.] [ind. obj.]"
+        ) {
+          let passageInfo: passageInfo[] = [
+            {
+              start: tieRow["Passage: start"],
+              startID: tieRow["Passage: start ID"],
+              end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
+              endID: tieRow["Passage: end ID"]
+            }
+          ];
+          connections.push({
+            target: getName(entities[tieRow["Direct Object ID"]]),
+            targetID: tieRow["Direct Object ID"],
+            verb: "is spouse of",
+            passage: passageInfo
+          });
+        }
 
-      // If you are the direct object X, e.g. (Z (verb) X Y)
-      else if (
-        tieRow["Direct Object ID"] &&
-        tieRow["Direct Object ID"] === id &&
-        tieRow.Verb === "gives in marriage [dir. obj.] [ind. obj.]"
-      ) {
-        let passageInfo: passageInfo[] = [
-          {
-            start: tieRow["Passage: start"],
-            startID: tieRow["Passage: start ID"],
-            end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
-            endID: tieRow["Passage: end ID"]
-          }
-        ];
-        connections.push({
-          target: getName(entities[tieRow["Indirect Object (to/for) ID"]]),
-          targetID: tieRow["Indirect Object (to/for) ID"],
-          verb: "is spouse of",
-          passage: passageInfo
-        });
+        // If you are the direct object X, e.g. (Z (verb) X Y)
+        else if (
+          tieRow["Direct Object ID"] &&
+          tieRow["Direct Object ID"] === id &&
+          tieRow.Verb === "gives in marriage [dir. obj.] [ind. obj.]"
+        ) {
+          let passageInfo: passageInfo[] = [
+            {
+              start: tieRow["Passage: start"],
+              startID: tieRow["Passage: start ID"],
+              end: tieRow["Passage: end"] === "" ? "" : tieRow["Passage: end"],
+              endID: tieRow["Passage: end ID"]
+            }
+          ];
+          connections.push({
+            target: getName(entities[tieRow["Indirect Object (to/for) ID"]]),
+            targetID: tieRow["Indirect Object (to/for) ID"],
+            verb: "is spouse of",
+            passage: passageInfo
+          });
+        }
       }
     }
   });
@@ -535,77 +545,84 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
   let parentsGrouped: childrenInfo[] = [];
   children.forEach(c => {
     Object.values(ties).forEach(function(tieRow) {
-      // rudimentary solution for entities causing errors
-      if (mainGender === "Female") {
-        // Y is CHILD of Z, where Y is child of X and X != Z
-        if (
-          tieRow["Subject ID"] === c.targetID &&
-          tieRow["Verb"] === "is child of" &&
-          tieRow["Direct Object ID"] !== id
-        ) {
+      // Attempting to fix child of Crete issue
+      if (tieRow["Direct Object ID"] !== "8188818") {
+        // rudimentary solution for entities causing errors
+        if (mainGender === "Female") {
+          // Y is CHILD of Z, where Y is child of X and X != Z
           if (
-            getGender(tieRow["Direct Object ID"]) === "Male" &&
-            entities[tieRow["Direct Object ID"]]["Type of entity"] === "Agent"
+            tieRow["Subject ID"] === c.targetID &&
+            tieRow["Verb"] === "is child of" &&
+            tieRow["Direct Object ID"] !== id
           ) {
-            parentsGrouped = checkAndRemoveParentDuplicates(
-              tieRow["Direct Object ID"],
-              c,
-              parentsGrouped
-            );
+            if (
+              entities[tieRow["Direct Object ID"]] &&
+              getGender(tieRow["Direct Object ID"]) === "Male" &&
+              entities[tieRow["Direct Object ID"]]["Type of entity"] === "Agent"
+            ) {
+              parentsGrouped = checkAndRemoveParentDuplicates(
+                tieRow["Direct Object ID"],
+                c,
+                parentsGrouped
+              );
+            }
+          }
+          // Z is FATHER of Y, where Y is child of X and X != Z
+          else if (
+            tieRow["Direct Object ID"] === c.targetID &&
+            tieRow["Verb"] === "is father of" &&
+            tieRow["Subject ID"] !== id
+          ) {
+            if (
+              entities[tieRow["Subject ID"]] &&
+              getGender(tieRow["Subject ID"]) === "Male" &&
+              entities[tieRow["Subject ID"]]["Type of entity"] === "Agent"
+            ) {
+              parentsGrouped = checkAndRemoveParentDuplicates(
+                tieRow["Subject ID"],
+                c,
+                parentsGrouped
+              );
+            }
           }
         }
-        // Z is FATHER of Y, where Y is child of X and X != Z
-        else if (
-          tieRow["Direct Object ID"] === c.targetID &&
-          tieRow["Verb"] === "is father of" &&
-          tieRow["Subject ID"] !== id
-        ) {
+        // rudimentary solution for entities causing errors
+        if (mainGender === "Male") {
+          // Y is CHILD of Z, where Y is child of X and X != Z
           if (
-            getGender(tieRow["Subject ID"]) === "Male" &&
-            entities[tieRow["Subject ID"]]["Type of entity"] === "Agent"
+            tieRow["Subject ID"] === c.targetID &&
+            tieRow["Verb"] === "is child of" &&
+            tieRow["Direct Object ID"] !== id
           ) {
-            parentsGrouped = checkAndRemoveParentDuplicates(
-              tieRow["Subject ID"],
-              c,
-              parentsGrouped
-            );
+            if (
+              entities[tieRow["Direct Object ID"]] &&
+              getGender(tieRow["Direct Object ID"]) === "Female" &&
+              entities[tieRow["Direct Object ID"]]["Type of entity"] === "Agent"
+            ) {
+              parentsGrouped = checkAndRemoveParentDuplicates(
+                tieRow["Direct Object ID"],
+                c,
+                parentsGrouped
+              );
+            }
           }
-        }
-      }
-      // rudimentary solution for entities causing errors
-      if (mainGender === "Male") {
-        // Y is CHILD of Z, where Y is child of X and X != Z
-        if (
-          tieRow["Subject ID"] === c.targetID &&
-          tieRow["Verb"] === "is child of" &&
-          tieRow["Direct Object ID"] !== id
-        ) {
-          if (
-            getGender(tieRow["Direct Object ID"]) === "Female" &&
-            entities[tieRow["Direct Object ID"]]["Type of entity"] === "Agent"
+          // Z is MOTHER of Y, where Y is child of X and X != Z
+          else if (
+            tieRow["Direct Object ID"] === c.targetID &&
+            tieRow["Verb"] === "is mother of" &&
+            tieRow["Subject ID"] !== id
           ) {
-            parentsGrouped = checkAndRemoveParentDuplicates(
-              tieRow["Direct Object ID"],
-              c,
-              parentsGrouped
-            );
-          }
-        }
-        // Z is MOTHER of Y, where Y is child of X and X != Z
-        else if (
-          tieRow["Direct Object ID"] === c.targetID &&
-          tieRow["Verb"] === "is mother of" &&
-          tieRow["Subject ID"] !== id
-        ) {
-          if (
-            getGender(tieRow["Subject ID"]) === "Female" &&
-            entities[tieRow["Subject ID"]]["Type of entity"] === "Agent"
-          ) {
-            parentsGrouped = checkAndRemoveParentDuplicates(
-              tieRow["Subject ID"],
-              c,
-              parentsGrouped
-            );
+            if (
+              entities[tieRow["Subject ID"]] &&
+              getGender(tieRow["Subject ID"]) === "Female" &&
+              entities[tieRow["Subject ID"]]["Type of entity"] === "Agent"
+            ) {
+              parentsGrouped = checkAndRemoveParentDuplicates(
+                tieRow["Subject ID"],
+                c,
+                parentsGrouped
+              );
+            }
           }
         }
       }
@@ -620,7 +637,6 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
 /******************************************************************************************/
 export const getGender = (id: string) => {
   if (id === "8188818") {
-    // Temporary fix for Is Child Of Crete issue
     return "Female";
   } else {
     return entities[id]["Agent/Coll.: gender"];

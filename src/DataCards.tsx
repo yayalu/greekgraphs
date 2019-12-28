@@ -355,7 +355,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       this.setState({ validSearch: false });
     } else {
       //Substitute with ID
-      // this.updateComponent(this.state.id);
       let newState = updateComponent(id);
       this.setState({
         id: newState.id,

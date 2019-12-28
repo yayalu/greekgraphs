@@ -1,5 +1,7 @@
 import entities from "./data/entities.json";
-import { updateComponent, getName } from "./DataCardHandler";
+import { updateComponent, getName, checkNoRelations } from "./DataCardHandler";
+import * as dagreD3 from "dagre-d3";
+import * as d3 from "d3";
 
 /*
 
@@ -15,24 +17,44 @@ export type relationshipInfo = {
 */
 
 export const getGraph = (depth: number, id: string, relationships: any) => {
-  let Graph = require("@dagrejs/graphlib").Graph;
-  let g = new Graph();
-  getAllLinks(g, depth, id, relationships);
-  /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
-  console.log("Final edges", g.edges());
+  if (!checkNoRelations(relationships)) {
+    // ignores initial empty relationship graph generation
+    // Generate all connections in GraphLib form
+    var dagreD3 = require("dagre-d3");
+    let d3 = require("d3");
+    // let Graph = require("@dagrejs/graphlib").Graph;
+    // var g = new Graph({ directed: true, multigraph: true, compound: true });
+    var g = new dagreD3.graphlib.Graph().setGraph({});
+
+    g.setGraph(getName(entities[id]) + " relationships"); // Set the graph's name
+    getAllLinks(g, depth, id, relationships);
+    console.log("Final connections found", g.edges());
+
+    /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
+
+    var svg = d3.select("svg"),
+      inner = svg.select("g");
+
+    // Create the renderer
+    let render = new dagreD3.render();
+    // Run the renderer and draw the final graph
+    render.run(inner, g);
+  } else {
+    return "";
+  }
 };
 
 const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
   g.setNode(id, getName(entities[id]));
+  console.log("all relationships", relationships);
 
   if (relationships.MOTHERS && relationships.MOTHERS.length !== 0) {
     for (let i = 0; i < relationships.MOTHERS.length; i++) {
       let r = relationships.MOTHERS[i];
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "mother");
-      if (r.targetID === undefined) {
-        console.log("MOTHERS", r);
-      }
+      // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
+      console.log("m", g);
     }
   }
 
@@ -41,20 +63,20 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       let r = relationships.FATHERS[i];
       g.setNode(r.targetID, r);
       g.setEdge(r.targetID, id, "father");
-      if (r.targetID === undefined) {
-        console.log("FATHERS", r);
-      }
+      // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
+      console.log("f", g);
     }
   }
 
-  if (relationships.SIBLINGS && relationships.SIBLINGS.length !== 0) {
+  if (
+    (relationships.SIBLINGS && relationships.SIBLINGS.length !== 0) ||
+    (relationships.TWIN && relationships.TWIN.length !== 0)
+  ) {
     for (let i = 0; i < relationships.SIBLINGS.length; i++) {
       let r = relationships.SIBLINGS[i];
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "sibling");
-      if (r.targetID === undefined) {
-        console.log("SIBLINGS", r);
-      }
+      console.log("s", g);
     }
   }
 
@@ -63,9 +85,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       let r = relationships.WIVES[i];
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "wife");
-      if (r.targetID === undefined) {
-        console.log("WIFE", r);
-      }
+      console.log("w", g);
     }
   }
 
@@ -74,9 +94,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       let r = relationships.HUSBANDS[i];
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "husband");
-      if (r.targetID === undefined) {
-        console.log("HUSBAND", r);
-      }
+      console.log("h", g);
     }
   }
 
@@ -86,9 +104,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       for (let j = 0; j < r.length; j++) {
         g.setNode(r[j].targetID, r[j].target);
         g.setEdge(r[j].targetID, id, "child");
-        if (r[j].targetID === undefined) {
-          console.log("CHILD", r[j]);
-        }
+        console.log("c", g);
       }
     }
   }

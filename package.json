@@ -12,6 +12,7 @@
     "@types/react": "16.9.2",
     "@types/react-dom": "16.8.5",
     "@types/react-router-dom": "^4.3.5",
+    "dagre-d3": "^0.6.4",
     "eslint": "^6.5.1",
     "eslint-utils": "^1.4.3",
     "gh-pages": "^2.1.1",
