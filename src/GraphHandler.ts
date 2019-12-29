@@ -28,7 +28,7 @@ export const getGraph = (depth: number, id: string, relationships: any) => {
 
     g.setGraph(getName(entities[id]) + " relationships"); // Set the graph's name
     getAllLinks(g, depth, id, relationships);
-    console.log("Final connections found", g.edges());
+    console.log("Final connections found", g.edges(), "with final graph", g);
 
     /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
 
@@ -46,7 +46,6 @@ export const getGraph = (depth: number, id: string, relationships: any) => {
 
 const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
   g.setNode(id, getName(entities[id]));
-  console.log("all relationships", relationships);
 
   if (relationships.MOTHERS && relationships.MOTHERS.length !== 0) {
     for (let i = 0; i < relationships.MOTHERS.length; i++) {
@@ -54,7 +53,6 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "mother");
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
-      console.log("m", g);
     }
   }
 
@@ -64,7 +62,6 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       g.setNode(r.targetID, r);
       g.setEdge(r.targetID, id, "father");
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
-      console.log("f", g);
     }
   }
 
@@ -76,7 +73,6 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       let r = relationships.SIBLINGS[i];
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "sibling");
-      console.log("s", g);
     }
   }
 
@@ -85,7 +81,6 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       let r = relationships.WIVES[i];
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "wife");
-      console.log("w", g);
     }
   }
 
@@ -94,7 +89,6 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       let r = relationships.HUSBANDS[i];
       g.setNode(r.targetID, r.target);
       g.setEdge(r.targetID, id, "husband");
-      console.log("h", g);
     }
   }
 
@@ -104,7 +98,6 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
       for (let j = 0; j < r.length; j++) {
         g.setNode(r[j].targetID, r[j].target);
         g.setEdge(r[j].targetID, id, "child");
-        console.log("c", g);
       }
     }
   }
