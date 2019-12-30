@@ -3,7 +3,7 @@ import "./App.css";
 import "./DataCards.scss";
 import queryString from "querystring";
 import passages from "./data/passages.json";
-import EntityGraph from "./EntityGraph";
+import EntityGraph from "./EntityGraph.jsx";
 import ReactGA from "react-ga";
 import entities from "./data/entities.json";
 import {
