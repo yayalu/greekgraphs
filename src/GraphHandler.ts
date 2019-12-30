@@ -17,21 +17,23 @@ export type relationshipInfo = {
 */
 
 export const getGraph = (depth: number, id: string, relationships: any) => {
-  if (!checkNoRelations(relationships)) {
-    // ignores initial empty relationship graph generation
-    // Generate all connections in GraphLib form
-    var dagreD3 = require("dagre-d3");
-    let d3 = require("d3");
-    // let Graph = require("@dagrejs/graphlib").Graph;
-    // var g = new Graph({ directed: true, multigraph: true, compound: true });
-    var g = new dagreD3.graphlib.Graph().setGraph({});
+  // ignores initial empty relationship graph generation
+  // Generate all connections in GraphLib form
+  var dagreD3 = require("dagre-d3");
+  let d3 = require("d3");
+  // let Graph = require("@dagrejs/graphlib").Graph;
+  // var g = new Graph({ directed: true, multigraph: true, compound: true });
 
-    g.setGraph(getName(entities[id]) + " relationships"); // Set the graph's name
-    getAllLinks(g, depth, id, relationships);
-    console.log("Final connections found", g.edges(), "with final graph", g);
+  // Establish the graph and set the graph's name
+  var g = new dagreD3.graphlib.Graph().setGraph(
+    getName(entities[id]) + " relationships"
+  );
 
-    /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
+  getAllLinks(g, depth, id, relationships);
 
+  /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
+
+  /*
     var svg = d3.select("svg"),
       inner = svg.select("g");
 
@@ -39,9 +41,8 @@ export const getGraph = (depth: number, id: string, relationships: any) => {
     let render = new dagreD3.render();
     // Run the renderer and draw the final graph
     render.run(inner, g);
-  } else {
-    return "";
-  }
+    */
+  return g;
 };
 
 const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
