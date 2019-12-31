@@ -61,9 +61,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     /* this.getNameFromID = this.getNameFromID.bind(this);
     this.checkNoRelations = this.checkNoRelations.bind(this);
     this.reversedVerb = this.reversedVerb.bind(this);
-    this.getDataPoints = this.getDataPoints.bind(this);
+    this.getDataPoints = this.getDataPoints.bind(this); */
     this.handleNameClicked = this.handleNameClicked.bind(this);
-    this.getAlternativeNames = this.getAlternativeNames.bind(this); */
+    /* this.getAlternativeNames = this.getAlternativeNames.bind(this); */
   }
 
   /*******************/
@@ -115,6 +115,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   }
 
   handleNameClicked(targetID: string) {
+    console.log("clicked", targetID, this.props);
     ReactGA.event({
       category: "NameClicked",
       action: "User clicked on a name within the data card"
@@ -448,6 +449,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         <EntityGraph
           id={this.state.id}
           relationships={this.state.relationships}
+          relationshipClicked={this.handleNameClicked}
         ></EntityGraph>
       </React.Fragment>
     );

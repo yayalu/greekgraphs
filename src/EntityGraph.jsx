@@ -12,6 +12,10 @@ class EntityGraph extends React.Component {
   // For findDOMNode in Typescript, see: https://stackoverflow.com/questions/32480321/using-react-finddomnode-in-typescript
   // How to use DagreJS https://dagrejs.github.io/project/dagre-d3/latest/demo/interactive-demo.html
 
+  constructor(props) {
+    super(props);
+    this.handleClickedNode = this.handleClickedNode.bind(this);
+  }
   componentDidMount() {
     if (!checkNoRelations(this.props.relationships)) {
       let g = getGraph(1, this.props.id, this.props.relationships);
@@ -32,7 +36,6 @@ class EntityGraph extends React.Component {
       .attr("fill", "red"); */
 
     // Return the graph with populated nodes
-    console.log("Accessed");
     if (!checkNoRelations(this.props.relationships)) {
       let g = getGraph(1, this.props.id, this.props.relationships);
       console.log("Final connections found", g.edges());
@@ -64,8 +67,22 @@ class EntityGraph extends React.Component {
       // Center the graph
       // var xCenterOffset = 10; // svg.attr("width") - g.graph().width) / 2;
       // svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
+
       svg.attr("height", g.graph().height + 40);
+
+      console.log("first", this.props);
+
+      var nodeSelected = svg.selectAll("g.node");
+      /* nodeSelected.each(
+        this.handleClickedNode
+      ); 
+      */
+      nodeSelected.on("click", this.handleClickedNode);
     }
+  }
+
+  handleClickedNode(id) {
+    this.props.relationshipClicked(id);
   }
 
   render() {
