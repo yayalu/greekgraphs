@@ -172,7 +172,7 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(id, r[j].targetID, {
             label: "child",
-            style: "stroke: yellow"
+            style: "stroke: orange"
           });
         } else if (
           entities[r[j].targetID] &&
@@ -189,7 +189,7 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(id, r[j].targetID, {
             label: "child",
-            style: "stroke: yellow"
+            style: "stroke: orange"
           });
         }
         g.setNode(relationships.CHILDREN[i].otherParentID, {
@@ -200,7 +200,7 @@ const getAllRelationshipLinks = (
         });
         g.setEdge(relationships.CHILDREN[i].otherParentID, r[j].targetID, {
           label: "other parent",
-          style: "stroke: grey"
+          style: "stroke: black"
         });
       }
     }

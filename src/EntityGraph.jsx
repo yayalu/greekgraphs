@@ -93,6 +93,7 @@ class EntityGraph extends React.Component {
             <span id="legend-relationedge">Genealogical connection</span>
             <span id="legend-disputededge">Disputed connection</span>
             <span id="legend-unusualedge">Unusual connection</span>
+            <span id="legend-memberedge">Member of collective</span>
           </div>
         </div>
         <svg
