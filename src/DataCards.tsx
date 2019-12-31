@@ -115,7 +115,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   }
 
   handleNameClicked(targetID: string) {
-    console.log("clicked", targetID, this.props);
     ReactGA.event({
       category: "NameClicked",
       action: "User clicked on a name within the data card"

@@ -5,72 +5,55 @@ import { checkNoRelations, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import * as d3 from "d3";
 import dagreD3 from "dagre-d3";
+import { zoom } from "d3-zoom";
 
 class EntityGraph extends React.Component {
   // For Refs, see: https://stackoverflow.com/questions/33796267/how-to-use-refs-in-react-with-typescript
   // For general setup, see: https://stackoverflow.com/questions/32292622/react-component-with-dagre-d3-not-drawing-correctly/32293469#32293469
   // For findDOMNode in Typescript, see: https://stackoverflow.com/questions/32480321/using-react-finddomnode-in-typescript
   // How to use DagreJS https://dagrejs.github.io/project/dagre-d3/latest/demo/interactive-demo.html
+  // Zooming: https://jsfiddle.net/xa9rofm5/10/
 
   constructor(props) {
     super(props);
     this.handleClickedNode = this.handleClickedNode.bind(this);
   }
-  componentDidMount() {
-    if (!checkNoRelations(this.props.relationships)) {
-      let g = getGraph(1, this.props.id, this.props.relationships);
-      console.log("Final connections found", g);
-      var render = new dagreD3.render();
-      let svg = d3.select(this.nodeTree);
-      render(d3.select(this.nodeTreeGroup), g);
-      svg.attr("height", g.graph().height + 40);
-    }
-  }
 
   componentDidUpdate() {
-    /* d3.select(this.state.ref)
-      .append("circle")
-      .attr("r", 5)
-      .attr("cx", "500px")
-      .attr("cy", "500px")
-      .attr("fill", "red"); */
-
     // Return the graph with populated nodes
     if (!checkNoRelations(this.props.relationships)) {
       let g = getGraph(1, this.props.id, this.props.relationships);
-      console.log("Final connections found", g.edges());
-
-      /*
-      // Create the renderer
-      var renderer = new dagreD3.render();
-
-      // Set up an SVG group so that we can translate the final graph.
-      var svg = d3.select("svg"),
-        svgGroup = svg.append("g");
-
-      //Run the renderer, draw the final graph
-      renderer(d3.select("svg g"), g);
-      */
-
-      // Create the renderer
-      var render = new dagreD3.render();
 
       // Set up an SVG group so that we can translate the final graph.
       let svg = d3.select(this.nodeTree);
+      let inner = d3.select(this.nodeTreeGroup);
 
-      /* var svg = d3.select(ReactDOM.findDOMNode(this.nodeTreeRef));
-      var svgGroup = d3.select(ReactDOM.findDOMNode(this.nodeTreeGroupRef)); */
+      // Set up zoom support
+      var zoom = d3.zoom().on("zoom", function() {
+        inner.attr("transform", d3.event.transform);
+      });
+      svg.call(zoom);
 
       // Run the renderer. This is what draws the final graph.
-      render(d3.select(this.nodeTreeGroup), g);
+      var render = new dagreD3.render();
+      render(inner, g);
 
       // Center the graph
-      // var xCenterOffset = 10; // svg.attr("width") - g.graph().width) / 2;
-      // svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
+      var initialScale = 0.3;
+      console.log("width", svg.attr("viewBox"));
+      svg.call(
+        zoom.transform,
+        d3.zoomIdentity
+          .translate(
+            (svg.attr("viewBox").split(" ")[2] -
+              g.graph().width * initialScale) /
+              2,
+            20
+          )
+          .scale(initialScale)
+      );
 
-      svg.attr("height", g.graph().height + 40);
-
-      console.log("first", this.props);
+      svg.attr("height", g.graph().height * initialScale + 40);
 
       var nodeSelected = svg.selectAll("g.node");
       nodeSelected.on("click", this.handleClickedNode);
@@ -112,15 +95,21 @@ class EntityGraph extends React.Component {
       </div> */
 
       <div
-        style={{ maxWidth: "100%", maxHeight: "20rem", textAlign: "center" }}
+        style={{
+          maxWidth: "80%",
+          maxHeight: "20rem",
+          padding: "1rem 7rem 1rem 7rem"
+        }}
       >
         <svg
           id="nodeTree"
           ref={ref => {
             this.nodeTree = ref;
           }}
-          width="150%"
-          height="1000"
+          // width="80%"
+          // height"1000"
+          viewBox="0 0 800 500"
+          style={{ border: "1px solid black", marginBottom: "2rem" }}
         >
           <g
             ref={r => {
