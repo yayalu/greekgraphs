@@ -245,11 +245,13 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             )}
             <span style={{ textDecoration: "underline" }}>{entity.target}</span>
           </div>
-          {showPassage
-            ? entity.passage.map(passage => {
-                return this.getPassageLink(passage);
-              })
-            : ""}
+          {showPassage ? (
+            entity.passage.map(passage => {
+              return this.getPassageLink(passage);
+            })
+          ) : (
+            <span style={{ paddingRight: "10rem" }}></span>
+          )}
         </span>
       );
     }

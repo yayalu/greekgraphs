@@ -73,10 +73,6 @@ class EntityGraph extends React.Component {
       console.log("first", this.props);
 
       var nodeSelected = svg.selectAll("g.node");
-      /* nodeSelected.each(
-        this.handleClickedNode
-      ); 
-      */
       nodeSelected.on("click", this.handleClickedNode);
     }
   }
