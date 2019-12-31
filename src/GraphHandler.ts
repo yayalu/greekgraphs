@@ -58,7 +58,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id); //, { k: "mother" });
+      g.setEdge(r.targetID, id, { label: "mother", style: "stroke: red" });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
   }
@@ -72,7 +72,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id); //, { k: "father" });
+      g.setEdge(r.targetID, id, { label: "father", style: "stroke: blue" });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
   }
@@ -89,7 +89,9 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id); //, { k: "sibling" });
+      g.setEdge(r.targetID, id, { label: "sibling", style: "stroke: green" });
+      g.setEdge(relationships.MOTHERS[0].targetID, r.targetID);
+      g.setEdge(relationships.FATHERS[0].targetID, r.targetID);
     }
   }
 
@@ -102,7 +104,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id); //, { k: "wife" });
+      g.setEdge(r.targetID, id, { label: "wife", style: "stroke: grey" });
     }
   }
 
@@ -115,7 +117,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id); //, { k: "husband" });
+      g.setEdge(r.targetID, id, { label: "husband", style: "stroke: grey" });
     }
   }
 
@@ -123,13 +125,38 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
     for (let i = 0; i < relationships.CHILDREN.length; i++) {
       let r = relationships.CHILDREN[i].child;
       for (let j = 0; j < r.length; j++) {
-        g.setNode(r[j].targetID, {
-          label: r[j].target,
-          width: 144,
-          height: 100,
-          shape: "ellipse"
-        });
-        g.setEdge(r[j].targetID, id); //, { k: "child" });
+        if (
+          entities[r[j].targetID] &&
+          entities[r[j].targetID]["Type of entity"] === "Agent"
+        ) {
+          g.setNode(r[j].targetID, {
+            label: r[j].target,
+            width: 144,
+            height: 100,
+            shape: "ellipse"
+          });
+          g.setEdge(id, r[j].targetID, {
+            label: "child",
+            style: "stroke: yellow"
+          });
+        } else if (
+          entities[r[j].targetID] &&
+          (entities[r[j].targetID]["Type of entity"] === "Collective (misc.)" ||
+            entities[r[j].targetID]["Type of entity"] ===
+              "Collective (genealogical)")
+        ) {
+          g.setNode(r[j].targetID, {
+            label: r[j].target,
+            width: 144,
+            height: 100,
+            shape: "ellipse",
+            style: "stroke: red"
+          });
+          g.setEdge(id, r[j].targetID, {
+            label: "child",
+            style: "stroke: yellow"
+          });
+        }
       }
     }
   }

@@ -10,6 +10,7 @@ class EntityGraph extends React.Component {
   // For Refs, see: https://stackoverflow.com/questions/33796267/how-to-use-refs-in-react-with-typescript
   // For general setup, see: https://stackoverflow.com/questions/32292622/react-component-with-dagre-d3-not-drawing-correctly/32293469#32293469
   // For findDOMNode in Typescript, see: https://stackoverflow.com/questions/32480321/using-react-finddomnode-in-typescript
+  // How to use DagreJS https://dagrejs.github.io/project/dagre-d3/latest/demo/interactive-demo.html
 
   componentDidMount() {
     if (!checkNoRelations(this.props.relationships)) {
