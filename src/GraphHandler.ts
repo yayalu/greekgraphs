@@ -104,7 +104,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, { label: "wife", style: "stroke: grey" });
+      g.setEdge(r.targetID, id, { label: "wife", style: "stroke: black" });
     }
   }
 
@@ -117,10 +117,11 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, { label: "husband", style: "stroke: grey" });
+      g.setEdge(r.targetID, id, { label: "husband", style: "stroke: black" });
     }
   }
 
+  // Add nodes for children, and add links for other parents of children (aka. mistresses but not spouses)
   if (relationships.CHILDREN && relationships.CHILDREN.length !== 0) {
     for (let i = 0; i < relationships.CHILDREN.length; i++) {
       let r = relationships.CHILDREN[i].child;
@@ -157,6 +158,16 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
             style: "stroke: yellow"
           });
         }
+        g.setNode(relationships.CHILDREN[i].otherParentID, {
+          label: getName(entities[relationships.CHILDREN[i].otherParentID]),
+          width: 144,
+          height: 100,
+          shape: "ellipse"
+        });
+        g.setEdge(relationships.CHILDREN[i].otherParentID, r[j].targetID, {
+          label: "other parent",
+          style: "stroke: grey"
+        });
       }
     }
   }
