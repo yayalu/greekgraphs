@@ -853,6 +853,10 @@ export const checkNoRelations = (relationships: any) => {
   );
 };
 
+export const checkNoMembers = (members: any) => {
+  return !members || members.length === 0;
+};
+
 /******************************************************************************************/
 /* Return all alternative names for entity (used in DataCards.tsx)                        */
 /******************************************************************************************/

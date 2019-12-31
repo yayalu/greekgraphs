@@ -1,5 +1,10 @@
 import entities from "./data/entities.json";
-import { updateComponent, getName } from "./DataCardHandler";
+import {
+  updateComponent,
+  getName,
+  checkNoMembers,
+  checkNoRelations
+} from "./DataCardHandler";
 import "./EntityGraph.scss";
 
 /*
@@ -15,12 +20,15 @@ export type relationshipInfo = {
 
 */
 
-export const getGraph = (depth: number, id: string, relationships: any) => {
+export const getGraph = (
+  depth: number,
+  id: string,
+  relationships: any,
+  members: any[]
+) => {
   // ignores initial empty relationship graph generation
   // Generate all connections in GraphLib form
   var dagreD3 = require("dagre-d3");
-  // let Graph = require("@dagrejs/graphlib").Graph;
-  // var g = new Graph({ directed: true, multigraph: true, compound: true });
 
   // Establish the graph and set the graph's name
   let g = new dagreD3.graphlib.Graph().setGraph({
@@ -30,8 +38,16 @@ export const getGraph = (depth: number, id: string, relationships: any) => {
     return {};
   });
 
-  getAllLinks(g, depth, id, relationships);
+  // Set main node
+  g.setNode(id, { label: getName(entities[id]), width: 144, height: 100 });
 
+  if (!checkNoRelations(relationships)) {
+    getAllRelationshipLinks(g, depth, id, relationships);
+  }
+  if (!checkNoMembers(members)) {
+    // We do not consider depth here due to type of graph produced
+    getAllMemberLinks(g, id, members);
+  }
   /* TODO: How to address partners, e.g. fathers linked to mothers if have multiple fathers or multiple mothers */
 
   /*
@@ -46,9 +62,27 @@ export const getGraph = (depth: number, id: string, relationships: any) => {
   return g;
 };
 
-const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
-  g.setNode(id, { label: getName(entities[id]), width: 144, height: 100 });
+const getAllMemberLinks = (g: any, id: string, members: any[]) => {
+  for (let i = 0; i < members.length; i++) {
+    g.setNode(members[i].targetID, {
+      label: members[i].target,
+      width: 144,
+      height: 100,
+      shape: "ellipse"
+    });
+    g.setEdge(id, members[i].targetID, {
+      label: "member",
+      style: "stroke: grey; stroke-dasharray: 10,10; d: M5 40 l215 0;"
+    });
+  }
+};
 
+const getAllRelationshipLinks = (
+  g: any,
+  depth: number,
+  id: string,
+  relationships: any
+) => {
   if (relationships.MOTHERS && relationships.MOTHERS.length !== 0) {
     for (let i = 0; i < relationships.MOTHERS.length; i++) {
       let r = relationships.MOTHERS[i];
@@ -177,7 +211,7 @@ const getAllLinks = (g: any, depth: number, id: string, relationships: any) => {
     for (let i = 0; i < edges.length; i++) {
       // Does this actually update g?
       // Recursive call to getAllLinks()
-      getAllLinks(
+      getAllRelationshipLinks(
         g,
         depth - 1,
         edges[i].v,

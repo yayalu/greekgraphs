@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { getGraph } from "./GraphHandler";
-import { checkNoRelations, getName } from "./DataCardHandler";
+import { checkNoRelations, checkNoMembers, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import * as d3 from "d3";
 import dagreD3 from "dagre-d3";
@@ -11,7 +11,7 @@ class EntityGraph extends React.Component {
   // For Refs, see: https://stackoverflow.com/questions/33796267/how-to-use-refs-in-react-with-typescript
   // For general setup, see: https://stackoverflow.com/questions/32292622/react-component-with-dagre-d3-not-drawing-correctly/32293469#32293469
   // For findDOMNode in Typescript, see: https://stackoverflow.com/questions/32480321/using-react-finddomnode-in-typescript
-  // How to use DagreJS https://dagrejs.github.io/project/dagre-d3/latest/demo/interactive-demo.html
+  // How to use DagreJS https://dagrejs.github.io/project/dagre-d3/latest/demo/interactive-demo.html, https://github.com/dagrejs/graphlib/wiki/API-Reference
   // Zooming: https://jsfiddle.net/xa9rofm5/10/
 
   constructor(props) {
@@ -21,8 +21,16 @@ class EntityGraph extends React.Component {
 
   componentDidUpdate() {
     // Return the graph with populated nodes
-    if (!checkNoRelations(this.props.relationships)) {
-      let g = getGraph(1, this.props.id, this.props.relationships);
+    if (
+      !checkNoRelations(this.props.relationships) ||
+      !checkNoMembers(this.props.members)
+    ) {
+      let g = getGraph(
+        1,
+        this.props.id,
+        this.props.relationships,
+        this.props.members
+      );
 
       // Set up an SVG group so that we can translate the final graph.
       let svg = d3.select(this.nodeTree);
@@ -40,7 +48,6 @@ class EntityGraph extends React.Component {
 
       // Center the graph
       var initialScale = 0.3;
-      console.log("width", svg.attr("viewBox"));
       svg.call(
         zoom.transform,
         d3.zoomIdentity
@@ -54,6 +61,7 @@ class EntityGraph extends React.Component {
       );
 
       svg.attr("height", g.graph().height * initialScale + 40);
+      console.log("viewBox", svg.attr("viewBox"));
 
       var nodeSelected = svg.selectAll("g.node");
       nodeSelected.on("click", this.handleClickedNode);
