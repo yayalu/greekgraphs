@@ -4,12 +4,16 @@
 .node polygon {
   stroke: #333;
   fill: #fff;
-  stroke-width: 1.5px;
+  stroke-width: 2px;
+  &:hover {
+    stroke-width: 4px;
+    cursor: pointer;
+  }
 }
 
 .edgePath path {
   stroke: #333;
-  stroke-width: 1.5px;
+  stroke-width: 2px;
   fill: #ffffff00;
 }
 
@@ -56,7 +60,7 @@ svg {
 }
 
 #legend-disputededge {
-  border-bottom: 2px solid blue;
+  border-bottom: 2px dotted blue;
   padding: 1rem 1rem 0.2rem 1rem;
   margin: 3rem 1rem 3rem 1rem;
   font-size: 0.7rem;
@@ -70,7 +74,7 @@ svg {
 }
 
 #legend-memberedge {
-  border-bottom: 2px solid grey;
+  border-bottom: 2px dashed grey;
   padding: 1rem 1rem 0.2rem 1rem;
   margin: 3rem 1rem 3rem 1rem;
   font-size: 0.7rem;

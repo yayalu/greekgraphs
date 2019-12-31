@@ -72,7 +72,8 @@ const getAllMemberLinks = (g: any, id: string, members: any[]) => {
     });
     g.setEdge(id, members[i].targetID, {
       label: "member",
-      style: "stroke: grey; stroke-dasharray: 10,10; d: M5 40 l215 0;"
+      style:
+        "stroke: grey; stroke-width: 2px; stroke-dasharray: 10,10; d: M5 40 l215 0;"
     });
   }
 };
@@ -92,7 +93,10 @@ const getAllRelationshipLinks = (
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, { label: "mother", style: "stroke: red" });
+      g.setEdge(r.targetID, id, {
+        label: "mother",
+        style: "stroke: red; stroke-width: 2px;"
+      });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
   }
@@ -106,7 +110,10 @@ const getAllRelationshipLinks = (
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, { label: "father", style: "stroke: blue" });
+      g.setEdge(r.targetID, id, {
+        label: "father",
+        style: "stroke: blue; stroke-width: 2px;"
+      });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
   }
@@ -123,7 +130,10 @@ const getAllRelationshipLinks = (
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, { label: "sibling", style: "stroke: green" });
+      g.setEdge(r.targetID, id, {
+        label: "sibling",
+        style: "stroke: green; stroke-width: 2px;"
+      });
       g.setEdge(relationships.MOTHERS[0].targetID, r.targetID);
       g.setEdge(relationships.FATHERS[0].targetID, r.targetID);
     }
@@ -138,7 +148,10 @@ const getAllRelationshipLinks = (
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, { label: "wife", style: "stroke: black" });
+      g.setEdge(r.targetID, id, {
+        label: "wife",
+        style: "stroke: black; stroke-width: 2px;"
+      });
     }
   }
 
@@ -151,7 +164,10 @@ const getAllRelationshipLinks = (
         height: 100,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, { label: "husband", style: "stroke: black" });
+      g.setEdge(r.targetID, id, {
+        label: "husband",
+        style: "stroke: black; stroke-width: 2px;"
+      });
     }
   }
 
@@ -172,7 +188,7 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(id, r[j].targetID, {
             label: "child",
-            style: "stroke: orange"
+            style: "stroke: orange; stroke-width: 2px;"
           });
         } else if (
           entities[r[j].targetID] &&
@@ -189,7 +205,7 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(id, r[j].targetID, {
             label: "child",
-            style: "stroke: orange"
+            style: "stroke: orange; stroke-width: 2px;"
           });
         }
         g.setNode(relationships.CHILDREN[i].otherParentID, {
@@ -200,7 +216,7 @@ const getAllRelationshipLinks = (
         });
         g.setEdge(relationships.CHILDREN[i].otherParentID, r[j].targetID, {
           label: "other parent",
-          style: "stroke: black"
+          style: "stroke: black; stroke-width: 2px;"
         });
       }
     }
