@@ -483,8 +483,12 @@ const checkAndRemoveParentDuplicates = (
 ) => {
   // This function removes duplicates but also groups children by the "other" parent
   // returns childrenInfo object: {child: <list of associated children>, otherParentID}
+
+  // If the same child appears under two different "otherParent"s, then dispute is expressed
+  // The child will be under {child: <list of children>, otherParents: <list of all parents + disputed>}
   let parentDuplicate = false;
   let childDuplicate = false;
+
   children.forEach(c => {
     if (c.otherParentID === parentID) {
       parentDuplicate = true;
@@ -628,7 +632,6 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
       }
     });
   });
-  // TODO: FIX PARENTS NOT SHOWING UP
   return parentsGrouped;
 };
 
@@ -905,5 +908,24 @@ export const getName = (entityRow: any) => {
     ) {
       return entityRow[possibleNames[i]];
     }
+  }
+};
+
+/******************************************************************************************/
+/* Get the entity type                                                                    */
+/******************************************************************************************/
+export const getEntityType = (id: string) => {
+  if (entities[id]) {
+    if (entities[id]["Type of entity"] === "Collective (Episodic)") {
+      return "Collective (Episodic)";
+    } else if (entities[id]["Type of entity"] === "Collective (misc.)") {
+      return "Collective (Miscellaneous)";
+    } else if (entities[id]["Type of entity"] === "Collective (genealogical)") {
+      return "Collective (Genealogical)";
+    } else {
+      return "";
+    }
+  } else {
+    return "";
   }
 };

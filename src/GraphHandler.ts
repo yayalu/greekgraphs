@@ -31,7 +31,11 @@ export const getGraph = (
   var dagreD3 = require("dagre-d3");
 
   // Establish the graph and set the graph's name
-  let g = new dagreD3.graphlib.Graph().setGraph({
+  let g = new dagreD3.graphlib.Graph({
+    directed: true,
+    compound: true,
+    multigraph: true
+  }).setGraph({
     name: getName(entities[id]) + " relationships"
   });
   g.setDefaultEdgeLabel(function() {
@@ -39,7 +43,13 @@ export const getGraph = (
   });
 
   // Set main node
-  g.setNode(id, { label: getName(entities[id]), width: 144, height: 100 });
+  g.setNode(id, {
+    label: getName(entities[id]),
+    labelStyle: "font-size: 30px;",
+    width: 288,
+    height: 200,
+    shape: "ellipse"
+  });
 
   if (!checkNoRelations(relationships)) {
     getAllRelationshipLinks(g, depth, id, relationships);
@@ -84,18 +94,26 @@ const getAllRelationshipLinks = (
   id: string,
   relationships: any
 ) => {
+  // Makes the size of the nodes proportional to the depth
+  let width = 144 / depth;
+  let height = 100 / depth;
+
   if (relationships.MOTHERS && relationships.MOTHERS.length !== 0) {
     for (let i = 0; i < relationships.MOTHERS.length; i++) {
       let r = relationships.MOTHERS[i];
       g.setNode(r.targetID, {
         label: r.target,
-        width: 144,
-        height: 100,
+        width: width,
+        height: height,
         shape: "ellipse"
       });
+      var disputeStyle =
+        "stroke: blue; stroke-width: 2px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
+      var normalStyle = "stroke: black; stroke-width: 2px;";
       g.setEdge(r.targetID, id, {
         label: "mother",
-        style: "stroke: red; stroke-width: 2px;"
+        style: relationships.MOTHERS.length > 1 ? disputeStyle : normalStyle,
+        id: relationships.MOTHERS.length > 1 ? "mother" : "disputed mother"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
@@ -106,13 +124,17 @@ const getAllRelationshipLinks = (
       let r = relationships.FATHERS[i];
       g.setNode(r.targetID, {
         label: r.target,
-        width: 144,
-        height: 100,
+        width: width,
+        height: height,
         shape: "ellipse"
       });
+      var disputeStyle =
+        "stroke: blue; stroke-width: 2px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
+      var normalStyle = "stroke: black; stroke-width: 2px;";
       g.setEdge(r.targetID, id, {
         label: "father",
-        style: "stroke: blue; stroke-width: 2px;"
+        style: relationships.FATHERS.length > 1 ? disputeStyle : normalStyle,
+        id: relationships.FATHERS.length > 1 ? "father" : "disputed father"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
@@ -126,11 +148,11 @@ const getAllRelationshipLinks = (
       let r = relationships.SIBLINGS[i];
       g.setNode(r.targetID, {
         label: r.target,
-        width: 144,
-        height: 100,
+        width: width,
+        height: height,
         shape: "ellipse"
       });
-      g.setEdge(r.targetID, id, {
+      g.setEdge(id, r.targetID, {
         label: "sibling",
         style: "stroke: green; stroke-width: 2px;"
       });
@@ -144,8 +166,8 @@ const getAllRelationshipLinks = (
       let r = relationships.WIVES[i];
       g.setNode(r.targetID, {
         label: r.target,
-        width: 144,
-        height: 100,
+        width: width,
+        height: height,
         shape: "ellipse"
       });
       g.setEdge(r.targetID, id, {
@@ -160,8 +182,8 @@ const getAllRelationshipLinks = (
       let r = relationships.HUSBANDS[i];
       g.setNode(r.targetID, {
         label: r.target,
-        width: 144,
-        height: 100,
+        width: width,
+        height: height,
         shape: "ellipse"
       });
       g.setEdge(r.targetID, id, {
@@ -182,8 +204,8 @@ const getAllRelationshipLinks = (
         ) {
           g.setNode(r[j].targetID, {
             label: r[j].target,
-            width: 144,
-            height: 100,
+            width: width,
+            height: height,
             shape: "ellipse"
           });
           g.setEdge(id, r[j].targetID, {
@@ -198,8 +220,8 @@ const getAllRelationshipLinks = (
         ) {
           g.setNode(r[j].targetID, {
             label: r[j].target,
-            width: 144,
-            height: 100,
+            width: width,
+            height: height,
             shape: "ellipse",
             style: "stroke: red"
           });
@@ -210,8 +232,8 @@ const getAllRelationshipLinks = (
         }
         g.setNode(relationships.CHILDREN[i].otherParentID, {
           label: getName(entities[relationships.CHILDREN[i].otherParentID]),
-          width: 144,
-          height: 100,
+          width: width,
+          height: height,
           shape: "ellipse"
         });
         g.setEdge(relationships.CHILDREN[i].otherParentID, r[j].targetID, {

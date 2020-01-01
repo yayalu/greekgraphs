@@ -60,10 +60,19 @@ class EntityGraph extends React.Component {
       );
 
       svg.attr("height", g.graph().height * initialScale + 40);
-      console.log("viewBox", svg.attr("viewBox"));
 
+      /* Make all entity nodes clickable */
       var nodeSelected = svg.selectAll("g.node");
       nodeSelected.on("click", this.handleClickedNode);
+
+      /* Make disputed edges clickable */
+      var disputedEdgeSelected = svg
+        .selectAll("g.edge")
+        .attr("id", function(d) {
+          console.log(d);
+        });
+      console.log(disputedEdgeSelected);
+      // disputedEdgeSelected.on("click", console.log(disputedEdgeSelected));
     }
   }
 
@@ -85,9 +94,9 @@ class EntityGraph extends React.Component {
         <div style={{ marginBottom: "2rem" }}>
           <h2>Legend:</h2>
           <div style={{ marginBottom: "2rem", marginTop: "2rem" }}>
-            <span id="legend-mainnode">Main node</span>
-            <span id="legend-relationnode">Agent relationship node</span>
-            <span id="legend-collectivenode">Collective relationship node</span>
+            {/* <span id="legend-mainnode">Main node</span> */}
+            <span id="legend-relationnode">Agent node</span>
+            <span id="legend-collectivenode">Collective node</span>
           </div>
           <div style={{ marginBottom: "2rem" }}>
             <span id="legend-relationedge">Genealogical connection</span>

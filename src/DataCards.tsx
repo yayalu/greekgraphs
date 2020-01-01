@@ -12,7 +12,8 @@ import {
   checkNoRelations,
   getAlternativeNames,
   getGender,
-  getName
+  getName,
+  getEntityType
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
 
@@ -415,6 +416,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               border: "solid 1px black"
             }}
           >
+            <div style={{ textAlign: "center" }}>
+              {getEntityType(this.state.id)}
+            </div>
             <div id="datacard-heading">{this.state.name}</div>
             <div id="datacard-othernames">
               {getAlternativeNames(this.state.id)}
