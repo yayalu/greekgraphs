@@ -154,7 +154,8 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(id, r.targetID, {
         label: "sibling",
-        style: "stroke: green; stroke-width: 2px;"
+        style: "stroke: green; stroke-width: 2px;",
+        arrowhead: "undirected"
       });
       g.setEdge(relationships.MOTHERS[0].targetID, r.targetID);
       g.setEdge(relationships.FATHERS[0].targetID, r.targetID);
@@ -172,7 +173,8 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "wife",
-        style: "stroke: black; stroke-width: 2px;"
+        style: "stroke: black; stroke-width: 2px;",
+        arrowhead: "undirected"
       });
     }
   }
@@ -188,7 +190,8 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "husband",
-        style: "stroke: black; stroke-width: 2px;"
+        style: "stroke: black; stroke-width: 2px;",
+        arrowhead: "undirected"
       });
     }
   }
