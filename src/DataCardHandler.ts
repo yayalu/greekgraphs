@@ -724,7 +724,6 @@ const reversedVerb = (verb: string, dirObject: string) => {
 
   // TODO: Deal with IS MEMBER OF verb here.
   else if (verb === "is member of" || verb === "is part of") {
-    // console.log("Trying to reverse", dirObject, "is member of");
     return "";
   } else {
     console.log(

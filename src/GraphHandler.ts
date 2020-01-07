@@ -150,11 +150,15 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(id, r.targetID, {
         label: "sibling",
-        style: "stroke: green; stroke-width: 2px;",
+        style: "stroke: black; stroke-width: 2px;",
         arrowhead: "undirected"
       });
-      g.setEdge(relationships.MOTHERS[0].targetID, r.targetID);
-      g.setEdge(relationships.FATHERS[0].targetID, r.targetID);
+      if (relationships.MOTHERS[0]) {
+        g.setEdge(relationships.MOTHERS[0].targetID, r.targetID);
+      }
+      if (relationships.FATHERS[0]) {
+        g.setEdge(relationships.FATHERS[0].targetID, r.targetID);
+      }
     }
   }
 
@@ -209,7 +213,7 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(id, r[j].targetID, {
             label: "child",
-            style: "stroke: orange; stroke-width: 2px;"
+            style: "stroke: black; stroke-width: 2px;"
           });
         } else if (
           entities[r[j].targetID] &&
@@ -226,7 +230,7 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(id, r[j].targetID, {
             label: "child",
-            style: "stroke: orange; stroke-width: 2px;"
+            style: "stroke: black; stroke-width: 2px;"
           });
         }
         g.setNode(relationships.CHILDREN[i].otherParentID, {

@@ -140,9 +140,7 @@ class Search extends React.Component<SearchProps, SearchState> {
           <datalist id="entities" style={{ maxHeight: "100px" }}>
             {Object.values(entities).map(entity => {
               return (
-                <option
-                  value={this.getDescriptors(entity["\ufeffID"])}
-                ></option>
+                <option value={this.getDescriptors(entity["ID"])}></option>
               );
             })}
           </datalist>
