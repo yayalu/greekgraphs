@@ -14,3 +14,16 @@ Object.values(entities).forEach(function(entity) {
   }
 });
 // console.log(allRelationshipData);
+
+var fs = require("fs");
+fs.writeFile(
+  "../data/relationships.json",
+  JSON.stringify(allRelationshipData, null, 4),
+  err => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log("Relationships.json file has been created");
+  }
+);
