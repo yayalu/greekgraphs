@@ -1,5 +1,6 @@
 var ties = require("./data/ties.json");
 var entities = require("./data/entities.json");
+var relationships = require("./data/relationships.json");
 
 type passageInfo = {
   start: string;
@@ -20,7 +21,7 @@ type entityInfo = {
 
 type childrenInfo = {
   child: entityInfo[];
-  otherParentID: string;
+  otherParentIDs: string[];
   divineParentID?: string;
 };
 
@@ -454,7 +455,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
 
   // Currently very inefficient, but finds the other parent of the child
   relationships.CHILDREN = getOtherParents(id, childrenTemp);
-  relationships.CHILDREN = alphabetizeChildren(relationships.CHILDREN);
+  // relationships.CHILDREN = alphabetizeChildren(relationships.CHILDREN);
 
   /* Return alphabetized, complete list of relationships */
   let connection: returningInfo = {
@@ -501,20 +502,44 @@ const checkAndRemoveDuplicates = (entities: any[], d: entityInfo) => {
 };
 
 const checkAndRemoveParentDuplicates = (
-  parentID: string, //parent
-  newChild: entityInfo, //child entity info
-  children: childrenInfo[] //parentsGrouped - existing parents list
+  child: entityInfo, //child to add
+  parentsList: string[], //list of child's parents
+  parentsGrouped: childrenInfo[] //existing parents list to update
 ) => {
   // This function removes duplicates but also groups children by the "other" parent
-  // returns childrenInfo object: {child: <list of associated children>, otherParentID}
+  // returns childrenInfo object: {child: <list of associated children>, otherParentIDs}
 
   // If the same child appears under two different "otherParent"s, then dispute is expressed
   // The child will be under {child: <list of children>, otherParents: <list of all parents + disputed>}
   let parentDuplicate = false;
   let childDuplicate = false;
 
-  children.forEach(c => {
-    if (c.otherParentID === parentID) {
+  for (let i = 0; i < parentsGrouped.length; i++) {
+    if (isEqual(parentsList, parentsGrouped[i])) {
+      // Is parent duplicate. Now check if child is already in list.
+      parentDuplicate = true;
+      parentsGrouped[i].child.forEach(c => {
+        if (c.targetID === child.targetID) {
+          childDuplicate = true;
+        }
+      });
+      if (!childDuplicate) {
+        parentsGrouped[i].child.push(child);
+      }
+    }
+  }
+
+  if (!childDuplicate && !parentDuplicate) {
+    let newChild: childrenInfo = {
+      child: [child],
+      otherParentIDs: parentsList
+    };
+    parentsGrouped.push(newChild);
+  }
+
+  return parentsGrouped;
+  /* children.forEach(c => {
+    if (c.otherParentIDs === parents) {
       parentDuplicate = true;
       for (let i = 0; i < c.child.length; i++) {
         if (c.child[i].targetID === newChild.targetID) {
@@ -527,10 +552,10 @@ const checkAndRemoveParentDuplicates = (
     }
   });
   if (!parentDuplicate) {
-    children.push({ child: [newChild], otherParentID: parentID });
+    children.push({ child: [newChild], otherParentIDs: parentID });
   }
 
-  return children;
+  return children; */
 };
 
 /******************************************************************************************/
@@ -549,7 +574,20 @@ const alphabetize = (relation: any[]) => {
   return relation;
 };
 
-const alphabetizeChildren = (relation: childrenInfo[]) => {
+const alphabetizeIDs = (relation: any[]) => {
+  if (relation.length === 0) {
+    return [];
+  } else {
+    relation.sort(function(a, b) {
+      var relationA = a.targetID;
+      var relationB = b.targetID;
+      return relationA < relationB ? -1 : relationA > relationB ? 1 : 0;
+    });
+  }
+  return relation;
+};
+
+/* const alphabetizeChildren = (relation: childrenInfo[]) => {
   if (relation.length === 0) {
     return [];
   } else {
@@ -557,22 +595,57 @@ const alphabetizeChildren = (relation: childrenInfo[]) => {
       r.child = alphabetize(r.child);
     });
     relation.sort(function(a, b) {
-      var relationA = getName(entities[a.otherParentID]);
-      var relationB = getName(entities[b.otherParentID]);
+      var relationA = getName(entities[a.otherParentIDs]);
+      var relationB = getName(entities[b.otherParentIDs]);
       return relationA < relationB ? -1 : relationA > relationB ? 1 : 0;
     });
   }
   return relation;
+}; */
+
+/******************************************************************************************/
+/* Check if two arrays are equal                                                          */
+/******************************************************************************************/
+const isEqual = (parentsList: any[], child: childrenInfo) => {
+  if (parentsList.length !== child.otherParentIDs.length) {
+    return false;
+  } else {
+    for (let i = 0; i < parentsList.length; i++) {
+      if (parentsList[i] !== child.otherParentIDs[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 };
 
 /******************************************************************************************/
-/* TODO: Fix this very VERY inefficient method of finding the other parent                */
+/* TODO: Fix this very VERY inefficient method of finding the other parent.               */
+/* Swap for shared NodegoatID                                                             */
 /******************************************************************************************/
 const getOtherParents = (id: string, children: entityInfo[]) => {
   let mainGender = getGender(id);
   let parentsGrouped: childrenInfo[] = [];
   children.forEach(c => {
-    Object.values(ties).forEach(function(tieRow) {
+    var parentsList;
+    if (mainGender === "Female") {
+      parentsList = JSON.parse(relationships[c.targetID]).relationships.FATHERS;
+    } else {
+      //temporary solution to undefined gender
+      parentsList = JSON.parse(relationships[c.targetID]).relationships.MOTHERS;
+    }
+    // Convert list of entityInfo to a list of IDs
+    for (let i = 0; i < parentsList.length; i++) {
+      parentsList[i] = parentsList[i].targetID;
+    }
+    parentsList = alphabetizeIDs(parentsList);
+    parentsGrouped = checkAndRemoveParentDuplicates(
+      c,
+      parentsList,
+      parentsGrouped
+    );
+
+    /* Object.values(ties).forEach(function(tieRow) {
       // Attempting to fix child of Crete issue
       if (typeof tieRow !== "object" || tieRow === null) {
       } else {
@@ -659,7 +732,7 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
           }
         }
       }
-    });
+    }); */
   });
   return parentsGrouped;
 };

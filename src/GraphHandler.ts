@@ -94,6 +94,11 @@ const getAllRelationshipLinks = (
   let width = 144 / depth;
   let height = 100 / depth;
 
+  // Set edge styles
+  var disputeEdge =
+    "stroke: blue; stroke-width: 2px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
+  var normalEdge = "stroke: black; stroke-width: 2px;";
+
   if (relationships.MOTHERS && relationships.MOTHERS.length !== 0) {
     for (let i = 0; i < relationships.MOTHERS.length; i++) {
       let r = relationships.MOTHERS[i];
@@ -103,13 +108,10 @@ const getAllRelationshipLinks = (
         height: height,
         shape: "ellipse"
       });
-      var disputeStyle =
-        "stroke: blue; stroke-width: 2px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
-      var normalStyle = "stroke: black; stroke-width: 2px;";
       g.setEdge(r.targetID, id, {
         label: "mother",
-        style: relationships.MOTHERS.length > 1 ? disputeStyle : normalStyle,
-        id: relationships.MOTHERS.length > 1 ? "mother" : "disputed mother"
+        style: relationships.MOTHERS.length > 1 ? disputeEdge : normalEdge,
+        id: relationships.MOTHERS.length > 1 ? "mother" : "dispute mother"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
@@ -124,13 +126,10 @@ const getAllRelationshipLinks = (
         height: height,
         shape: "ellipse"
       });
-      var disputeStyle =
-        "stroke: blue; stroke-width: 2px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
-      var normalStyle = "stroke: black; stroke-width: 2px;";
       g.setEdge(r.targetID, id, {
         label: "father",
-        style: relationships.FATHERS.length > 1 ? disputeStyle : normalStyle,
-        id: relationships.FATHERS.length > 1 ? "father" : "disputed father"
+        style: relationships.FATHERS.length > 1 ? disputeEdge : normalEdge,
+        id: relationships.FATHERS.length > 1 ? "father" : "dispute father"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }

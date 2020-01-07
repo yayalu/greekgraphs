@@ -72,7 +72,7 @@ class EntityGraph extends React.Component {
         .attr("id", function(d) {
           console.log(d);
         });
-      console.log(disputedEdgeSelected);
+      // console.log(disputedEdgeSelected);
       // disputedEdgeSelected.on("click", console.log(disputedEdgeSelected));
     }
   }

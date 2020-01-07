@@ -359,7 +359,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else {
       //Substitute with ID
       let newState = JSON.parse(relationships[id]);
-      console.log(newState);
       this.setState({
         id: newState.id,
         relationships: newState.relationships,
