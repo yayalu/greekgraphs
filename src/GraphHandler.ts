@@ -1,10 +1,6 @@
 import entities from "./data/entities.json";
-import {
-  updateComponent,
-  getName,
-  checkNoMembers,
-  checkNoRelations
-} from "./DataCardHandler";
+import { getName, checkNoMembers, checkNoRelations } from "./DataCardHandler";
+import relationships from "./data/relationships.json";
 import "./EntityGraph.scss";
 
 /*
@@ -256,7 +252,7 @@ const getAllRelationshipLinks = (
         g,
         depth - 1,
         edges[i].v,
-        updateComponent(edges[i].v).relationships
+        JSON.parse(relationships[edges[i].v]).relationships
       );
     }
   }

@@ -3,12 +3,12 @@ import "./App.css";
 import "./DataCards.scss";
 import queryString from "querystring";
 import passages from "./data/passages.json";
+import relationships from "./data/relationships.json";
 import EntityGraph from "./EntityGraph.jsx";
 import ReactGA from "react-ga";
 import entities from "./data/entities.json";
 import {
   relationshipInfo,
-  updateComponent,
   checkNoRelations,
   getAlternativeNames,
   getGender,
@@ -358,7 +358,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       this.setState({ validSearch: false });
     } else {
       //Substitute with ID
-      let newState = updateComponent(id);
+      let newState = JSON.parse(relationships[id]);
+      console.log(typeof newState + "\n\n");
       this.setState({
         id: newState.id,
         relationships: newState.relationships,
@@ -380,8 +381,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       this.setState({ validSearch: false });
     } else if (this.state.id !== id) {
       //Substitute with ID
-      // this.updateComponent(this.state.id);
-      let newState = updateComponent(id);
+      let newState = JSON.parse(relationships[id]);
       this.setState({
         id: newState.id,
         relationships: newState.relationships,

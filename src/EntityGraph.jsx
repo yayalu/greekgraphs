@@ -3,6 +3,7 @@ import "./App.css";
 import { getGraph } from "./GraphHandler";
 import { checkNoRelations, checkNoMembers, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
+import relationships from "./data/relationships.json";
 import * as d3 from "d3";
 import dagreD3 from "dagre-d3";
 
