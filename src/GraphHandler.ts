@@ -240,7 +240,7 @@ const getAllRelationshipLinks = (
             shape: "ellipse"
           });
           g.setEdge(p[k], r[j].targetID, {
-            label: "disputed other parent",
+            label: "dispute\nother parent",
             style: p.length > 1 ? disputeEdge : normalEdge,
             id: p.length > 1 ? "dispute otherparent" : "otherparent"
           });
