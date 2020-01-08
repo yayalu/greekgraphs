@@ -16,6 +16,7 @@ import {
   getEntityType
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
+import { tickIncrement } from "d3";
 
 type DatumProps = {
   location: {
@@ -216,16 +217,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           <div className="entity-child-grouping">
             {that.getChildParentGrouped(entity)}
           </div>
-          <div className="entity-parent-grouping">
-            with{" "}
-            <span
-              className="entity-child-button"
-              style={{ margin: 0 }}
-              onClick={() => this.handleNameClicked(entity.otherParentID)}
-            >
-              {getName(entities[entity.otherParentID])}
-            </span>
-          </div>
+          {that.getOtherParentText(entity.otherParentIDs)}
         </div>
       );
     } else {
@@ -268,6 +260,34 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         </div>
       );
     });
+  }
+
+  getOtherParentText(otherParentIDs: any[]) {
+    if (otherParentIDs.length === 0) {
+      return <div className="entity-parent-grouping">with undefined</div>;
+    } else {
+      return (
+        <div className="entity-parent-grouping">
+          with{" "}
+          {otherParentIDs.map(pID => {
+            return (
+              <span>
+                <span
+                  className="entity-child-button"
+                  style={{ margin: 0 }}
+                  onClick={() => this.handleNameClicked(pID)}
+                >
+                  {getName(entities[pID])}
+                </span>
+                {otherParentIDs.indexOf(pID) === otherParentIDs.length - 1
+                  ? ""
+                  : " OR "}
+              </span>
+            );
+          })}
+        </div>
+      );
+    }
   }
 
   getCollectiveMembers() {
