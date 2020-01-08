@@ -538,24 +538,6 @@ const checkAndRemoveParentDuplicates = (
   }
 
   return parentsGrouped;
-  /* children.forEach(c => {
-    if (c.otherParentIDs === parents) {
-      parentDuplicate = true;
-      for (let i = 0; i < c.child.length; i++) {
-        if (c.child[i].targetID === newChild.targetID) {
-          childDuplicate = true;
-        }
-      }
-      if (!childDuplicate) {
-        c.child.push(newChild);
-      }
-    }
-  });
-  if (!parentDuplicate) {
-    children.push({ child: [newChild], otherParentIDs: parentID });
-  }
-
-  return children; */
 };
 
 /******************************************************************************************/
@@ -586,22 +568,6 @@ const alphabetizeIDs = (relation: any[]) => {
   }
   return relation;
 };
-
-/* const alphabetizeChildren = (relation: childrenInfo[]) => {
-  if (relation.length === 0) {
-    return [];
-  } else {
-    relation.forEach(r => {
-      r.child = alphabetize(r.child);
-    });
-    relation.sort(function(a, b) {
-      var relationA = getName(entities[a.otherParentIDs]);
-      var relationB = getName(entities[b.otherParentIDs]);
-      return relationA < relationB ? -1 : relationA > relationB ? 1 : 0;
-    });
-  }
-  return relation;
-}; */
 
 /******************************************************************************************/
 /* Check if two arrays are equal                                                          */
@@ -644,95 +610,6 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
       parentsList,
       parentsGrouped
     );
-
-    /* Object.values(ties).forEach(function(tieRow) {
-      // Attempting to fix child of Crete issue
-      if (typeof tieRow !== "object" || tieRow === null) {
-      } else {
-        if (tieRow["Direct Object ID"] !== "8188818") {
-          // rudimentary solution for entities causing errors
-          if (mainGender === "Female") {
-            // Y is CHILD of Z, where Y is child of X and X != Z
-            if (
-              tieRow["Subject ID"] === c.targetID &&
-              tieRow["Verb"] === "is child of" &&
-              tieRow["Direct Object ID"] !== id
-            ) {
-              if (
-                entities[tieRow["Direct Object ID"]] &&
-                getGender(tieRow["Direct Object ID"]) === "Male" &&
-                entities[tieRow["Direct Object ID"]]["Type of entity"] ===
-                  "Agent"
-              ) {
-                parentsGrouped = checkAndRemoveParentDuplicates(
-                  tieRow["Direct Object ID"],
-                  c,
-                  parentsGrouped
-                );
-              }
-            }
-            // Z is FATHER of Y, where Y is child of X and X != Z
-            else if (
-              tieRow["Direct Object ID"] === c.targetID &&
-              tieRow["Verb"] === "is father of" &&
-              tieRow["Subject ID"] !== id
-            ) {
-              if (
-                entities[tieRow["Subject ID"]] &&
-                getGender(tieRow["Subject ID"]) === "Male" &&
-                entities[tieRow["Subject ID"]]["Type of entity"] === "Agent"
-              ) {
-                parentsGrouped = checkAndRemoveParentDuplicates(
-                  tieRow["Subject ID"],
-                  c,
-                  parentsGrouped
-                );
-              }
-            }
-          }
-          // rudimentary solution for entities causing errors
-          if (mainGender === "Male") {
-            // Y is CHILD of Z, where Y is child of X and X != Z
-            if (
-              tieRow["Subject ID"] === c.targetID &&
-              tieRow["Verb"] === "is child of" &&
-              tieRow["Direct Object ID"] !== id
-            ) {
-              if (
-                entities[tieRow["Direct Object ID"]] &&
-                getGender(tieRow["Direct Object ID"]) === "Female" &&
-                entities[tieRow["Direct Object ID"]]["Type of entity"] ===
-                  "Agent"
-              ) {
-                parentsGrouped = checkAndRemoveParentDuplicates(
-                  tieRow["Direct Object ID"],
-                  c,
-                  parentsGrouped
-                );
-              }
-            }
-            // Z is MOTHER of Y, where Y is child of X and X != Z
-            else if (
-              tieRow["Direct Object ID"] === c.targetID &&
-              tieRow["Verb"] === "is mother of" &&
-              tieRow["Subject ID"] !== id
-            ) {
-              if (
-                entities[tieRow["Subject ID"]] &&
-                getGender(tieRow["Subject ID"]) === "Female" &&
-                entities[tieRow["Subject ID"]]["Type of entity"] === "Agent"
-              ) {
-                parentsGrouped = checkAndRemoveParentDuplicates(
-                  tieRow["Subject ID"],
-                  c,
-                  parentsGrouped
-                );
-              }
-            }
-          }
-        }
-      }
-    }); */
   });
   return parentsGrouped;
 };

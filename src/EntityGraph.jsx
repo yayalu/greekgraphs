@@ -67,13 +67,12 @@ class EntityGraph extends React.Component {
       nodeSelected.on("click", this.handleClickedNode);
 
       /* Make disputed edges clickable */
-      var disputedEdgeSelected = svg
-        .selectAll("g.edge")
-        .attr("id", function(d) {
-          console.log(d);
-        });
+      var disputedEdgeSelected = svg.selectAll("g.edge");
+      /* .attr("id", function(d) {
+          d.split(" ")[0] === "dispute";
+        }); */
       // console.log(disputedEdgeSelected);
-      // disputedEdgeSelected.on("click", console.log(disputedEdgeSelected));
+      disputedEdgeSelected.on("click", console.log(disputedEdgeSelected));
     }
   }
 

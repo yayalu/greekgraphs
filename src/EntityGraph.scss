@@ -1,7 +1,4 @@
-.node rect,
-.node circle,
-.node ellipse,
-.node polygon {
+.node ellipse {
   stroke: #333;
   fill: #fff;
   stroke-width: 2px;
@@ -15,6 +12,10 @@
   stroke: #333;
   stroke-width: 2px;
   fill: #ffffff00;
+  &:hover {
+    stroke-width: 4px;
+    cursor: pointer;
+  }
 }
 
 body {
