@@ -9,11 +9,32 @@
 }
 
 .edgePath path {
-  stroke: #333;
+  stroke: #000000;
   stroke-width: 2px;
   fill: #ffffff00;
+}
+
+.memberEdge path {
+  stroke: grey;
+  stroke-width: 2px;
+  stroke-dasharray: 10, 10;
+}
+
+.disputedEdge path {
+  stroke: blue;
+  stroke-width: 3px;
+  stroke-dasharray: 10, 10;
   &:hover {
-    stroke-width: 4px;
+    stroke-width: 6px;
+    cursor: pointer;
+  }
+}
+
+.unusualEdge path {
+  stroke: red;
+  stroke-width: 3px;
+  &:hover {
+    stroke-width: 6px;
     cursor: pointer;
   }
 }
@@ -79,4 +100,14 @@ svg {
   padding: 1rem 1rem 0.2rem 1rem;
   margin: 3rem 1rem 3rem 1rem;
   font-size: 0.7rem;
+}
+
+.no-display {
+  display: none;
+}
+.info-page-border {
+  border: solid 1px red;
+  margin: 1rem 6rem 3rem;
+  padding: 3rem;
+  display: flow-root;
 }

@@ -518,11 +518,11 @@ const checkAndRemoveParentDuplicates = (
     if (isEqual(parentsList, parentsGrouped[i])) {
       // Is parent duplicate. Now check if child is already in list.
       parentDuplicate = true;
-      parentsGrouped[i].child.forEach(c => {
-        if (c.targetID === child.targetID) {
+      for (let j = 0; j < parentsGrouped[i].child.length; j++) {
+        if (parentsGrouped[i].child[j].targetID === child.targetID) {
           childDuplicate = true;
         }
-      });
+      }
       if (!childDuplicate) {
         parentsGrouped[i].child.push(child);
       }

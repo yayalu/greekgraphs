@@ -3,7 +3,6 @@ import "./App.css";
 import { getGraph } from "./GraphHandler";
 import { checkNoRelations, checkNoMembers, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
-import relationships from "./data/relationships.json";
 import * as d3 from "d3";
 import dagreD3 from "dagre-d3";
 
@@ -16,7 +15,11 @@ class EntityGraph extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      openInfoPage: { showDisputePage: false, showUnusualPage: false }
+    };
     this.handleClickedNode = this.handleClickedNode.bind(this);
+    this.handleClickedEdge = this.handleClickedEdge.bind(this);
   }
 
   componentDidUpdate() {
@@ -60,24 +63,38 @@ class EntityGraph extends React.Component {
           .scale(initialScale)
       );
 
-      svg.attr("height", g.graph().height * initialScale + 40);
+      // svg.attr("height", g.graph().height * initialScale + 40);
+      svg.attr("height", 500);
 
       /* Make all entity nodes clickable */
       var nodeSelected = svg.selectAll("g.node");
       nodeSelected.on("click", this.handleClickedNode);
 
       /* Make disputed edges clickable */
-      var disputedEdgeSelected = svg.selectAll("g.edge");
+      var disputedEdgeSelected = svg.selectAll("g.edgePath");
       /* .attr("id", function(d) {
           d.split(" ")[0] === "dispute";
         }); */
       // console.log(disputedEdgeSelected);
-      disputedEdgeSelected.on("click", console.log(disputedEdgeSelected));
+      // disputedEdgeSelected.on("click", this.handleClickedEdge);
+      let that = this;
+      disputedEdgeSelected.on("click", function(d, i) {
+        if (g.edge(d.v, d.w).id.split(" ")[0] === "disputed") {
+          that.handleClickedEdge(d, g.edge(d.v, d.w).id);
+        }
+      });
     }
   }
 
   handleClickedNode(id) {
     this.props.relationshipClicked(id);
+  }
+
+  handleClickedEdge(edge, id) {
+    // this.props.disputeClicked(edge, id);
+    this.setState({
+      openInfoPage: { showDisputePage: true, showUnusualPage: false }
+    });
   }
 
   render() {
@@ -105,6 +122,33 @@ class EntityGraph extends React.Component {
             <span id="legend-memberedge">Member of collective</span>
           </div>
         </div>
+
+        <div>
+          {/* Show disputed relationships page */}
+          <div
+            style={{}}
+            className={
+              this.state.openInfoPage.showDisputePage
+                ? "info-page-border"
+                : "no-display"
+            }
+          >
+            <h3>Disputed relationship</h3>
+            {this.state.openInfoPage.showDisputePage}
+          </div>
+
+          {/* Show unusual relationships page */}
+          <div
+            className={
+              this.state.openInfoPage.showUnusualPage
+                ? "info-page-border"
+                : "no-display"
+            }
+          >
+            Show unusual page
+          </div>
+        </div>
+
         <svg
           id="nodeTree"
           ref={ref => {

@@ -16,7 +16,6 @@ import {
   getEntityType
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
-import { tickIncrement } from "d3";
 
 type DatumProps = {
   location: {
@@ -65,6 +64,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     this.reversedVerb = this.reversedVerb.bind(this);
     this.getDataPoints = this.getDataPoints.bind(this); */
     this.handleNameClicked = this.handleNameClicked.bind(this);
+    // this.handleDisputeClicked = this.handleDisputeClicked.bind(this);
     /* this.getAlternativeNames = this.getAlternativeNames.bind(this); */
   }
 
@@ -123,6 +123,13 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     });
     this.props.history.push("/datacards?id=" + targetID);
   }
+
+  /* handleDisputeClicked(edge: any, id: string) {
+    console.log("edge", edge, "id", id);
+    this.setState({
+      openInfoPage: { showDisputePage: true, showUnusualPage: false }
+    });
+  } */
 
   getDataPoints(relationship: string, showPassage: boolean) {
     let that = this;
@@ -474,6 +481,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           id={this.state.id}
           relationships={this.state.relationships}
           relationshipClicked={this.handleNameClicked}
+          // disputeClicked={this.handleDisputeClicked}
           members={this.state.members}
         ></EntityGraph>
       </React.Fragment>

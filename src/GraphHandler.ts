@@ -1,6 +1,10 @@
 import entities from "./data/entities.json";
-import { getName, checkNoMembers, checkNoRelations } from "./DataCardHandler";
-import relationships from "./data/relationships.json";
+import {
+  getName,
+  getGender,
+  checkNoMembers,
+  checkNoRelations
+} from "./DataCardHandler";
 import "./EntityGraph.scss";
 
 /*
@@ -78,8 +82,7 @@ const getAllMemberLinks = (g: any, id: string, members: any[]) => {
     });
     g.setEdge(id, members[i].targetID, {
       label: "member",
-      style:
-        "stroke: grey; stroke-width: 2px; stroke-dasharray: 10,10; d: M5 40 l215 0;"
+      class: "memberEdge"
     });
   }
 };
@@ -94,11 +97,6 @@ const getAllRelationshipLinks = (
   let width = 144 / depth;
   let height = 100 / depth;
 
-  // Set edge styles
-  var disputeEdge =
-    "stroke: blue; stroke-width: 3px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
-  var normalEdge = "stroke: black; stroke-width: 2px;";
-
   if (relationships.MOTHERS && relationships.MOTHERS.length !== 0) {
     for (let i = 0; i < relationships.MOTHERS.length; i++) {
       let r = relationships.MOTHERS[i];
@@ -110,8 +108,8 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "mother",
-        style: relationships.MOTHERS.length > 1 ? disputeEdge : normalEdge,
-        id: relationships.MOTHERS.length > 1 ? "mother" : "dispute mother"
+        class: relationships.MOTHERS.length > 1 ? "disputedEdge" : "",
+        id: relationships.MOTHERS.length > 1 ? "disputed mother" : "mother"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
@@ -128,8 +126,8 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "father",
-        style: relationships.FATHERS.length > 1 ? disputeEdge : normalEdge,
-        id: relationships.FATHERS.length > 1 ? "father" : "dispute father"
+        class: relationships.FATHERS.length > 1 ? "disputedEdge" : "",
+        id: relationships.FATHERS.length > 1 ? "disputed father" : "father"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
     }
@@ -149,7 +147,6 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(id, r.targetID, {
         label: "sibling",
-        style: "stroke: black; stroke-width: 2px;",
         arrowhead: "undirected"
       });
       if (relationships.MOTHERS[0]) {
@@ -172,7 +169,6 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "wife",
-        style: "stroke: black; stroke-width: 2px;",
         arrowhead: "undirected"
       });
     }
@@ -189,7 +185,6 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "husband",
-        style: "stroke: black; stroke-width: 2px;",
         arrowhead: "undirected"
       });
     }
@@ -227,11 +222,11 @@ const getAllRelationshipLinks = (
           });
         }
         g.setEdge(id, r[j].targetID, {
-          label: "child",
-          style: "stroke: black; stroke-width: 2px;"
+          label: "child"
         });
 
         // Link to the other parents
+        let childGender = getGender(r[j].targetID);
         for (let k = 0; k < p.length; k++) {
           g.setNode(p[k], {
             label: getName(entities[p[k]]),
@@ -241,8 +236,13 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(p[k], r[j].targetID, {
             label: p.length > 1 ? "disputed\nother parent" : "other parent",
-            style: p.length > 1 ? disputeEdge : normalEdge,
-            id: p.length > 1 ? "dispute otherparent" : "otherparent"
+            class: p.length > 1 ? "disputedEdge" : "",
+            id:
+              p.length > 1
+                ? getGender(r[j].targetID) === "Female"
+                  ? "disputed child mother"
+                  : "disputed child father"
+                : "otherparent"
           });
         }
       }
