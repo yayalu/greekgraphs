@@ -96,7 +96,7 @@ const getAllRelationshipLinks = (
 
   // Set edge styles
   var disputeEdge =
-    "stroke: blue; stroke-width: 2px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
+    "stroke: blue; stroke-width: 3px; stroke-dasharray: 2,2; d: M5 40 l215 0;";
   var normalEdge = "stroke: black; stroke-width: 2px;";
 
   if (relationships.MOTHERS && relationships.MOTHERS.length !== 0) {
@@ -199,7 +199,9 @@ const getAllRelationshipLinks = (
   if (relationships.CHILDREN && relationships.CHILDREN.length !== 0) {
     for (let i = 0; i < relationships.CHILDREN.length; i++) {
       let r = relationships.CHILDREN[i].child;
+      let p = relationships.CHILDREN[i].otherParentIDs;
       for (let j = 0; j < r.length; j++) {
+        // For each child in the children grouping
         if (
           entities[r[j].targetID] &&
           entities[r[j].targetID]["Type of entity"] === "Agent"
@@ -209,10 +211,6 @@ const getAllRelationshipLinks = (
             width: width,
             height: height,
             shape: "ellipse"
-          });
-          g.setEdge(id, r[j].targetID, {
-            label: "child",
-            style: "stroke: black; stroke-width: 2px;"
           });
         } else if (
           entities[r[j].targetID] &&
@@ -227,21 +225,26 @@ const getAllRelationshipLinks = (
             shape: "ellipse",
             style: "stroke: red"
           });
-          g.setEdge(id, r[j].targetID, {
-            label: "child",
-            style: "stroke: black; stroke-width: 2px;"
-          });
         }
-        g.setNode(relationships.CHILDREN[i].otherParentID, {
-          label: getName(entities[relationships.CHILDREN[i].otherParentID]),
-          width: width,
-          height: height,
-          shape: "ellipse"
-        });
-        g.setEdge(relationships.CHILDREN[i].otherParentID, r[j].targetID, {
-          label: "other parent",
+        g.setEdge(id, r[j].targetID, {
+          label: "child",
           style: "stroke: black; stroke-width: 2px;"
         });
+
+        // Link to the other parents
+        for (let k = 0; k < p.length; k++) {
+          g.setNode(p[k], {
+            label: getName(entities[p[k]]),
+            width: width,
+            height: height,
+            shape: "ellipse"
+          });
+          g.setEdge(p[k], r[j].targetID, {
+            label: "disputed other parent",
+            style: p.length > 1 ? disputeEdge : normalEdge,
+            id: p.length > 1 ? "dispute otherparent" : "otherparent"
+          });
+        }
       }
     }
   }
