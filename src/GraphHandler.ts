@@ -108,7 +108,7 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "mother",
-        class: relationships.MOTHERS.length > 1 ? "disputedEdge" : "",
+        class: relationships.MOTHERS.length > 1 ? "disputedEdge" : "normalEdge",
         id: relationships.MOTHERS.length > 1 ? "disputed mother" : "mother"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
@@ -126,7 +126,7 @@ const getAllRelationshipLinks = (
       });
       g.setEdge(r.targetID, id, {
         label: "father",
-        class: relationships.FATHERS.length > 1 ? "disputedEdge" : "",
+        class: relationships.FATHERS.length > 1 ? "disputedEdge" : "normalEdge",
         id: relationships.FATHERS.length > 1 ? "disputed father" : "father"
       });
       // g.setParent(id, r.targetID); //make compound subgraphs, r.targetID is parent of id
@@ -226,7 +226,6 @@ const getAllRelationshipLinks = (
         });
 
         // Link to the other parents
-        let childGender = getGender(r[j].targetID);
         for (let k = 0; k < p.length; k++) {
           g.setNode(p[k], {
             label: getName(entities[p[k]]),
@@ -236,7 +235,7 @@ const getAllRelationshipLinks = (
           });
           g.setEdge(p[k], r[j].targetID, {
             label: p.length > 1 ? "disputed\nother parent" : "other parent",
-            class: p.length > 1 ? "disputedEdge" : "",
+            class: p.length > 1 ? "disputedEdge" : "normalEdge",
             id:
               p.length > 1
                 ? getGender(r[j].targetID) === "Female"

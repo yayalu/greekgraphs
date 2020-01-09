@@ -81,6 +81,7 @@ class EntityGraph extends React.Component {
         }); */
       // console.log(disputedEdgeSelected);
       // disputedEdgeSelected.on("click", this.handleClickedEdge);
+
       let that = this;
       disputedEdgeSelected.on("click", function(d, i) {
         if (g.edge(d.v, d.w).id.split(" ")[0] === "disputed") {
@@ -90,8 +91,16 @@ class EntityGraph extends React.Component {
     }
   }
 
+  componentWillReceiveProps() {
+    this.setState({
+      openInfoPage: { showDisputePage: false, showUnusualPage: false }
+    });
+  }
+
   handleClickedNode(id) {
     this.props.relationshipClicked(id);
+    // Cheat way to fix edges coming up as disputed when not
+    // document.location.reload(true);
   }
 
   handleClickedEdge(edge, identifier) {
@@ -134,11 +143,18 @@ class EntityGraph extends React.Component {
           There is an inconsistency between texts.
           <br /> <br />
           {disputedEntities.map(e => {
-            console.log(e);
             return (
               <div style={{ borderTop: "100px" }}>
-                <span style={{ color: "red" }}>--> </span>
-                {e.target} is {edgeType} of {getName(entities[targetID])} in{" "}
+                <div style={{ color: "red", float: "left" }}>--> </div>
+                <div
+                  className="entity-button"
+                  onClick={() => this.handleClickedNode(e.targetID)}
+                >
+                  <span style={{ textDecoration: "underline" }}>
+                    {e.target}{" "}
+                  </span>
+                </div>
+                is {edgeType} of {getName(entities[targetID])} in{" "}
                 {e.passage.map(passage => {
                   return this.getPassageLink(passage);
                 })}
@@ -223,7 +239,7 @@ class EntityGraph extends React.Component {
         <div>
           {/* Show disputed relationships page */}
           <div
-            style={{}}
+            style={{ textAlign: "left" }}
             className={
               this.state.openInfoPage.showDisputePage
                 ? "info-page-border"
