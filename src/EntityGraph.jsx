@@ -3,6 +3,8 @@ import "./App.css";
 import { getGraph } from "./GraphHandler";
 import { checkNoRelations, checkNoMembers, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
+import passages from "./data/passages.json";
+import relationships from "./data/relationships.json";
 import * as d3 from "d3";
 import dagreD3 from "dagre-d3";
 
@@ -16,7 +18,9 @@ class EntityGraph extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      openInfoPage: { showDisputePage: false, showUnusualPage: false }
+      openInfoPage: { showDisputePage: false, showUnusualPage: false },
+      edgeType: "",
+      targetID: ""
     };
     this.handleClickedNode = this.handleClickedNode.bind(this);
     this.handleClickedEdge = this.handleClickedEdge.bind(this);
@@ -90,11 +94,104 @@ class EntityGraph extends React.Component {
     this.props.relationshipClicked(id);
   }
 
-  handleClickedEdge(edge, id) {
+  handleClickedEdge(edge, identifier) {
     // this.props.disputeClicked(edge, id);
+    let keywords = identifier.split(" ");
+    let targetID = "";
+    let edgeType = "";
+
+    if (keywords[0] === "disputed") {
+      if (keywords[1] === "mother" || keywords[1] === "father") {
+        // if is "disputed mother"
+        targetID = edge.w;
+        edgeType = keywords[1];
+      } else if (keywords[1] === "child") {
+        // if is "disputed father"
+        targetID = edge.w;
+        edgeType = keywords[2];
+      }
+    }
+    // console.log(identifier, getName(entities[targetID]));
     this.setState({
-      openInfoPage: { showDisputePage: true, showUnusualPage: false }
+      openInfoPage: { showDisputePage: true, showUnusualPage: false },
+      edgeType: edgeType,
+      targetID: targetID
     });
+  }
+
+  getDisputedInfo(targetID, edgeType) {
+    if (targetID && edgeType) {
+      let disputedEntities;
+      if ((edgeType = "mother")) {
+        disputedEntities = JSON.parse(relationships[targetID]).relationships
+          .MOTHERS;
+      } else if ((edgeType = "father")) {
+        disputedEntities = JSON.parse(relationships[targetID]).relationships
+          .FATHERS;
+      }
+      return (
+        <div>
+          There is an inconsistency between texts.
+          <br /> <br />
+          {disputedEntities.map(e => {
+            console.log(e);
+            return (
+              <div style={{ borderTop: "100px" }}>
+                <span style={{ color: "red" }}>--> </span>
+                {e.target} is {edgeType} of {getName(entities[targetID])} in{" "}
+                {e.passage.map(passage => {
+                  return this.getPassageLink(passage);
+                })}
+              </div>
+            );
+          })}
+        </div>
+      );
+    } else return "";
+  }
+
+  getPassageLink(passage) {
+    let id = passage.startID;
+    let author = passages[id].Author;
+    let title = passages[id].Title;
+    let start = passages[id].Passage;
+    let end = passage.endID;
+
+    // Dealing with multiple URNs
+    let URN = "";
+    let URNsplit = passages[id]["CTS URN"].split(", ");
+    if (URNsplit.length >= 2) {
+      URN = URNsplit[1];
+    } else {
+      URN = passages[id]["CTS URN"];
+    }
+
+    URN = "https://scaife.perseus.org/reader/" + URN;
+    if (passage.endID !== "") {
+      end = passages[end].Passage;
+      URN = URN + "-" + end;
+    }
+    URN = URN + "/?right=perseus-eng2";
+
+    return (
+      <span>
+        {"  ("}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={URN}
+          style={{
+            color: "grey",
+            fontSize: "0.8rem"
+          }}
+        >
+          {author + ", "}
+          <span style={{ fontStyle: "italic" }}>{title}</span> {start}
+          {start !== end && end !== "" ? "-" + end : ""}
+        </a>
+        {")"}
+      </span>
+    );
   }
 
   render() {
@@ -134,7 +231,7 @@ class EntityGraph extends React.Component {
             }
           >
             <h3>Disputed relationship</h3>
-            {this.state.openInfoPage.showDisputePage}
+            {this.getDisputedInfo(this.state.targetID, this.state.edgeType)}
           </div>
 
           {/* Show unusual relationships page */}
