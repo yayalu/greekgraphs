@@ -100,7 +100,7 @@ class EntityGraph extends React.Component {
   handleClickedNode(id) {
     this.props.relationshipClicked(id);
     // Cheat way to fix edges coming up as disputed when not
-    // document.location.reload(true);
+    document.location.reload(true);
   }
 
   handleClickedEdge(edge, identifier) {
