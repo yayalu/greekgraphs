@@ -307,7 +307,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               fontWeight: "bold",
               textTransform: "uppercase",
               textDecoration: "underline",
-              marginBottom: "0.5rem"
+              marginBottom: "0.5rem",
+              marginTop: "5rem"
             }}
           >
             MEMBERS:
