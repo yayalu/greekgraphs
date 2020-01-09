@@ -465,15 +465,23 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             ></div>
             {/* If current entity is an alternative name for an existing entity */}
             <div>{this.getAlternativePage()}</div>
-
             {/* If data is available for the subject */}
-            {Object.keys(this.state.relationships).map(key => {
-              if (key === "MOTHERS" || key === "FATHERS" || key === "SPOUSES") {
-                return <div key={key}>{this.getDataPoints(key, true)}</div>;
-              } else {
-                return <div key={key}>{this.getDataPoints(key, false)}</div>;
-              }
-            })}
+            {entities[this.state.id]["Type of entity"] ===
+            "Collective (genealogical)"
+              ? ""
+              : Object.keys(this.state.relationships).map(key => {
+                  if (
+                    key === "MOTHERS" ||
+                    key === "FATHERS" ||
+                    key === "SPOUSES"
+                  ) {
+                    return <div key={key}>{this.getDataPoints(key, true)}</div>;
+                  } else {
+                    return (
+                      <div key={key}>{this.getDataPoints(key, false)}</div>
+                    );
+                  }
+                })}
             <div>{this.getCollectiveMembers()}</div>
           </div>
         </div>
