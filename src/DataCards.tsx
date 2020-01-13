@@ -533,14 +533,21 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             <div>{this.getCollectiveMembers()}</div>
           </div>
         </div>
-
-        <EntityGraph
-          id={this.state.id}
-          relationships={this.state.relationships}
-          relationshipClicked={this.handleNameClicked}
-          // disputeClicked={this.handleDisputeClicked}
-          members={this.state.members}
-        ></EntityGraph>
+        <div
+          className={
+            entities[this.state.id]["Type of entity"] === "Agent"
+              ? ""
+              : "no-display"
+          }
+        >
+          <EntityGraph
+            id={this.state.id}
+            relationships={this.state.relationships}
+            relationshipClicked={this.handleNameClicked}
+            // disputeClicked={this.handleDisputeClicked}
+            members={this.state.members}
+          ></EntityGraph>
+        </div>
       </React.Fragment>
     );
   }
