@@ -145,10 +145,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               marginTop: "0.5rem"
             }}
           >
-            {this.state.relationships[relationship].length === 1 &&
-            this.state.relationships[relationship][0].type !== "Collective"
-              ? Pluralize.singular(relationship) + ": "
-              : relationship + ": "}
+            {this.getPluralization(relationship)}
           </div>
           <div style={{ float: "left", marginTop: "0.5rem" }}>
             {that.state.relationships[relationship].map(entity => {
@@ -167,6 +164,18 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       );
     } else {
       return null;
+    }
+  }
+
+  getPluralization(relationship: string) {
+    if (relationship === "MOTHERS" || relationship === "FATHERS") {
+      return Pluralize.singular(relationship) + ": ";
+    } else {
+      if (this.state.relationships[relationship].length === 1) {
+        return Pluralize.singular(relationship) + ": ";
+      } else {
+        return relationship + ": ";
+      }
     }
   }
 
@@ -333,6 +342,45 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     }
   }
 
+  getCollectiveSubheading(id: string) {
+    let relation = getGender(id) === "Female" ? "daughters" : "sons";
+    let parents: { mothers: string; fathers: string } = {
+      mothers: "",
+      fathers: ""
+    };
+    for (let i = 0; i < this.state.relationships.MOTHERS.length; i++) {
+      if (parents.mothers === "") {
+        parents.mothers = this.state.relationships.MOTHERS[i].target;
+      } else {
+        parents.mothers =
+          parents.mothers + " OR " + this.state.relationships.MOTHERS[i].target;
+      }
+    }
+    for (let i = 0; i < this.state.relationships.FATHERS.length; i++) {
+      if (parents.fathers === "") {
+        parents.fathers = this.state.relationships.FATHERS[i].target;
+      } else {
+        parents.fathers =
+          parents.fathers + " OR " + this.state.relationships.FATHERS[i].target;
+      }
+    }
+    let finalString = "";
+    if (parents.mothers !== "" && parents.fathers !== "") {
+      finalString = parents.mothers + " and " + parents.fathers;
+    } else if (parents.mothers !== "" && parents.fathers === "") {
+      finalString = parents.mothers;
+    } else if (parents.mothers === "" && parents.fathers !== "") {
+      finalString = parents.fathers;
+    } else {
+    }
+
+    return (
+      <div id="datacard-alternativename">
+        The {relation} of {finalString}
+      </div>
+    );
+  }
+
   getAlternativePage() {
     if (
       this.state.alternativeName.targetID !== "" &&
@@ -468,7 +516,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             {/* If data is available for the subject */}
             {entities[this.state.id]["Type of entity"] ===
             "Collective (genealogical)"
-              ? ""
+              ? this.getCollectiveSubheading(this.state.id)
               : Object.keys(this.state.relationships).map(key => {
                   if (
                     key === "MOTHERS" ||
