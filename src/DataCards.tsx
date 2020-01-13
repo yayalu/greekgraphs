@@ -280,7 +280,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
   getOtherParentText(otherParentIDs: any[]) {
     if (otherParentIDs.length === 0) {
-      return <div className="entity-parent-grouping">with undefined</div>;
+      return <div className="entity-parent-grouping"></div>;
     } else {
       return (
         <div className="entity-parent-grouping">
