@@ -230,7 +230,7 @@ class EntityGraph extends React.Component {
           </div>
           <div style={{ marginBottom: "2rem" }}>
             <span id="legend-relationedge">Genealogical connection</span>
-            <span id="legend-disputededge">Disputed connection</span>
+            <span id="legend-disputededge">Disputed tradition</span>
             <span id="legend-unusualedge">Unusual connection</span>
             <span id="legend-memberedge">Member of collective</span>
           </div>
@@ -246,7 +246,7 @@ class EntityGraph extends React.Component {
                 : "no-display"
             }
           >
-            <h3>Disputed relationship</h3>
+            <h3>Disputed Tradition </h3>
             {this.getDisputedInfo(this.state.targetID, this.state.edgeType)}
           </div>
 
