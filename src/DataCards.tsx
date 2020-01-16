@@ -344,7 +344,23 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
   getCollectiveSubheading(id: string) {
     let relation = getGender(id) === "Female" ? "daughters" : "sons";
-    let parents: { mothers: string; fathers: string } = {
+    // How to deal with multiple of the same ID in the entities?
+    let parents = getName(
+      entities[entities[id]["Collective (geneal.): children of ID"]]
+    );
+    if (entities[id]["Other collective parent ID"]) {
+      parents =
+        parents +
+        " and " +
+        getName(entities[entities[id]["Other collective parent ID"]]);
+    }
+    let divineParents = entities[id]["Collective (geneal.): divine father ID"]
+      ? "OR " +
+        getName(
+          entities[entities[id]["Collective (geneal.): divine father ID"]]
+        )
+      : "";
+    /* let parents: { mothers: string; fathers: string } = {
       mothers: "",
       fathers: ""
     };
@@ -372,11 +388,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else if (parents.mothers === "" && parents.fathers !== "") {
       finalString = parents.fathers;
     } else {
-    }
+    } */
 
     return (
       <div id="datacard-alternativename">
-        The {relation} of {finalString}
+        The {relation} of {parents} {divineParents}
       </div>
     );
   }

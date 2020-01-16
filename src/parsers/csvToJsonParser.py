@@ -56,7 +56,11 @@ with open(entitiesCsvFilePath) as csvFile:
         if (csvRow["Type of entity"] == "Agent" or csvRow["Type of entity"] == "Collective (misc.)" or csvRow["Type of entity"] == "Collective (genealogical)" or csvRow["Type of entity"] == "Collective (Episodic)"):
             csvRow["ID"] = csvRow["\xef\xbb\xbfID"]
             csvRow["\xef\xbb\xbfID"] = ""
-            data[csvRow["ID"]] = csvRow
+            if csvRow["ID"] in data:
+                data[csvRow["ID"]]["Other collective parent"] = csvRow["Collective (geneal.): children of"]
+                data[csvRow["ID"]]["Other collective parent ID"] = csvRow["Collective (geneal.): children of ID"]
+            else:
+                data[csvRow["ID"]] = csvRow
 
 # Write contents to a JSON file - entities.json
 with open(entitiesJsonFilePath, "w") as jsonFile:
