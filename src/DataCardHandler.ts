@@ -593,23 +593,27 @@ const getOtherParents = (id: string, children: entityInfo[]) => {
   let mainGender = getGender(id);
   let parentsGrouped: childrenInfo[] = [];
   children.forEach(c => {
-    var parentsList;
-    if (mainGender === "Female") {
-      parentsList = JSON.parse(relationships[c.targetID]).relationships.FATHERS;
-    } else {
-      //temporary solution to undefined gender
-      parentsList = JSON.parse(relationships[c.targetID]).relationships.MOTHERS;
+    if (relationships[c.targetID] !== undefined) {
+      var parentsList;
+      if (mainGender === "Female") {
+        parentsList = JSON.parse(relationships[c.targetID]).relationships
+          .FATHERS;
+      } else {
+        //temporary solution to undefined gender
+        parentsList = JSON.parse(relationships[c.targetID]).relationships
+          .MOTHERS;
+      }
+      // Convert list of entityInfo to a list of IDs
+      for (let i = 0; i < parentsList.length; i++) {
+        parentsList[i] = parentsList[i].targetID;
+      }
+      parentsList = alphabetizeIDs(parentsList);
+      parentsGrouped = checkAndRemoveParentDuplicates(
+        c,
+        parentsList,
+        parentsGrouped
+      );
     }
-    // Convert list of entityInfo to a list of IDs
-    for (let i = 0; i < parentsList.length; i++) {
-      parentsList[i] = parentsList[i].targetID;
-    }
-    parentsList = alphabetizeIDs(parentsList);
-    parentsGrouped = checkAndRemoveParentDuplicates(
-      c,
-      parentsList,
-      parentsGrouped
-    );
   });
   return parentsGrouped;
 };

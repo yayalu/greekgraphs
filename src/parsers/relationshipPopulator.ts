@@ -1,6 +1,5 @@
-var ties = require("../data/ties.json");
 var entities = require("../data/entities.json");
-import { updateComponent, getName } from "../DataCardHandler";
+import { updateComponent } from "../DataCardHandler";
 
 /* Attempting to run JS file from terminal */
 let allRelationshipData = {};

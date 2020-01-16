@@ -10,17 +10,6 @@
         "\ufeffID": "9372756", 
         "Title ID": "8194400"
     }, 
-    "9613683": {
-        "Name": "Apollodorus Library 3.6.1", 
-        "Title": "Library", 
-        "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.6.1", 
-        "Author": "Apollodorus", 
-        "Author ID": "8194398", 
-        "Passage": "3.6.1", 
-        "\ufeffID": "9613683", 
-        "Title ID": "8194400"
-    }, 
     "9613768": {
         "Name": "Apollodorus Library 3.6.7", 
         "Title": "Library", 
@@ -30,6 +19,17 @@
         "Author ID": "8194398", 
         "Passage": "3.6.7", 
         "\ufeffID": "9613768", 
+        "Title ID": "8194400"
+    }, 
+    "9613683": {
+        "Name": "Apollodorus Library 3.6.1", 
+        "Title": "Library", 
+        "Fragment": "", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.6.1", 
+        "Author": "Apollodorus", 
+        "Author ID": "8194398", 
+        "Passage": "3.6.1", 
+        "\ufeffID": "9613683", 
         "Title ID": "8194400"
     }, 
     "9055281": {
@@ -241,16 +241,16 @@
         "\ufeffID": "8194638", 
         "Title ID": "8194399"
     }, 
-    "8194639": {
-        "Name": "Apollodorus Epitome 6.11", 
-        "Title": "Epitome", 
+    "9613810": {
+        "Name": "Apollodorus Library 3.7.4", 
+        "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.11", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.7.4", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "6.11", 
-        "\ufeffID": "8194639", 
-        "Title ID": "8194399"
+        "Passage": "3.7.4", 
+        "\ufeffID": "9613810", 
+        "Title ID": "8194400"
     }, 
     "8194636": {
         "Name": "Apollodorus Epitome 6.8", 
@@ -461,15 +461,15 @@
         "\ufeffID": "8358919", 
         "Title ID": "8194400"
     }, 
-    "9367776": {
-        "Name": "Apollodorus Library 1.9.8", 
+    "9055259": {
+        "Name": "Apollodorus Library 1.4.3", 
         "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.8", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.4.3", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.9.8", 
-        "\ufeffID": "9367776", 
+        "Passage": "1.4.3", 
+        "\ufeffID": "9055259", 
         "Title ID": "8194400"
     }, 
     "8194390": {
@@ -526,17 +526,6 @@
         "Passage": "1.9.20", 
         "\ufeffID": "9374903", 
         "Title ID": "8194400"
-    }, 
-    "8194657": {
-        "Name": "Apollodorus Epitome 6.29", 
-        "Title": "Epitome", 
-        "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.29", 
-        "Author": "Apollodorus", 
-        "Author ID": "8194398", 
-        "Passage": "6.29", 
-        "\ufeffID": "8194657", 
-        "Title ID": "8194399"
     }, 
     "9374908": {
         "Name": "Apollodorus Library 1.9.21", 
@@ -978,16 +967,16 @@
         "\ufeffID": "9615048", 
         "Title ID": "8194400"
     }, 
-    "9613809": {
-        "Name": "Apollodorus Library 3.7.2", 
-        "Title": "Library", 
+    "8194646": {
+        "Name": "Apollodorus Epitome 6.18", 
+        "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.7.2", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.18", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "3.7.2", 
-        "\ufeffID": "9613809", 
-        "Title ID": "8194400"
+        "Passage": "6.18", 
+        "\ufeffID": "8194646", 
+        "Title ID": "8194399"
     }, 
     "8194607": {
         "Name": "Apollodorus Epitome 5.4", 
@@ -1088,16 +1077,16 @@
         "\ufeffID": "8194609", 
         "Title ID": "8194399"
     }, 
-    "9587599": {
-        "Name": "Apollodorus Library 1.9.27", 
-        "Title": "Library", 
+    "8194608": {
+        "Name": "Apollodorus Epitome 5.5", 
+        "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.27", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:5.5", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.9.27", 
-        "\ufeffID": "9587599", 
-        "Title ID": "8194400"
+        "Passage": "5.5", 
+        "\ufeffID": "8194608", 
+        "Title ID": "8194399"
     }, 
     "8189936": {
         "Name": "Apollodorus Epitome 1.6", 
@@ -1429,16 +1418,16 @@
         "\ufeffID": "8194647", 
         "Title ID": "8194399"
     }, 
-    "8194646": {
-        "Name": "Apollodorus Epitome 6.18", 
-        "Title": "Epitome", 
+    "9613809": {
+        "Name": "Apollodorus Library 3.7.2", 
+        "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.18", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.7.2", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "6.18", 
-        "\ufeffID": "8194646", 
-        "Title ID": "8194399"
+        "Passage": "3.7.2", 
+        "\ufeffID": "9613809", 
+        "Title ID": "8194400"
     }, 
     "8194645": {
         "Name": "Apollodorus Epitome 6.17", 
@@ -1726,17 +1715,6 @@
         "\ufeffID": "8190208", 
         "Title ID": "8194399"
     }, 
-    "8194608": {
-        "Name": "Apollodorus Epitome 5.5", 
-        "Title": "Epitome", 
-        "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:5.5", 
-        "Author": "Apollodorus", 
-        "Author ID": "8194398", 
-        "Passage": "5.5", 
-        "\ufeffID": "8194608", 
-        "Title ID": "8194399"
-    }, 
     "9366097": {
         "Name": "Apollodorus Library 1.9.4", 
         "Title": "Library", 
@@ -1869,15 +1847,15 @@
         "\ufeffID": "8316556", 
         "Title ID": "8194400"
     }, 
-    "9364241": {
-        "Name": "Apollodorus Library 1.9.2", 
+    "8316555": {
+        "Name": "Apollodorus Library 2.7.2", 
         "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.2", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:2.7.2", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.9.2", 
-        "\ufeffID": "9364241", 
+        "Passage": "2.7.2", 
+        "\ufeffID": "8316555", 
         "Title ID": "8194400"
     }, 
     "8316554": {
@@ -2177,15 +2155,15 @@
         "\ufeffID": "9587570", 
         "Title ID": "8194400"
     }, 
-    "9364254": {
-        "Name": "Apollodorus Library 1.9.3", 
+    "8316540": {
+        "Name": "Apollodorus Library 2.5.3", 
         "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.3", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:2.5.3", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.9.3", 
-        "\ufeffID": "9364254", 
+        "Passage": "2.5.3", 
+        "\ufeffID": "8316540", 
         "Title ID": "8194400"
     }, 
     "9615039": {
@@ -2331,16 +2309,16 @@
         "\ufeffID": "9374880", 
         "Title ID": "8194400"
     }, 
-    "9613810": {
-        "Name": "Apollodorus Library 3.7.4", 
-        "Title": "Library", 
+    "8194639": {
+        "Name": "Apollodorus Epitome 6.11", 
+        "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.7.4", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.11", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "3.7.4", 
-        "\ufeffID": "9613810", 
-        "Title ID": "8194400"
+        "Passage": "6.11", 
+        "\ufeffID": "8194639", 
+        "Title ID": "8194399"
     }, 
     "8194347": {
         "Name": "Apollodorus Epitome 2.6", 
@@ -2417,6 +2395,17 @@
         "Author ID": "8194398", 
         "Passage": "1.1.2", 
         "\ufeffID": "8103181", 
+        "Title ID": "8194400"
+    }, 
+    "9612930": {
+        "Name": "Apollodorus Library 3.3.2", 
+        "Title": "Library", 
+        "Fragment": "", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.3.2", 
+        "Author": "Apollodorus", 
+        "Author ID": "8194398", 
+        "Passage": "3.3.2", 
+        "\ufeffID": "9612930", 
         "Title ID": "8194400"
     }, 
     "8316519": {
@@ -2573,27 +2562,27 @@
         "\ufeffID": "9055300", 
         "Title ID": "8194400"
     }, 
-    "8358893": {
-        "Name": "Apollodorus Library 1.2.3", 
-        "Title": "Library", 
+    "8194697": {
+        "Name": "Apollodorus Epitome 7.39", 
+        "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.2.3", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:7.39", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.2.3", 
-        "\ufeffID": "8358893", 
-        "Title ID": "8194400"
+        "Passage": "7.39", 
+        "\ufeffID": "8194697", 
+        "Title ID": "8194399"
     }, 
-    "8358895": {
-        "Name": "Apollodorus Library 1.2.4", 
-        "Title": "Library", 
+    "8194691": {
+        "Name": "Apollodorus Epitome 7.33", 
+        "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.2.4", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:7.33", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.2.4", 
-        "\ufeffID": "8358895", 
-        "Title ID": "8194400"
+        "Passage": "7.33", 
+        "\ufeffID": "8194691", 
+        "Title ID": "8194399"
     }, 
     "9613083": {
         "Name": "Apollodorus Library 3.5.7", 
@@ -2716,27 +2705,27 @@
         "\ufeffID": "8194655", 
         "Title ID": "8194399"
     }, 
-    "9612931": {
-        "Name": "Apollodorus Library 3.4.1", 
-        "Title": "Library", 
+    "8194656": {
+        "Name": "Apollodorus Epitome 6.28", 
+        "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.4.1", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.28", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "3.4.1", 
-        "\ufeffID": "9612931", 
-        "Title ID": "8194400"
+        "Passage": "6.28", 
+        "\ufeffID": "8194656", 
+        "Title ID": "8194399"
     }, 
-    "9612930": {
-        "Name": "Apollodorus Library 3.3.2", 
-        "Title": "Library", 
+    "8194657": {
+        "Name": "Apollodorus Epitome 6.29", 
+        "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.3.2", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.29", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "3.3.2", 
-        "\ufeffID": "9612930", 
-        "Title ID": "8194400"
+        "Passage": "6.29", 
+        "\ufeffID": "8194657", 
+        "Title ID": "8194399"
     }, 
     "8194300": {
         "Name": "Apollodorus Epitome 1.22", 
@@ -3024,6 +3013,17 @@
         "\ufeffID": "9367792", 
         "Title ID": "8194400"
     }, 
+    "9587599": {
+        "Name": "Apollodorus Library 1.9.27", 
+        "Title": "Library", 
+        "Fragment": "", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.27", 
+        "Author": "Apollodorus", 
+        "Author ID": "8194398", 
+        "Passage": "1.9.27", 
+        "\ufeffID": "9587599", 
+        "Title ID": "8194400"
+    }, 
     "9369027": {
         "Name": "Apollodorus Library 1.9.12", 
         "Title": "Library", 
@@ -3167,15 +3167,15 @@
         "\ufeffID": "8316547", 
         "Title ID": "8194400"
     }, 
-    "8316540": {
-        "Name": "Apollodorus Library 2.5.3", 
+    "9364254": {
+        "Name": "Apollodorus Library 1.9.3", 
         "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:2.5.3", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.3", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "2.5.3", 
-        "\ufeffID": "8316540", 
+        "Passage": "1.9.3", 
+        "\ufeffID": "9364254", 
         "Title ID": "8194400"
     }, 
     "8316541": {
@@ -3288,16 +3288,16 @@
         "\ufeffID": "8194696", 
         "Title ID": "8194399"
     }, 
-    "8194697": {
-        "Name": "Apollodorus Epitome 7.39", 
-        "Title": "Epitome", 
+    "8358893": {
+        "Name": "Apollodorus Library 1.2.3", 
+        "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:7.39", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.2.3", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "7.39", 
-        "\ufeffID": "8194697", 
-        "Title ID": "8194399"
+        "Passage": "1.2.3", 
+        "\ufeffID": "8358893", 
+        "Title ID": "8194400"
     }, 
     "8194690": {
         "Name": "Apollodorus Epitome 7.32", 
@@ -3310,16 +3310,16 @@
         "\ufeffID": "8194690", 
         "Title ID": "8194399"
     }, 
-    "8194691": {
-        "Name": "Apollodorus Epitome 7.33", 
-        "Title": "Epitome", 
+    "8358895": {
+        "Name": "Apollodorus Library 1.2.4", 
+        "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:7.33", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.2.4", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "7.33", 
-        "\ufeffID": "8194691", 
-        "Title ID": "8194399"
+        "Passage": "1.2.4", 
+        "\ufeffID": "8358895", 
+        "Title ID": "8194400"
     }, 
     "8194692": {
         "Name": "Apollodorus Epitome 7.34", 
@@ -3629,15 +3629,15 @@
         "\ufeffID": "8194628", 
         "Title ID": "8194399"
     }, 
-    "8316555": {
-        "Name": "Apollodorus Library 2.7.2", 
+    "9364241": {
+        "Name": "Apollodorus Library 1.9.2", 
         "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:2.7.2", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.2", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "2.7.2", 
-        "\ufeffID": "8316555", 
+        "Passage": "1.9.2", 
+        "\ufeffID": "9364241", 
         "Title ID": "8194400"
     }, 
     "8194332": {
@@ -3684,15 +3684,15 @@
         "\ufeffID": "8194521", 
         "Title ID": "8194399"
     }, 
-    "9055259": {
-        "Name": "Apollodorus Library 1.4.3", 
+    "9367776": {
+        "Name": "Apollodorus Library 1.9.8", 
         "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.4.3", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:1.9.8", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.4.3", 
-        "\ufeffID": "9055259", 
+        "Passage": "1.9.8", 
+        "\ufeffID": "9367776", 
         "Title ID": "8194400"
     }, 
     "9055260": {
@@ -3706,15 +3706,15 @@
         "\ufeffID": "9055260", 
         "Title ID": "8194400"
     }, 
-    "8188807": {
-        "Name": "Apollodorus Epitome 1.2", 
+    "8194569": {
+        "Name": "Apollodorus Epitome 3.9", 
         "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:1.2", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:3.9", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.2", 
-        "\ufeffID": "8188807", 
+        "Passage": "3.9", 
+        "\ufeffID": "8194569", 
         "Title ID": "8194399"
     }, 
     "9613009": {
@@ -3783,15 +3783,15 @@
         "\ufeffID": "8194566", 
         "Title ID": "8194399"
     }, 
-    "8188809": {
-        "Name": "Apollodorus Epitome 1.4", 
+    "8194567": {
+        "Name": "Apollodorus Epitome 3.7", 
         "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:1.4", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:3.7", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "1.4", 
-        "\ufeffID": "8188809", 
+        "Passage": "3.7", 
+        "\ufeffID": "8194567", 
         "Title ID": "8194399"
     }, 
     "9356971": {
@@ -3948,16 +3948,16 @@
         "\ufeffID": "8194668", 
         "Title ID": "8194399"
     }, 
-    "8194656": {
-        "Name": "Apollodorus Epitome 6.28", 
-        "Title": "Epitome", 
+    "9612931": {
+        "Name": "Apollodorus Library 3.4.1", 
+        "Title": "Library", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:6.28", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg001.perseus-grc2:3.4.1", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "6.28", 
-        "\ufeffID": "8194656", 
-        "Title ID": "8194399"
+        "Passage": "3.4.1", 
+        "\ufeffID": "9612931", 
+        "Title ID": "8194400"
     }, 
     "9612924": {
         "Name": "Apollodorus Library 3.2.2", 
@@ -4157,15 +4157,15 @@
         "\ufeffID": "8194568", 
         "Title ID": "8194399"
     }, 
-    "8194569": {
-        "Name": "Apollodorus Epitome 3.9", 
+    "8188807": {
+        "Name": "Apollodorus Epitome 1.2", 
         "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:3.9", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:1.2", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "3.9", 
-        "\ufeffID": "8194569", 
+        "Passage": "1.2", 
+        "\ufeffID": "8188807", 
         "Title ID": "8194399"
     }, 
     "9356324": {
@@ -4223,15 +4223,15 @@
         "\ufeffID": "8188808", 
         "Title ID": "8194399"
     }, 
-    "8194567": {
-        "Name": "Apollodorus Epitome 3.7", 
+    "8188809": {
+        "Name": "Apollodorus Epitome 1.4", 
         "Title": "Epitome", 
         "Fragment": "", 
-        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:3.7", 
+        "CTS URN": "urn:cts:greekLit:tlg0548.tlg002.perseus-grc2:1.4", 
         "Author": "Apollodorus", 
         "Author ID": "8194398", 
-        "Passage": "3.7", 
-        "\ufeffID": "8194567", 
+        "Passage": "1.4", 
+        "\ufeffID": "8188809", 
         "Title ID": "8194399"
     }, 
     "8194564": {
