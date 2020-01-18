@@ -38,7 +38,7 @@ type returningInfo = {
   id: string;
   relationships: relationshipInfo;
   name: string;
-  members: any[];
+  members: { sub: any[]; super: any[] };
   type: string;
   validSearch: boolean;
   alternativeName: { targetID: string; passage: passageInfo[] };
@@ -98,7 +98,7 @@ export const updateComponent = (id: string) => {
       id: id,
       relationships: empty,
       name: getName(entities[id]),
-      members: [],
+      members: { sub: [], super: [] },
       type: entities[id] ? entities[id]["Type of entity"] : "",
       validSearch: true,
       alternativeName: {
@@ -189,7 +189,11 @@ const getAllConnections = (id: string) => {
           connections.push({
             target: getName(entities[tieRow["Subject ID"]]),
             targetID: tieRow["Subject ID"],
-            verb: tieRow["Verb"],
+            verb:
+              tieRow["Verb"] === "is part of" ||
+              tieRow["Verb"] === "is member of"
+                ? "has members"
+                : tieRow["Verb"],
             passage: passageInfo
           });
         }
@@ -222,7 +226,11 @@ const getAllConnections = (id: string) => {
             connections.push({
               target: getName(entities[tieRow["Direct Object ID"]]),
               targetID: tieRow["Direct Object ID"],
-              verb: reversedVerb(tieRow["Verb"], tieRow["Direct Object ID"]),
+              verb:
+                tieRow["Verb"] === "is part of" ||
+                tieRow["Verb"] === "is member of"
+                  ? "is member of"
+                  : reversedVerb(tieRow["Verb"], tieRow["Direct Object ID"]),
               passage: passageInfo
             });
           }
@@ -291,7 +299,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   /* Preliminary info about the entity */
   let name = getName(entities[id]);
   let type = entities[id] ? entities[id]["Type of entity"] : "";
-  let members: any[] = [];
+  let members: { sub: any[]; super: any[] } = { sub: [], super: [] };
   let relationships: relationshipInfo = {
     MOTHERS: [],
     FATHERS: [],
@@ -397,9 +405,11 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
         d
       );
     }
-    // X is a MEMBER of a collective
-    else if (tie.verb === "is part of" || tie.verb === "is member of") {
-      members = checkAndRemoveDuplicates(members, d);
+    // X is a MEMBER of a collective but the main ID
+    else if (tie.verb === "is member of") {
+      members.super = checkAndRemoveDuplicates(members.super, d);
+    } else if (tie.verb === "has members") {
+      members.sub = checkAndRemoveDuplicates(members.sub, d);
     }
     // X is born by autochthony
     else if (tie.verb === "is born by autochthony [in/on/at]") {
@@ -431,7 +441,8 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.TWIN = alphabetize(relationships.TWIN);
   relationships.SPOUSES = alphabetize(relationships.SPOUSES);
-  members = alphabetize(members);
+  members.super = alphabetize(members.super);
+  members.sub = alphabetize(members.sub);
 
   // Currently very inefficient, but finds the other parent of the child
   relationships.CHILDREN = getOtherParents(id, childrenTemp);
@@ -649,10 +660,7 @@ const reversedVerb = (verb: string, dirObject: string) => {
   // No cases of homosexual relationships in the mythology
   else if (verb === "is spouse of" || verb === "marries") {
     return "is spouse of";
-  }
-
-  // TODO: Deal with IS MEMBER OF verb here.
-  else if (verb === "is member of" || verb === "is part of") {
+  } else if (verb === "is member of" || verb === "is part of") {
     return "";
   } else {
     console.log(

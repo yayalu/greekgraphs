@@ -29,7 +29,7 @@ type DatumState = {
   id: string;
   name: string;
   relationships: relationshipInfo;
-  members: any[];
+  members: { sub: any[]; super: any[] };
   type: string;
   validSearch: boolean;
   alternativeName: { targetID: string; passage: any[] };
@@ -54,7 +54,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         SPOUSES: [],
         CHILDREN: []
       },
-      members: [],
+      members: { sub: [], super: [] },
       type: "",
       validSearch: false,
       alternativeName: { targetID: "", passage: [] }
@@ -132,8 +132,13 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   } */
 
   getDataPoints(relationship: string, showPassage: boolean) {
+    console.log(relationship);
     let that = this;
-    if (that.state.relationships[relationship].length !== 0) {
+    let focus =
+      relationship === "PART OF"
+        ? this.state.members.super
+        : that.state.relationships[relationship];
+    if (focus.length !== 0) {
       return (
         <div style={{ clear: "both" }}>
           <div
@@ -148,7 +153,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             {this.getPluralization(relationship)}
           </div>
           <div style={{ float: "left", marginTop: "0.5rem" }}>
-            {that.state.relationships[relationship].map(entity => {
+            {focus.map(entity => {
               return (
                 <div style={{ margin: "0" }}>
                   {this.checkUnusualRelationship(
@@ -168,7 +173,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   }
 
   getPluralization(relationship: string) {
-    if (relationship === "MOTHERS" || relationship === "FATHERS") {
+    if (relationship === "PART OF") {
+      return relationship + ": ";
+    } else if (relationship === "MOTHERS" || relationship === "FATHERS") {
       return Pluralize.singular(relationship) + ": ";
     } else {
       if (this.state.relationships[relationship].length === 1) {
@@ -237,16 +244,18 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         </div>
       );
     } else {
+      console.log("ID", entity.targetID);
       return (
         <span>
           <div
             className="entity-button"
             onClick={() => this.handleNameClicked(entity.targetID)}
           >
-            {entity !== that.state.relationships[relationship][0] &&
-            relationship !== "CHILDREN" &&
+            {relationship !== "CHILDREN" &&
             relationship !== "SIBLINGS" &&
-            relationship !== "SPOUSES" ? (
+            relationship !== "SPOUSES" &&
+            relationship !== "PART OF" &&
+            entity !== that.state.relationships[relationship][0] ? (
               <span>OR </span>
             ) : (
               ""
@@ -308,7 +317,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
   getCollectiveMembers() {
     let that = this;
-    if (that.state.members.length !== 0) {
+    if (that.state.members.sub.length !== 0) {
       return (
         <div style={{ marginTop: "3rem", textAlign: "center" }}>
           <div
@@ -322,7 +331,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           >
             MEMBERS:
           </div>
-          {that.state.members.map(member => {
+          {that.state.members.sub.map(member => {
             return (
               <div style={{ margin: "0" }}>
                 <span
@@ -546,6 +555,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                     );
                   }
                 })}
+            {this.state.members.super.length !== 0 ? (
+              <div>{this.getDataPoints("PART OF", true)}</div>
+            ) : (
+              ""
+            )}
             <div>{this.getCollectiveMembers()}</div>
           </div>
         </div>
