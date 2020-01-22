@@ -132,7 +132,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   } */
 
   getDataPoints(relationship: string, showPassage: boolean) {
-    console.log(relationship);
     let that = this;
     let focus =
       relationship === "PART OF"
@@ -244,7 +243,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         </div>
       );
     } else {
-      console.log("ID", entity.targetID);
       return (
         <span>
           <div
