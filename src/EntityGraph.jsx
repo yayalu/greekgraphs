@@ -19,6 +19,7 @@ import {
 } from "react-konva";
 
 class EntityGraph extends React.Component {
+  // Combining canvas tag with konva-react: https://lavrton.com/using-react-with-html5-canvas-871d07d8d753/
   constructor(props) {
     super(props);
     this.state = {
@@ -27,13 +28,13 @@ class EntityGraph extends React.Component {
     };
   }
 
-  rect(props) {
+  node(props) {
     const { ctx, x, y, text } = props;
-    ctx.ctx.strokeRect(75, 140, 150, 110);
-    x, y, width, height;
+    ctx.strokeRect(x, y, 80, 30);
+    ctx.fillText(text, x + 10, y + 20);
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     // Return the graph with populated nodes
     if (
       !checkNoRelations(JSON.parse(relationships[this.props.id]).relationships)
@@ -46,7 +47,8 @@ class EntityGraph extends React.Component {
       const ctx = this.refs.graphCanvas.getContext("2d");
 
       //Add in main node:
-      this.rect({
+      this.node({
+        ctx,
         x: this.refs.graphCanvas.width / 2,
         y: this.refs.graphCanvas.height / 2,
         text: getName(entities[this.props.id])
