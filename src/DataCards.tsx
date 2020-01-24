@@ -570,10 +570,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         >
           <EntityGraph
             id={this.state.id}
-            relationships={this.state.relationships}
             relationshipClicked={this.handleNameClicked}
             // disputeClicked={this.handleDisputeClicked}
-            members={this.state.members}
           ></EntityGraph>
         </div>
       </React.Fragment>
