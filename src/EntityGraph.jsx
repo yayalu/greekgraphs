@@ -46,13 +46,17 @@ class EntityGraph extends React.Component {
   }
 
   parentEdge(props) {
-    const { ctx, leftX, rightX, y } = props;
+    const { ctx, leftX, rightX, y, disputed } = props;
     ctx.beginPath();
     ctx.moveTo(leftX - 20, y + this.state.nodeHeight / 2);
     ctx.lineTo(leftX - 20, y + this.state.nodeHeight + 20);
     ctx.lineTo(rightX + 20, y + this.state.nodeHeight + 20);
     ctx.lineTo(rightX + 20, y + this.state.nodeHeight / 2);
+    if (disputed) {
+      ctx.strokeStyle = "#f00";
+    }
     ctx.stroke();
+    ctx.strokeStyle = "#000";
   }
 
   componentDidUpdate() {
@@ -163,7 +167,8 @@ class EntityGraph extends React.Component {
           ctx,
           leftX: leftmost,
           rightX: rightmost,
-          y: level
+          y: level,
+          disputed: allParents.length > 2 ? true : false
         });
       }
 
