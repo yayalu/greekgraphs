@@ -4,6 +4,7 @@ import { getGraph } from "./GraphHandler";
 import { checkNoRelations, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import relationships from "./data/relationships.json";
+import { objectTypeAnnotation } from "@babel/types";
 // import Konva from "konva";
 /* import {
   Stage,
@@ -46,15 +47,27 @@ class EntityGraph extends React.Component {
   }
 
   parentEdge(props) {
-    const { ctx, leftX, rightX, y, disputed } = props;
+    const { ctx, leftX, rightX, y, siblings, disputed } = props;
     ctx.beginPath();
+    if (disputed) {
+      ctx.strokeStyle = "#f00";
+    }
     ctx.moveTo(leftX - 20, y + this.state.nodeHeight / 2);
     ctx.lineTo(leftX - 20, y + this.state.nodeHeight + 20);
     ctx.lineTo(rightX + 20, y + this.state.nodeHeight + 20);
     ctx.lineTo(rightX + 20, y + this.state.nodeHeight / 2);
-    if (disputed) {
-      ctx.strokeStyle = "#f00";
-    }
+    ctx.moveTo((rightX + leftX) / 2, y + this.state.nodeHeight + 20);
+
+    let centrePoint = {
+      x: (rightX + leftX) / 2,
+      y: y + this.state.nodeHeight + this.state.nodeVerticalSpacing / 2 + 10
+    };
+    ctx.lineTo(centrePoint.x, centrePoint.y);
+    Object.values(siblings).forEach(s => {
+      ctx.moveTo(centrePoint.x, centrePoint.y);
+      ctx.lineTo(s.x1 + this.state.nodeWidth / 2, centrePoint.y);
+      ctx.lineTo(s.x1 + this.state.nodeWidth / 2, s.y1);
+    });
     ctx.stroke();
     ctx.strokeStyle = "#000";
   }
@@ -81,6 +94,10 @@ class EntityGraph extends React.Component {
       // Uses HTML CanvasRenderingContext2D functions: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
       const ctx = this.refs.graphCanvas.getContext("2d");
 
+      /************************************************************************/
+      /*    ~~~~~~    NODES   ~~~~~~~                                         */
+      /************************************************************************/
+
       //Add in main node:
       let mainNodeWidth = this.refs.graphCanvas.width / 2;
       let mainNodeHeight = this.refs.graphCanvas.height / 2;
@@ -97,9 +114,7 @@ class EntityGraph extends React.Component {
         y2: mainNodeHeight + this.state.nodeHeight
       };
 
-      /**************************************************/
       /*  DEPTH -1 - MOTHERS, FATHERS & DIVINE PARENTS  */
-      /**************************************************/
       let extension = 1;
       let level =
         nodePositions[this.props.id].y1 - nodeVerticalSpacing - nodeHeight;
@@ -152,31 +167,9 @@ class EntityGraph extends React.Component {
             extension++;
           }
         });
-
-        let leftmost = nodePositions[this.props.id].x1;
-        let rightmost = nodePositions[this.props.id].x2;
-        for (let i = 0; i < allParents.length; i++) {
-          if (nodePositions[allParents[i].targetID].x1 < leftmost) {
-            leftmost = nodePositions[allParents[i].targetID].x1;
-          }
-          if (nodePositions[allParents[i].targetID].x2 > rightmost) {
-            rightmost = nodePositions[allParents[i].targetID].x2;
-          }
-        }
-        this.parentEdge({
-          ctx,
-          leftX: leftmost,
-          rightX: rightmost,
-          y: level,
-          disputed: allParents.length > 2 ? true : false
-        });
       }
 
-      // Connect parents:
-
-      /***********************************/
       /*  DEPTH 0 - SIBLINGS AND SPOUSES */
-      /***********************************/
 
       extension = 0;
       //Loop through all depth 0 nodes and add them into the graph
@@ -225,6 +218,12 @@ class EntityGraph extends React.Component {
         }
       });
 
+      /***************************************/
+      /*      ~~~ EDGES ~~~~~                */
+      /***************************************/
+
+      /* COUPLE EDGES */
+
       Object.values(graphContent.edges).forEach(edge => {
         if (edge.relation === "spouse") {
           let edgeStart = {};
@@ -258,10 +257,37 @@ class EntityGraph extends React.Component {
         }
       });
 
-      // ctx.clearRect(0, 0, 300, 300);
-      // draw children “components”
-      /*this.rect({ ctx, x: 10, y: 10, width: 50, height: 50 });
-      this.rect({ ctx, x: 110, y: 110, width: 50, height: 50 }); */
+      /* PARENT EDGES LINKING TO SIBLING NODES */
+
+      // Parent edges top half
+      let leftmost = nodePositions[this.props.id].x1;
+      let rightmost = nodePositions[this.props.id].x2;
+      for (let i = 0; i < allParents.length; i++) {
+        if (nodePositions[allParents[i].targetID].x1 < leftmost) {
+          leftmost = nodePositions[allParents[i].targetID].x1;
+        }
+        if (nodePositions[allParents[i].targetID].x2 > rightmost) {
+          rightmost = nodePositions[allParents[i].targetID].x2;
+        }
+      }
+
+      // Get location of all siblings
+      let siblings = JSON.parse(relationships[this.props.id]).relationships
+        .SIBLINGS;
+      // Add all siblings and pre-add the main node
+      let connectedSiblings = {};
+      connectedSiblings[this.props.id] = nodePositions[this.props.id];
+      siblings.forEach(s => {
+        connectedSiblings[s.targetID] = nodePositions[s.targetID];
+      });
+      this.parentEdge({
+        ctx,
+        leftX: leftmost,
+        rightX: rightmost,
+        y: level,
+        siblings: connectedSiblings,
+        disputed: allParents.length > 2 ? true : false
+      });
     }
   }
 
