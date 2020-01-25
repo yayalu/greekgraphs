@@ -95,7 +95,7 @@ class EntityGraph extends React.Component {
             let rightNodeX =
               nodePositions[this.props.id].x2 +
               nodeHorizontalSpacing +
-              nodeHorizontalSpacing * extension;
+              (nodeWidth + nodeHorizontalSpacing) * extension * 0.5;
             let rightNodeY = nodePositions[this.props.id].y1;
             this.node({
               ctx,
@@ -107,14 +107,14 @@ class EntityGraph extends React.Component {
               x1: rightNodeX,
               y1: rightNodeY,
               x2: rightNodeX + nodeHorizontalSpacing,
-              y2: rightNodeY + nodeHorizontalSpacing
+              y2: rightNodeY + nodeHeight
             };
           } else {
             let leftNodeX =
               nodePositions[this.props.id].x1 -
-              nodeWidth -
               nodeHorizontalSpacing -
-              nodeHorizontalSpacing * (extension - 1);
+              nodeWidth -
+              (nodeWidth + nodeHorizontalSpacing) * (extension - 1) * 0.5;
             let leftNodeY = nodePositions[this.props.id].y1;
             this.node({
               ctx,
@@ -123,10 +123,10 @@ class EntityGraph extends React.Component {
               text: getName(entities[node.id])
             });
             nodePositions[node.id] = {
-              x1: leftNodeX,
+              x1: leftNodeX - nodeHorizontalSpacing,
               y1: leftNodeY,
-              x2: leftNodeX - nodeHorizontalSpacing,
-              y2: leftNodeY - nodeHorizontalSpacing
+              x2: leftNodeX,
+              y2: leftNodeY + nodeHeight
             };
           }
           extension++;
@@ -135,12 +135,33 @@ class EntityGraph extends React.Component {
 
       Object.values(graphContent.edges).forEach(edge => {
         if (edge.relation === "spouse") {
+          let edgeStart = {};
+          let edgeEnd = {};
+          if (nodePositions[this.props.id].x1 < nodePositions[edge.to].x1) {
+            edgeStart = {
+              x: nodePositions[this.props.id].x2,
+              y: nodePositions[this.props.id].y1
+            };
+            edgeEnd = {
+              x: nodePositions[edge.to].x1,
+              y: nodePositions[edge.to].y1 - nodeHeight / 2
+            };
+          } else {
+            edgeStart = {
+              x: nodePositions[this.props.id].x1,
+              y: nodePositions[this.props.id].y1
+            };
+            edgeEnd = {
+              x: nodePositions[edge.to].x1,
+              y: nodePositions[edge.to].y1 - nodeHeight / 2
+            };
+          }
           this.edge({
             ctx,
-            fromX: nodePositions[edge.from].x1,
-            fromY: nodePositions[edge.from].y1,
-            toX: nodePositions[edge.to].x1,
-            toY: nodePositions[edge.to].y1
+            fromX: edgeStart.x,
+            fromY: edgeStart.y,
+            toX: edgeEnd.x,
+            toY: edgeEnd.y
           });
         }
       });
