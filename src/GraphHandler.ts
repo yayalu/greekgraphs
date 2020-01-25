@@ -1,17 +1,10 @@
-import entities from "./data/entities.json";
-import {
-  getName,
-  getGender,
-  checkNoMembers,
-  checkNoRelations
-} from "./DataCardHandler";
 import { nodeType, edgeType } from "./GraphTypes";
 import allRelationships from "./data/relationships.json";
 import "./EntityGraph.scss";
 
 export const getGraph = (id: string) => {
   let relationships = JSON.parse(allRelationships[id]).relationships;
-  console.log(relationships);
+  console.log(JSON.parse(allRelationships[id]));
   return getAllRelationshipLinks(id, relationships);
 };
 
@@ -192,15 +185,15 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
         edge = {
           from: id,
           to: relationships.CHILDREN[i].otherParentIDs[j],
-          relation: "other parent",
+          relation: "co-parent",
           style: "",
-          disputed: "other parent"
+          disputed: "co-parent"
         };
       } else {
         edge = {
           from: id,
           to: relationships.CHILDREN[i].otherParentIDs[j],
-          relation: "other parent",
+          relation: "co-parent",
           style: ""
         };
       }

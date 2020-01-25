@@ -1,9 +1,8 @@
 import React from "react";
 import "./App.css";
 import { getGraph } from "./GraphHandler";
-import { checkNoRelations, checkNoMembers, getName } from "./DataCardHandler";
+import { checkNoRelations, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
-import passages from "./data/passages.json";
 import relationships from "./data/relationships.json";
 // import Konva from "konva";
 /* import {
@@ -26,7 +25,8 @@ class EntityGraph extends React.Component {
       openInfoPage: { showDisputePage: false, showUnusualPage: false },
       nodeWidth: 80,
       nodeHeight: 30,
-      nodeHorizontalSpacing: 60
+      nodeHorizontalSpacing: 60,
+      nodeVerticalSpacing: 100
     };
   }
 
@@ -45,11 +45,22 @@ class EntityGraph extends React.Component {
     ctx.stroke();
   }
 
+  parentEdge(props) {
+    const { ctx, leftX, rightX, y } = props;
+    ctx.beginPath();
+    ctx.moveTo(leftX - 20, y + this.state.nodeHeight / 2);
+    ctx.lineTo(leftX - 20, y + this.state.nodeHeight + 20);
+    ctx.lineTo(rightX + 20, y + this.state.nodeHeight + 20);
+    ctx.lineTo(rightX + 20, y + this.state.nodeHeight / 2);
+    ctx.stroke();
+  }
+
   componentDidUpdate() {
     let nodePositions = {};
     let nodeWidth = this.state.nodeWidth;
     let nodeHeight = this.state.nodeHeight;
     let nodeHorizontalSpacing = this.state.nodeHorizontalSpacing;
+    let nodeVerticalSpacing = this.state.nodeVerticalSpacing;
 
     // Return the graph with populated nodes
     if (
@@ -82,12 +93,88 @@ class EntityGraph extends React.Component {
         y2: mainNodeHeight + this.state.nodeHeight
       };
 
+      /**************************************************/
+      /*  DEPTH -1 - MOTHERS, FATHERS & DIVINE PARENTS  */
+      /**************************************************/
+      let extension = 1;
+      let level =
+        nodePositions[this.props.id].y1 - nodeVerticalSpacing - nodeHeight;
+      let allParents = JSON.parse(relationships[this.props.id]).relationships
+        .FATHERS;
+      let mothers = JSON.parse(relationships[this.props.id]).relationships
+        .MOTHERS;
+      mothers.forEach(m => {
+        allParents.push(m);
+      });
+
+      if (allParents.length > 0) {
+        Object.values(graphContent.nodes).forEach(node => {
+          if (node.depth === -1 && node.id !== this.props.id) {
+            if (extension % 2 === 0) {
+              let rightX =
+                nodePositions[this.props.id].x1 +
+                (nodeHorizontalSpacing + nodeWidth) * extension * 0.5;
+              let rightY = level;
+              this.node({
+                ctx,
+                x: rightX,
+                y: rightY,
+                text: getName(entities[node.id])
+              });
+              nodePositions[node.id] = {
+                x1: rightX,
+                y1: rightY,
+                x2: rightX + nodeWidth,
+                y2: rightY + nodeHeight
+              };
+            } else {
+              let leftX =
+                nodePositions[this.props.id].x1 -
+                (nodeHorizontalSpacing + nodeWidth) * (extension - 1) * 0.5;
+              let leftY = level;
+              this.node({
+                ctx,
+                x: leftX,
+                y: leftY,
+                text: getName(entities[node.id])
+              });
+              nodePositions[node.id] = {
+                x1: leftX,
+                y1: leftY,
+                x2: leftX + nodeWidth,
+                y2: leftY + nodeHeight
+              };
+            }
+            extension++;
+          }
+        });
+
+        let leftmost = nodePositions[this.props.id].x1;
+        let rightmost = nodePositions[this.props.id].x2;
+        for (let i = 0; i < allParents.length; i++) {
+          if (nodePositions[allParents[i].targetID].x1 < leftmost) {
+            leftmost = nodePositions[allParents[i].targetID].x1;
+          }
+          if (nodePositions[allParents[i].targetID].x2 > rightmost) {
+            rightmost = nodePositions[allParents[i].targetID].x2;
+          }
+        }
+        this.parentEdge({
+          ctx,
+          leftX: leftmost,
+          rightX: rightmost,
+          y: level
+        });
+      }
+
+      // Connect parents:
+
       /***********************************/
       /*  DEPTH 0 - SIBLINGS AND SPOUSES */
       /***********************************/
 
+      extension = 0;
       //Loop through all depth 0 nodes and add them into the graph
-      let extension = 0;
       Object.values(graphContent.nodes).forEach(node => {
         if (node.depth === 0 && node.id !== this.props.id) {
           // The following means the main node is centred, and the other nodes fan out alongside the main node.
@@ -106,7 +193,7 @@ class EntityGraph extends React.Component {
             nodePositions[node.id] = {
               x1: rightNodeX,
               y1: rightNodeY,
-              x2: rightNodeX + nodeHorizontalSpacing,
+              x2: rightNodeX + nodeWidth,
               y2: rightNodeY + nodeHeight
             };
           } else {
@@ -123,9 +210,9 @@ class EntityGraph extends React.Component {
               text: getName(entities[node.id])
             });
             nodePositions[node.id] = {
-              x1: leftNodeX - nodeHorizontalSpacing,
+              x1: leftNodeX,
               y1: leftNodeY,
-              x2: leftNodeX,
+              x2: leftNodeX + nodeWidth,
               y2: leftNodeY + nodeHeight
             };
           }
