@@ -12,8 +12,7 @@ import "./EntityGraph.scss";
 export const getGraph = (id: string) => {
   let relationships = JSON.parse(allRelationships[id]).relationships;
   console.log(relationships);
-  let graphContent = getAllRelationshipLinks(id, relationships);
-  console.log(graphContent);
+  return getAllRelationshipLinks(id, relationships);
 };
 
 const getAllRelationshipLinks = (id: string, relationships: any) => {

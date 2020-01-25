@@ -24,17 +24,25 @@ class EntityGraph extends React.Component {
     super(props);
     this.state = {
       openInfoPage: { showDisputePage: false, showUnusualPage: false },
-      graphContent: {}
+      nodeWidth: 80,
+      nodeHeight: 30,
+      nodeHorizontalSpacing: 60
     };
   }
 
   node(props) {
     const { ctx, x, y, text } = props;
-    ctx.strokeRect(x, y, 80, 30);
+    ctx.strokeRect(x, y, this.state.nodeWidth, this.state.nodeHeight);
+    // ctx.font = "20px Arial";
     ctx.fillText(text, x + 10, y + 20);
   }
 
   componentDidUpdate() {
+    let nodePositions = {};
+    let nodeWidth = this.state.nodeWidth;
+    let nodeHeight = this.state.nodeHeight;
+    let nodeHorizontalSpacing = this.state.nodeHorizontalSpacing;
+
     // Return the graph with populated nodes
     if (
       !checkNoRelations(JSON.parse(relationships[this.props.id]).relationships)
@@ -47,12 +55,52 @@ class EntityGraph extends React.Component {
       const ctx = this.refs.graphCanvas.getContext("2d");
 
       //Add in main node:
+      let mainNodeWidth = this.refs.graphCanvas.width / 2;
+      let mainNodeHeight = this.refs.graphCanvas.height / 2;
       this.node({
         ctx,
-        x: this.refs.graphCanvas.width / 2,
-        y: this.refs.graphCanvas.height / 2,
+        x: mainNodeWidth,
+        y: mainNodeHeight,
         text: getName(entities[this.props.id])
       });
+      nodePositions[this.props.id] = {
+        x1: mainNodeWidth,
+        y1: mainNodeHeight,
+        x2: mainNodeWidth + this.state.nodeWidth,
+        y2: mainNodeHeight + this.state.nodeHeight
+      };
+
+      //Loop through all depth 0 nodes and add them into the graph
+      let extension = 0;
+      Object.values(graphContent.nodes).forEach(node => {
+        if (node.depth === 0 && node.id !== this.props.id) {
+          console.log(node);
+          if (extension % 2 === 0) {
+            this.node({
+              ctx,
+              x:
+                nodePositions[this.props.id].x2 +
+                nodeHorizontalSpacing +
+                nodeHorizontalSpacing * extension,
+              y: nodePositions[this.props.id].y1,
+              text: getName(entities[node.id])
+            });
+          } else {
+            this.node({
+              ctx,
+              x:
+                nodePositions[this.props.id].x1 -
+                nodeWidth -
+                nodeHorizontalSpacing -
+                nodeHorizontalSpacing * (extension - 1),
+              y: nodePositions[this.props.id].y1,
+              text: getName(entities[node.id])
+            });
+          }
+          extension++;
+        }
+      });
+
       // ctx.clearRect(0, 0, 300, 300);
       // draw children “components”
       /*this.rect({ ctx, x: 10, y: 10, width: 50, height: 50 });
@@ -109,6 +157,7 @@ class EntityGraph extends React.Component {
     </Stage>*/}
         <canvas
           ref="graphCanvas"
+          id="responsive-canvas"
           width={width}
           height={height}
           style={{ border: "1px solid #000000" }}
