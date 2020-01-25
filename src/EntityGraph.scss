@@ -140,28 +140,16 @@ svg {
   width: 100%;
 }
 
-#legend-mainnode {
-  border: 1px solid black;
-  background-color: #fff;
-  padding: 1rem;
-  margin: 3rem 1rem 3rem 1rem;
-  font-size: 0.7rem;
-}
-
 #legend-relationnode {
   border: 1px solid black;
-  background-color: #fff;
   padding: 1rem;
-  border-radius: 50%;
   margin: 3rem 1rem 3rem 1rem;
   font-size: 0.7rem;
 }
 
 #legend-collectivenode {
   border: 1px solid red;
-  background-color: #fff;
   padding: 1rem;
-  border-radius: 50%;
   margin: 3rem 1rem 3rem 1rem;
   font-size: 0.7rem;
 }

@@ -58,6 +58,10 @@ class EntityGraph extends React.Component {
       let graphContent = getGraph(this.props.id);
       console.log(graphContent);
 
+      //Set the scrollbar for the canvas to start in the centre
+      let canvasDiv = this.refs.canvasOuterDiv;
+      canvasDiv.scrollLeft = 1900;
+
       // Provide context for graph - render graph on canvas
       // Uses HTML CanvasRenderingContext2D functions: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
       const ctx = this.refs.graphCanvas.getContext("2d");
@@ -150,8 +154,6 @@ class EntityGraph extends React.Component {
 
   // To add a scrollbar: https://stackoverflow.com/questions/56645156/how-to-add-a-scrollable-area-in-a-konva-stage
   render() {
-    let width = "1500";
-    let height = "600";
     return (
       <div style={{ textAlign: "center" }}>
         <h1>Relationship Graph for {getName(entities[this.props.id])}</h1>
@@ -196,6 +198,7 @@ class EntityGraph extends React.Component {
           </Layer>
     </Stage>*/}
         <div
+          ref="canvasOuterDiv"
           style={{
             overflow: "scroll",
             border: "1px solid #000000",
