@@ -29,7 +29,7 @@ class EntityGraph extends React.Component {
       nodeHeight: 30,
       nodeHorizontalSpacing: 60,
       nodeVerticalSpacing: 100,
-      verticalOffset: 150
+      verticalOffset: 250
     };
   }
 
@@ -127,7 +127,11 @@ class EntityGraph extends React.Component {
       );
       let middle = {
         x: (otherParentLocation.x + mainLocation.x) / 2,
-        y: otherParentLocation.y + this.state.verticalOffset + newNodeYOffset
+        y:
+          otherParentLocation.y +
+          this.state.verticalOffset +
+          newNodeYOffset +
+          20
       };
       ctx.lineTo(middle.x, middle.y);
       for (let j = 0; j < children.length; j++) {
