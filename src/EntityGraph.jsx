@@ -42,8 +42,6 @@ class EntityGraph extends React.Component {
       ctx.fillText(text, x + 10, y + 20);
       ctx.setLineDash([]);
       ctx.strokeStyle = "#000";
-
-      console.log("Unknown");
     } else {
       ctx.strokeRect(x, y, this.state.nodeWidth, this.state.nodeHeight);
       ctx.fillText(text, x + 10, y + 20);
@@ -102,13 +100,16 @@ class EntityGraph extends React.Component {
       ctx.strokeStyle = "#f00";
     }
     let newNodeYOffset = nodeYOffset;
-    console.log("Parents", parents, "Children", children);
 
     let mainLocation = {
       x: nodePositions[this.props.id].x1 + this.state.nodeWidth / 2,
       y: nodePositions[this.props.id].y1 + this.state.nodeHeight
     };
 
+    if (parents.length === 0) {
+      // Other parent is unknown
+      parents.push("Unknown");
+    }
     for (let i = 0; i < parents.length; i++) {
       //Start line at halfway point between coparents, and draw line between coparents
       ctx.beginPath();
@@ -297,10 +298,21 @@ class EntityGraph extends React.Component {
           ctx,
           x:
             nodePositions[depth0Nodes[depth0Nodes.length - 1].id].x2 +
-            nodeWidth,
+            nodeHorizontalSpacing,
           y: nodePositions[this.props.id].y1,
           text: "Unknown"
         });
+        nodePositions["Unknown"] = {
+          x1:
+            nodePositions[depth0Nodes[depth0Nodes.length - 1].id].x2 +
+            nodeHorizontalSpacing,
+          y1: nodePositions[this.props.id].y1,
+          x2:
+            nodePositions[depth0Nodes[depth0Nodes.length - 1].id].x2 +
+            nodeHorizontalSpacing +
+            nodeWidth,
+          y2: nodePositions[this.props.id].y1 + nodeHeight
+        };
       }
       let startingX =
         nodePositions[this.props.id].x1 -
