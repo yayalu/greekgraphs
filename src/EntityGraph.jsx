@@ -5,6 +5,7 @@ import { checkNoRelations, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import relationships from "./data/relationships.json";
 import { objectTypeAnnotation } from "@babel/types";
+import { isObject } from "util";
 // import Konva from "konva";
 /* import {
   Stage,
@@ -72,6 +73,58 @@ class EntityGraph extends React.Component {
     ctx.strokeStyle = "#000";
   }
 
+  childEdge(props) {
+    const { ctx, nodePositions, parents, children } = props;
+    console.log(parents);
+    if (parents.length > 1) {
+      // disputed parentage
+      ctx.strokeStyle = "#f00";
+    }
+    for (let i = 0; i < parents.length; i++) {
+      //Start line at halfway point between coparents, and draw line between coparents
+      ctx.beginPath();
+      let middleX;
+      let middleY =
+        nodePositions[this.props.id].y2 + this.state.nodeVerticalSpacing / 2;
+      if (nodePositions[parents[i]].x1 < nodePositions[this.props.id].x1) {
+        middleX =
+          (nodePositions[this.props.id].x1 - nodePositions[parents[i]].x2) / 4 +
+          nodePositions[parents[i]].x2;
+        ctx.moveTo(
+          nodePositions[parents[i]].x2,
+          nodePositions[this.props.id].y1 + this.state.nodeHeight / 2
+        );
+        ctx.lineTo(middleX, middleY);
+        ctx.lineTo(
+          nodePositions[this.props.id].x1,
+          nodePositions[this.props.id].y1 + this.state.nodeHeight / 2
+        );
+      } else {
+        middleX =
+          nodePositions[parents[i]].x1 -
+          (nodePositions[parents[i]].x1 - nodePositions[this.props.id].x2) / 4;
+        ctx.moveTo(
+          nodePositions[this.props.id].x2,
+          nodePositions[this.props.id].y1 + this.state.nodeHeight / 2
+        );
+        ctx.lineTo(middleX, middleY);
+        ctx.lineTo(
+          nodePositions[parents[i]].x1,
+          nodePositions[this.props.id].y1 + this.state.nodeHeight / 2
+        );
+      }
+      for (let j = 0; j < children.length; j++) {
+        ctx.moveTo(middleX, middleY);
+        ctx.lineTo(
+          nodePositions[children[j].targetID].x1 + this.state.nodeWidth / 2,
+          nodePositions[children[j].targetID].y1
+        );
+      }
+      ctx.stroke();
+    }
+    ctx.strokeStyle = "#000";
+  }
+
   componentDidUpdate() {
     let nodePositions = {};
     let nodeWidth = this.state.nodeWidth;
@@ -88,7 +141,7 @@ class EntityGraph extends React.Component {
 
       //Set the scrollbar for the canvas to start in the centre
       let canvasDiv = this.refs.canvasOuterDiv;
-      canvasDiv.scrollLeft = 1900;
+      canvasDiv.scrollLeft = 4500;
 
       // Provide context for graph - render graph on canvas
       // Uses HTML CanvasRenderingContext2D functions: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
@@ -218,46 +271,38 @@ class EntityGraph extends React.Component {
         }
       });
 
+      /*  DEPTH 1 - CHILDREN */
+      let startingX = nodePositions[this.props.id].x1 - 3500; //Temporary placement
+      extension = 0;
+      let children = JSON.parse(relationships[this.props.id]).relationships
+        .CHILDREN;
+      children.forEach(i => {
+        for (let j = 0; j < i.child.length; j++) {
+          this.node({
+            ctx,
+            x: startingX + extension * (nodeWidth + nodeHorizontalSpacing),
+            y: nodePositions[this.props.id].y2 + nodeVerticalSpacing,
+            text: getName(entities[i.child[j].targetID])
+          });
+          nodePositions[i.child[j].targetID] = {
+            x1: startingX + extension * (nodeWidth + nodeHorizontalSpacing),
+            y1: nodePositions[this.props.id].y2 + nodeVerticalSpacing,
+            x2:
+              startingX +
+              extension * (nodeWidth + nodeHorizontalSpacing) +
+              nodeWidth,
+            y2:
+              nodePositions[this.props.id].y2 + nodeVerticalSpacing + nodeHeight
+          };
+          extension++;
+        }
+      });
+
       /***************************************/
       /*      ~~~ EDGES ~~~~~                */
       /***************************************/
 
-      /* COUPLE EDGES */
-
-      Object.values(graphContent.edges).forEach(edge => {
-        if (edge.relation === "spouse") {
-          let edgeStart = {};
-          let edgeEnd = {};
-          if (nodePositions[this.props.id].x1 < nodePositions[edge.to].x1) {
-            edgeStart = {
-              x: nodePositions[this.props.id].x2,
-              y: nodePositions[this.props.id].y1
-            };
-            edgeEnd = {
-              x: nodePositions[edge.to].x1,
-              y: nodePositions[edge.to].y1 - nodeHeight / 2
-            };
-          } else {
-            edgeStart = {
-              x: nodePositions[this.props.id].x1,
-              y: nodePositions[this.props.id].y1
-            };
-            edgeEnd = {
-              x: nodePositions[edge.to].x1,
-              y: nodePositions[edge.to].y1 - nodeHeight / 2
-            };
-          }
-          this.edge({
-            ctx,
-            fromX: edgeStart.x,
-            fromY: edgeStart.y,
-            toX: edgeEnd.x,
-            toY: edgeEnd.y
-          });
-        }
-      });
-
-      /* PARENT EDGES LINKING TO SIBLING NODES */
+      /* PARENT EDGES LINKING TO SIBLING NODES (DEPTH 1 -> DEPTH 0)*/
 
       // Parent edges top half
       let leftmost = nodePositions[this.props.id].x1;
@@ -287,6 +332,52 @@ class EntityGraph extends React.Component {
         y: level,
         siblings: connectedSiblings,
         disputed: allParents.length > 2 ? true : false
+      });
+
+      /* COUPLE EDGES */
+
+      /* Object.values(graphContent.edges).forEach(edge => {
+        if (edge.relation === "spouse" || edge.relation === "co-parent") {
+          let edgeStart = {};
+          let edgeEnd = {};
+          if (nodePositions[this.props.id].x1 < nodePositions[edge.to].x1) {
+            edgeStart = {
+              x: nodePositions[this.props.id].x2,
+              y: nodePositions[this.props.id].y1
+            };
+            edgeEnd = {
+              x: nodePositions[edge.to].x1,
+              y: nodePositions[edge.to].y1 - nodeHeight / 2
+            };
+          } else {
+            edgeStart = {
+              x: nodePositions[this.props.id].x1,
+              y: nodePositions[this.props.id].y1
+            };
+            edgeEnd = {
+              x: nodePositions[edge.to].x1,
+              y: nodePositions[edge.to].y1 - nodeHeight / 2
+            };
+          }
+          this.edge({
+            ctx,
+            fromX: edgeStart.x,
+            fromY: edgeStart.y,
+            toX: edgeEnd.x,
+            toY: edgeEnd.y
+          });
+        }
+      }); */
+
+      /* SPOUSES/COPARENTS LINKING TO CHILDREN EDGES */
+
+      children.forEach(i => {
+        this.childEdge({
+          ctx,
+          nodePositions,
+          parents: i.otherParentIDs,
+          children: i.child
+        });
       });
     }
   }
@@ -349,7 +440,7 @@ class EntityGraph extends React.Component {
           <canvas
             ref="graphCanvas"
             id="responsive-canvas"
-            width={5000}
+            width={10000}
             height={500}
           ></canvas>
         </div>

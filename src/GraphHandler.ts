@@ -1,4 +1,6 @@
 import { nodeType, edgeType } from "./GraphTypes";
+import { getName } from "./DataCardHandler";
+import entities from "./data/entities.json";
 import allRelationships from "./data/relationships.json";
 import "./EntityGraph.scss";
 
@@ -40,7 +42,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
       // Duplicated edge
       console.log(
         "Sibling suspicious - TODO handle",
-        relationships.SIBLINGS[i].targetID
+        relationships.SIBLINGS[i].target
       );
     } else {
       edges[relationships.SIBLINGS[i].targetID] = edge;
@@ -64,7 +66,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
       // Duplicated edge
       console.log(
         "Spouse suspicious - TODO handle",
-        relationships.SPOUSES[i].targetID
+        relationships.SPOUSES[i].target
       );
     } else {
       edges[relationships.SPOUSES[i].targetID] = edge;
@@ -88,7 +90,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
       // Duplicated edge
       console.log(
         "Twin suspicious - TODO handle",
-        relationships.TWIN[i].targetID
+        relationships.TWIN[i].target
       );
     } else {
       edges[relationships.TWIN[i].targetID] = edge;
@@ -114,7 +116,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
       // Duplicated edge
       console.log(
         "Mother suspicious - TODO handle",
-        relationships.MOTHERS[i].targetID
+        relationships.MOTHERS[i].target
       );
     } else {
       edges[relationships.MOTHERS[i].targetID] = edge;
@@ -138,7 +140,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
       // Duplicated edge
       console.log(
         "Fathers suspicious - TODO handle",
-        relationships.FATHERS[i].targetID
+        relationships.FATHERS[i].target
       );
     } else {
       edges[relationships.FATHERS[i].targetID] = edge;
@@ -165,7 +167,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
         // Duplicated edge
         console.log(
           "Child suspicious - TODO handle",
-          relationships.CHILDREN[i].child[j].targetID
+          relationships.CHILDREN[i].child[j].target
         );
       } else {
         edges[relationships.CHILDREN[i].child[j].targetID] = edge;
@@ -201,7 +203,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
         // Duplicated edge
         console.log(
           "Other parent suspicious - TODO handle",
-          relationships.CHILDREN[i].otherParentIDs[j]
+          getName(entities[relationships.CHILDREN[i].otherParentIDs[j]])
         );
       } else {
         edges[relationships.CHILDREN[i].otherParentIDs[j]] = edge;
