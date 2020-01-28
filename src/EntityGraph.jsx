@@ -48,38 +48,49 @@ class EntityGraph extends React.Component {
   }
 
   parentEdge(props) {
-    const { ctx, leftX, rightX, y, siblings, disputed } = props;
+    const {
+      ctx,
+      nodePositions,
+      parent1,
+      parent2,
+      siblings,
+      y,
+      disputed
+    } = props;
+    let parent1X = nodePositions[parent1].x1 + this.state.nodeWidth / 2;
+    let parent2X = nodePositions[parent2].x1 + this.state.nodeWidth / 2;
     ctx.beginPath();
     if (disputed) {
       ctx.strokeStyle = "#f00";
     }
-    ctx.moveTo(leftX - 20, y + this.state.nodeHeight / 2);
-    ctx.lineTo(leftX - 20, y + this.state.nodeHeight + 20);
-    ctx.lineTo(rightX + 20, y + this.state.nodeHeight + 20);
-    ctx.lineTo(rightX + 20, y + this.state.nodeHeight / 2);
-    ctx.moveTo((rightX + leftX) / 2, y + this.state.nodeHeight + 20);
+    ctx.moveTo(parent1X, y + this.state.nodeHeight);
+    ctx.lineTo(parent1X, y + this.state.nodeHeight + 20);
+    ctx.lineTo(parent2X, y + this.state.nodeHeight + 20);
+    ctx.lineTo(parent2X, y + this.state.nodeHeight);
+    ctx.moveTo((parent1X + parent2X) / 2, y + this.state.nodeHeight + 20);
+    ctx.lineTo((parent1X + parent2X) / 2, y + this.state.nodeHeight + 40);
 
-    let centrePoint = {
-      x: (rightX + leftX) / 2,
-      y: y + this.state.nodeHeight + this.state.nodeVerticalSpacing / 2 + 10
+    /*let centrePoint = {
+      x: (parent1X + parent2X) / 2,
+      y: y + this.state.nodeHeight + 40
     };
-    ctx.lineTo(centrePoint.x, centrePoint.y);
     Object.values(siblings).forEach(s => {
       ctx.moveTo(centrePoint.x, centrePoint.y);
       ctx.lineTo(s.x1 + this.state.nodeWidth / 2, centrePoint.y);
       ctx.lineTo(s.x1 + this.state.nodeWidth / 2, s.y1);
     });
+*/
     ctx.stroke();
     ctx.strokeStyle = "#000";
   }
 
   childEdge(props) {
     const { ctx, nodePositions, parents, children } = props;
-    console.log(parents);
     if (parents.length > 1) {
       // disputed parentage
       ctx.strokeStyle = "#f00";
     }
+    /*
     for (let i = 0; i < parents.length; i++) {
       //Start line at halfway point between coparents, and draw line between coparents
       ctx.beginPath();
@@ -123,6 +134,7 @@ class EntityGraph extends React.Component {
       ctx.stroke();
     }
     ctx.strokeStyle = "#000";
+    */
   }
 
   componentDidUpdate() {
@@ -171,15 +183,12 @@ class EntityGraph extends React.Component {
       let extension = 1;
       let level =
         nodePositions[this.props.id].y1 - nodeVerticalSpacing - nodeHeight;
-      let allParents = JSON.parse(relationships[this.props.id]).relationships
+      let fathers = JSON.parse(relationships[this.props.id]).relationships
         .FATHERS;
       let mothers = JSON.parse(relationships[this.props.id]).relationships
         .MOTHERS;
-      mothers.forEach(m => {
-        allParents.push(m);
-      });
 
-      if (allParents.length > 0) {
+      if (fathers.length > 0 || mothers.length > 0) {
         Object.values(graphContent.nodes).forEach(node => {
           if (node.depth === -1 && node.id !== this.props.id) {
             if (extension % 2 === 0) {
@@ -223,10 +232,43 @@ class EntityGraph extends React.Component {
       }
 
       /*  DEPTH 0 - SIBLINGS AND SPOUSES */
+      //Loop through all depth 0 nodes and add them into the graph
 
       extension = 0;
-      //Loop through all depth 0 nodes and add them into the graph
+
+      let depth0Nodes = [];
       Object.values(graphContent.nodes).forEach(node => {
+        if (node.depth === 0 && node.id !== this.props.id) {
+          depth0Nodes.push(node);
+        }
+      });
+      let middleIndex = Math.floor(depth0Nodes.length / 2) - 1;
+      let xPosition =
+        nodePositions[this.props.id].x1 -
+        (nodeWidth + nodeHorizontalSpacing) * (middleIndex + 1);
+      for (let i = 0; i < depth0Nodes.length; i++) {
+        let x = xPosition;
+        let y = nodePositions[this.props.id].y1;
+        this.node({
+          ctx,
+          x: xPosition,
+          y: nodePositions[this.props.id].y1,
+          text: getName(entities[depth0Nodes[i].id])
+        });
+        nodePositions[depth0Nodes[i].targetID] = {
+          x1: xPosition,
+          y1: nodePositions[this.props.id].y1,
+          x2: xPosition + nodeWidth,
+          y2: nodePositions[this.props.id] + nodeHeight
+        };
+        if (i === middleIndex) {
+          xPosition = xPosition + (nodeWidth + nodeHorizontalSpacing) * 2;
+        } else {
+          xPosition = xPosition + nodeWidth + nodeHorizontalSpacing;
+        }
+      }
+
+      /* Object.values(graphContent.nodes).forEach(node => {
         if (node.depth === 0 && node.id !== this.props.id) {
           // The following means the main node is centred, and the other nodes fan out alongside the main node.
           if (extension % 2 === 0) {
@@ -269,13 +311,22 @@ class EntityGraph extends React.Component {
           }
           extension++;
         }
-      });
+      }); */
 
       /*  DEPTH 1 - CHILDREN */
-      let startingX = nodePositions[this.props.id].x1 - 3500; //Temporary placement
       extension = 0;
+      let siblings = JSON.parse(relationships[this.props.id]).relationships
+        .SIBLINGS;
       let children = JSON.parse(relationships[this.props.id]).relationships
         .CHILDREN;
+      let numChildren = 0;
+      children.forEach(c => {
+        numChildren += c.child.length;
+      });
+      let startingX =
+        nodePositions[this.props.id].x1 -
+        (numChildren / 2) * (nodeWidth + nodeHorizontalSpacing);
+
       children.forEach(i => {
         for (let j = 0; j < i.child.length; j++) {
           this.node({
@@ -304,34 +355,55 @@ class EntityGraph extends React.Component {
 
       /* PARENT EDGES LINKING TO SIBLING NODES (DEPTH 1 -> DEPTH 0)*/
 
-      // Parent edges top half
-      let leftmost = nodePositions[this.props.id].x1;
-      let rightmost = nodePositions[this.props.id].x2;
-      for (let i = 0; i < allParents.length; i++) {
-        if (nodePositions[allParents[i].targetID].x1 < leftmost) {
-          leftmost = nodePositions[allParents[i].targetID].x1;
-        }
-        if (nodePositions[allParents[i].targetID].x2 > rightmost) {
-          rightmost = nodePositions[allParents[i].targetID].x2;
-        }
-      }
-
       // Get location of all siblings
-      let siblings = JSON.parse(relationships[this.props.id]).relationships
-        .SIBLINGS;
       // Add all siblings and pre-add the main node
       let connectedSiblings = {};
       connectedSiblings[this.props.id] = nodePositions[this.props.id];
       siblings.forEach(s => {
         connectedSiblings[s.targetID] = nodePositions[s.targetID];
       });
-      this.parentEdge({
-        ctx,
-        leftX: leftmost,
-        rightX: rightmost,
-        y: level,
-        siblings: connectedSiblings,
-        disputed: allParents.length > 2 ? true : false
+      // Get parents
+      let disputed = mothers.length > 1 || fathers.length > 1;
+      let parentGroupings = [];
+      if (mothers.length > 1) {
+        mothers.forEach(m => {
+          fathers.forEach(f => {
+            parentGroupings.push({
+              parent1: m.targetID,
+              parent2: f.targetID
+            });
+          });
+        });
+      } else if (fathers.length > 1) {
+        fathers.forEach(f => {
+          mothers.forEach(m => {
+            parentGroupings.push({
+              parent1: m.targetID,
+              parent2: f.targetID
+            });
+          });
+        });
+      } else {
+        // No disputed connections
+        // TODO: Add when only one parent is known
+        if (mothers.length !== 0 && fathers.length !== 0) {
+          parentGroupings.push({
+            parent1: mothers[0].targetID,
+            parent2: fathers[0].targetID
+          });
+        }
+      }
+
+      parentGroupings.forEach(p => {
+        this.parentEdge({
+          ctx,
+          nodePositions,
+          parent1: p.parent1,
+          parent2: p.parent2,
+          y: level,
+          siblings: connectedSiblings,
+          disputed: disputed
+        });
       });
 
       /* COUPLE EDGES */
