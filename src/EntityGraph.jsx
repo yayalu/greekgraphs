@@ -35,9 +35,19 @@ class EntityGraph extends React.Component {
 
   node(props) {
     const { ctx, x, y, text } = props;
-    ctx.strokeRect(x, y, this.state.nodeWidth, this.state.nodeHeight);
-    // ctx.font = "20px Arial";
-    ctx.fillText(text, x + 10, y + 20);
+    if (text === "Unknown") {
+      ctx.strokeStyle = "#848484";
+      ctx.setLineDash([5, 4]);
+      ctx.strokeRect(x, y, this.state.nodeWidth, this.state.nodeHeight);
+      ctx.fillText(text, x + 10, y + 20);
+      ctx.setLineDash([]);
+      ctx.strokeStyle = "#000";
+
+      console.log("Unknown");
+    } else {
+      ctx.strokeRect(x, y, this.state.nodeWidth, this.state.nodeHeight);
+      ctx.fillText(text, x + 10, y + 20);
+    }
   }
 
   edge(props) {
@@ -246,8 +256,6 @@ class EntityGraph extends React.Component {
         nodePositions[this.props.id].x1 -
         (nodeWidth + nodeHorizontalSpacing) * (middleIndex + 1);
       for (let i = 0; i < depth0Nodes.length; i++) {
-        let x = xPosition;
-        let y = nodePositions[this.props.id].y1;
         this.node({
           ctx,
           x: xPosition,
@@ -274,13 +282,26 @@ class EntityGraph extends React.Component {
       let children = JSON.parse(relationships[this.props.id]).relationships
         .CHILDREN;
       // Get the depth of parents to place children nodes
-
       let numChildren = 0;
       let numParents = 0;
+      let createUnknownNode = false;
       children.forEach(c => {
         numChildren += c.child.length;
         numParents += c.otherParentIDs.length; // Not the same number of actual parents, but more rather than less.
+        if (c.otherParentIDs.length === 0) {
+          createUnknownNode = true;
+        }
       });
+      if (createUnknownNode) {
+        this.node({
+          ctx,
+          x:
+            nodePositions[depth0Nodes[depth0Nodes.length - 1].id].x2 +
+            nodeWidth,
+          y: nodePositions[this.props.id].y1,
+          text: "Unknown"
+        });
+      }
       let startingX =
         nodePositions[this.props.id].x1 -
         (numChildren / 2) * (nodeWidth + nodeHorizontalSpacing);
@@ -321,12 +342,10 @@ class EntityGraph extends React.Component {
       // Add all siblings and pre-add the main node
       let connectedSiblings = {};
       connectedSiblings[this.props.id] = nodePositions[this.props.id];
-      console.log(connectedSiblings, "siblings");
 
       siblings.forEach(s => {
         connectedSiblings[s.targetID] = nodePositions[s.targetID];
       });
-      console.log(connectedSiblings, "siblings");
       // Get parents
       let disputed = mothers.length > 1 || fathers.length > 1;
       let parentGroupings = [];
@@ -370,41 +389,6 @@ class EntityGraph extends React.Component {
           disputed: disputed
         });
       });
-
-      /* COUPLE EDGES */
-
-      /* Object.values(graphContent.edges).forEach(edge => {
-        if (edge.relation === "spouse" || edge.relation === "co-parent") {
-          let edgeStart = {};
-          let edgeEnd = {};
-          if (nodePositions[this.props.id].x1 < nodePositions[edge.to].x1) {
-            edgeStart = {
-              x: nodePositions[this.props.id].x2,
-              y: nodePositions[this.props.id].y1
-            };
-            edgeEnd = {
-              x: nodePositions[edge.to].x1,
-              y: nodePositions[edge.to].y1 - nodeHeight / 2
-            };
-          } else {
-            edgeStart = {
-              x: nodePositions[this.props.id].x1,
-              y: nodePositions[this.props.id].y1
-            };
-            edgeEnd = {
-              x: nodePositions[edge.to].x1,
-              y: nodePositions[edge.to].y1 - nodeHeight / 2
-            };
-          }
-          this.edge({
-            ctx,
-            fromX: edgeStart.x,
-            fromY: edgeStart.y,
-            toX: edgeEnd.x,
-            toY: edgeEnd.y
-          });
-        }
-      }); */
 
       /* SPOUSES/COPARENTS LINKING TO CHILDREN EDGES */
 
