@@ -325,7 +325,7 @@ class EntityGraph extends React.Component {
         nodePositions[this.props.id].y2 +
         this.state.verticalOffset +
         numParents * 10 +
-        40;
+        80;
 
       children.forEach(i => {
         for (let j = 0; j < i.child.length; j++) {
