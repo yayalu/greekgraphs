@@ -4,8 +4,6 @@ import { getGraph } from "./GraphHandler";
 import { checkNoRelations, getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import relationships from "./data/relationships.json";
-import { objectTypeAnnotation } from "@babel/types";
-import { isObject } from "util";
 // import Konva from "konva";
 /* import {
   Stage,
@@ -113,6 +111,7 @@ class EntityGraph extends React.Component {
     for (let i = 0; i < parents.length; i++) {
       //Start line at halfway point between coparents, and draw line between coparents
       ctx.beginPath();
+      //Draw parent to parent half-rectangle
       ctx.moveTo(mainLocation.x, mainLocation.y);
       ctx.lineTo(mainLocation.x, mainLocation.y + newNodeYOffset);
       let otherParentLocation = {
@@ -121,6 +120,7 @@ class EntityGraph extends React.Component {
       };
       ctx.lineTo(otherParentLocation.x, otherParentLocation.y + newNodeYOffset);
       ctx.lineTo(otherParentLocation.x, otherParentLocation.y);
+      //Draw from middle of parent half-rectangle to child middle point
       ctx.moveTo(
         (otherParentLocation.x + mainLocation.x) / 2,
         otherParentLocation.y + newNodeYOffset
@@ -134,10 +134,17 @@ class EntityGraph extends React.Component {
           20
       };
       ctx.lineTo(middle.x, middle.y);
+      //Start drawing child half-rectangles
       for (let j = 0; j < children.length; j++) {
         ctx.moveTo(middle.x, middle.y);
+        console.log(
+          "Move to",
+          children[j].target,
+          "from",
+          getName(entities[parents[i]])
+        );
         ctx.lineTo(
-          nodePositions[children[j].targetID].x1 + this.state.nodeWidth / 2,
+          nodePositions[children[j].targetID].x1 + this.state.nodeWidth / 2, //This is probably the area of change
           middle.y
         );
         ctx.lineTo(
@@ -481,7 +488,7 @@ class EntityGraph extends React.Component {
             ref="graphCanvas"
             id="responsive-canvas"
             width={10000}
-            height={2000}
+            height={1000}
           ></canvas>
         </div>
       </div>
