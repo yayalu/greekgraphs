@@ -132,6 +132,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   } */
 
   getDataPoints(relationship: string, showPassage: boolean) {
+    console.log(relationship);
     let that = this;
     let focus =
       relationship === "PART OF"
@@ -243,6 +244,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         </div>
       );
     } else {
+      console.log("ID", entity.targetID);
       return (
         <span>
           <div
@@ -570,8 +572,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         >
           <EntityGraph
             id={this.state.id}
+            relationships={this.state.relationships}
             relationshipClicked={this.handleNameClicked}
             // disputeClicked={this.handleDisputeClicked}
+            members={this.state.members}
           ></EntityGraph>
         </div>
       </React.Fragment>

@@ -1,4 +1,4 @@
-/* .node ellipse {
+.node ellipse {
   stroke: #333;
   fill: #fff;
   stroke-width: 2px;
@@ -124,64 +124,4 @@ svg {
   float: left;
   padding-right: 6px;
   padding-left: 10px;
-}
-*/
-
-canvas {
-  position: relative;
-}
-
-body {
-  font: 300 14px "Helvetica Neue", Helvetica;
-}
-
-svg {
-  height: 100%;
-  width: 100%;
-}
-
-#legend-relationnode {
-  border: 1px solid black;
-  padding: 1rem;
-  margin: 3rem 1rem 3rem 1rem;
-  font-size: 0.7rem;
-}
-
-#legend-collectivenode {
-  border: 1px solid red;
-  padding: 1rem;
-  margin: 3rem 1rem 3rem 1rem;
-  font-size: 0.7rem;
-}
-
-#legend-relationedge {
-  border-bottom: 2px solid black;
-  padding: 1rem 1rem 0.2rem 1rem;
-  margin: 3rem 1rem 3rem 1rem;
-  font-size: 0.7rem;
-}
-
-#legend-disputededge {
-  border-bottom: 2px dotted blue;
-  padding: 1rem 1rem 0.2rem 1rem;
-  margin: 3rem 1rem 3rem 1rem;
-  font-size: 0.7rem;
-}
-
-#legend-unusualedge {
-  border-bottom: 2px solid red;
-  padding: 1rem 1rem 0.2rem 1rem;
-  margin: 3rem 1rem 3rem 1rem;
-  font-size: 0.7rem;
-}
-
-#legend-memberedge {
-  border-bottom: 2px dashed grey;
-  padding: 1rem 1rem 0.2rem 1rem;
-  margin: 3rem 1rem 3rem 1rem;
-  font-size: 0.7rem;
-}
-
-.no-display {
-  display: none;
 }
