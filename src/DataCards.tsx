@@ -544,7 +544,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                   if (
                     key === "MOTHERS" ||
                     key === "FATHERS" ||
-                    key === "SPOUSES"
+                    key === "SPOUSES" ||
+                    key === "TWIN"
                   ) {
                     return <div key={key}>{this.getDataPoints(key, true)}</div>;
                   } else {
@@ -568,11 +569,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               : "no-display"
           }
         >
-          <EntityGraph
+          {/* <EntityGraph
             id={this.state.id}
             relationshipClicked={this.handleNameClicked}
             // disputeClicked={this.handleDisputeClicked}
-          ></EntityGraph>
+          ></EntityGraph> */}
         </div>
       </React.Fragment>
     );

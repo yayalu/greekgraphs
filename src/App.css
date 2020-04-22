@@ -6,3 +6,24 @@
   font-weight: bold;
   transform: rotate(180deg);
 }
+
+.homepageBackground {
+  background-color: #eeeeee;
+  min-height: 100% !important;
+  width: 100%;
+}
+
+.help-icon {
+  width: 1.5rem;
+  opacity: 40%;
+  cursor: pointer;
+}
+
+html,
+body {
+  min-height: 100% !important;
+}
+
+.no-display {
+  display: none;
+}
