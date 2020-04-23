@@ -459,18 +459,18 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     let parents = getName(
       entities[entities[id]["Collective (geneal.): children of ID"]]
     );
+    let otherParents = "";
     if (entities[id]["Other collective parent ID"]) {
-      parents =
-        parents +
-        " and " +
-        getName(entities[entities[id]["Other collective parent ID"]]);
+      otherParents = getName(
+        entities[entities[id]["Other collective parent ID"]]
+      );
     }
-    let divineParents = entities[id]["Collective (geneal.): divine father ID"]
-      ? "OR " +
-        getName(
-          entities[entities[id]["Collective (geneal.): divine father ID"]]
-        )
-      : "";
+    let divineParents = "";
+    if (entities[id]["Collective (geneal.): divine father ID"]) {
+      divineParents = getName(
+        entities[entities[id]["Collective (geneal.): divine father ID"]]
+      );
+    }
     /* let parents: { mothers: string; fathers: string } = {
       mothers: "",
       fathers: ""
@@ -503,7 +503,57 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
     return (
       <div id="datacard-alternativename">
-        The {relation} of {parents} {divineParents}
+        The {relation} of{" "}
+        <span
+          style={{ textDecoration: "underline", cursor: "pointer" }}
+          onClick={() =>
+            this.handleNameClicked(
+              entities[id]["Collective (geneal.): children of ID"]
+            )
+          }
+        >
+          {getName(
+            entities[entities[id]["Collective (geneal.): children of ID"]]
+          )}
+        </span>
+        {otherParents === "" ? (
+          ""
+        ) : (
+          <span>
+            {" "}
+            OR{" "}
+            <span
+              style={{ textDecoration: "underline", cursor: "pointer" }}
+              onClick={() =>
+                this.handleNameClicked(
+                  entities[id]["Other collective parent ID"]
+                )
+              }
+            >
+              {getName(entities[entities[id]["Other collective parent ID"]])}
+            </span>
+          </span>
+        )}{" "}
+        {divineParents === "" ? (
+          ""
+        ) : (
+          <span>
+            {" "}
+            OR{" "}
+            <span
+              style={{ textDecoration: "underline", cursor: "pointer" }}
+              onClick={() =>
+                this.handleNameClicked(
+                  entities[id]["Collective (geneal.): divine father ID"]
+                )
+              }
+            >
+              {getName(
+                entities[entities[id]["Collective (geneal.): divine father ID"]]
+              )}
+            </span>
+          </span>
+        )}
       </div>
     );
   }
