@@ -133,27 +133,61 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     });
   } */
 
+  removeGrandparentDuplicates(grandparents: entityInfo[], g: entityInfo[]) {
+    //grandparents = the original grandparents list
+    //g = a list of new entities to add
+    for (let i = 0; i < g.length; i++) {
+      let duplicate = false;
+      let duplicateIndex = 0;
+      for (let j = 0; j < grandparents.length; j++) {
+        if (g[i].targetID === grandparents[j].targetID) {
+          duplicate = true;
+          duplicateIndex = j;
+          break;
+        }
+      }
+      if (duplicate) {
+        console.log("Test", g[i]);
+        let newPassages = grandparents[duplicateIndex].passage.concat(
+          g[i].passage
+        );
+        grandparents[duplicateIndex].passage = newPassages;
+      } else {
+        grandparents.push(g[i]);
+      }
+    }
+    return grandparents;
+  }
+
   getGrandparentDataPoints() {
     let that = this;
     let grandparents: entityInfo[] = [];
     // Check all mother's mother and fathers
-    console.log("CHECK", that.state.relationships.MOTHERS);
     that.state.relationships.MOTHERS.forEach(m => {
-      grandparents = grandparents.concat(
+      grandparents = this.removeGrandparentDuplicates(
+        grandparents,
         JSON.parse(relationships[m.targetID]).relationships.MOTHERS
       );
-      grandparents = grandparents.concat(
+      grandparents = this.removeGrandparentDuplicates(
+        grandparents,
         JSON.parse(relationships[m.targetID]).relationships.FATHERS
       );
     });
     that.state.relationships.FATHERS.forEach(f => {
-      grandparents = grandparents.concat(
+      grandparents = this.removeGrandparentDuplicates(
+        grandparents,
         JSON.parse(relationships[f.targetID]).relationships.MOTHERS
       );
-      grandparents = grandparents.concat(
+      grandparents = this.removeGrandparentDuplicates(
+        grandparents,
         JSON.parse(relationships[f.targetID]).relationships.FATHERS
       );
     });
+    //Remove duplicate grandparents
+    for (let i = 0; i < grandparents.length; i++) {
+      for (let j = i + 1; j < grandparents.length; j++) {}
+    }
+    //Add grandparent data points
     if (grandparents.length > 0) {
       return (
         <div style={{ clear: "both" }}>
