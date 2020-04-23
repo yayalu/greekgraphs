@@ -9,7 +9,7 @@ type passageInfo = {
   endID: string;
 };
 
-type entityInfo = {
+export type entityInfo = {
   target: string;
   targetID: string;
   passage: passageInfo[];

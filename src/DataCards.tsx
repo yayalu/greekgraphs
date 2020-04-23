@@ -9,6 +9,7 @@ import ReactGA from "react-ga";
 import entities from "./data/entities.json";
 import {
   relationshipInfo,
+  entityInfo,
   checkNoRelations,
   getAlternativeNames,
   getGender,
@@ -16,6 +17,7 @@ import {
   getEntityType
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
+import { objectTypeSpreadProperty, arrayTypeAnnotation } from "@babel/types";
 
 type DatumProps = {
   location: {
@@ -130,6 +132,74 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       openInfoPage: { showDisputePage: true, showUnusualPage: false }
     });
   } */
+
+  getGrandparentDataPoints() {
+    let that = this;
+    let grandparents: entityInfo[] = [];
+    // Check all mother's mother and fathers
+    console.log("CHECK", that.state.relationships.MOTHERS);
+    that.state.relationships.MOTHERS.forEach(m => {
+      grandparents = grandparents.concat(
+        JSON.parse(relationships[m.targetID]).relationships.MOTHERS
+      );
+      grandparents = grandparents.concat(
+        JSON.parse(relationships[m.targetID]).relationships.FATHERS
+      );
+    });
+    that.state.relationships.FATHERS.forEach(f => {
+      grandparents = grandparents.concat(
+        JSON.parse(relationships[f.targetID]).relationships.MOTHERS
+      );
+      grandparents = grandparents.concat(
+        JSON.parse(relationships[f.targetID]).relationships.FATHERS
+      );
+    });
+    if (grandparents.length > 0) {
+      return (
+        <div style={{ clear: "both" }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              float: "left",
+              paddingRight: "1rem",
+              marginTop: "0.5rem"
+            }}
+          >
+            {grandparents.length === 1 ? "GRANDPARENT:" : "GRANDPARENTS:"}
+          </div>
+          <div style={{ float: "left", marginTop: "0.5rem" }}>
+            {grandparents.map(entity => {
+              return (
+                <div style={{ margin: "0" }}>
+                  <span>
+                    <div
+                      className="entity-button"
+                      onClick={() => this.handleNameClicked(entity.targetID)}
+                    >
+                      <span style={{ textDecoration: "underline" }}>
+                        {entity.target}
+                      </span>
+                    </div>
+                    {entity.passage.map(passage => {
+                      return this.getPassageLink(passage);
+                    })}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    } else {
+      return <span></span>;
+    }
+
+    // Create grandparent title data point
+    // Check all mother's mother & father IDs
+    // Check all father's mother  & father IDs
+    // Generate the data points using getDataPoints and getUnusualConnectionsetc. below
+  }
 
   getDataPoints(relationship: string, showPassage: boolean) {
     let that = this;
@@ -528,6 +598,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             >
               Gender: {getGender(this.state.id)}
             </div>
+            <p></p>
             {/* If no data is available for the subject */}
             <div
               className={
@@ -537,6 +608,13 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             {/* If current entity is an alternative name for an existing entity */}
             <div>{this.getAlternativePage()}</div>
             {/* If data is available for the subject */}
+            {this.state.relationships["MOTHERS"].length +
+              this.state.relationships["FATHERS"].length >
+            0 ? (
+              <div>{this.getGrandparentDataPoints()}</div>
+            ) : (
+              ""
+            )}
             {entities[this.state.id]["Type of entity"] ===
             "Collective (genealogical)"
               ? this.getCollectiveSubheading(this.state.id)
