@@ -619,7 +619,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             }}
           >
             <div style={{ textAlign: "center" }}>
-              {getEntityType(this.state.id)}
+              {/* getEntityType(this.state.id)*/}
             </div>
             <div id="datacard-heading">{this.state.name}</div>
             <div id="datacard-othernames">
