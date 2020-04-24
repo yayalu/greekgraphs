@@ -627,6 +627,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else {
       //Substitute with ID
       let newState = JSON.parse(relationships[id]);
+      console.log("Hello", newState.name);
       this.setState({
         id: newState.id,
         relationships: newState.relationships,
@@ -705,6 +706,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               }
             ></div>
             {/* If current entity is an alternative name for an existing entity */}
+            {console.log(this.state.relationships)}
             <div>{this.getAlternativePage()}</div>
             {/* If data is available for the subject */}
             {this.state.relationships["MOTHERS"].length +

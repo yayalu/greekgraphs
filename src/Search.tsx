@@ -31,6 +31,9 @@ class Search extends React.Component<SearchProps, SearchState> {
         alternatives =
           alternatives + ", " + entities[id]["Name (transliteration)"];
       }
+      if (entities[id]["Name (Greek font)"] !== "") {
+        alternatives = alternatives + ", " + entities[id]["Name (Greek font)"];
+      }
       if (entities[id]["Name (Latinized)"] !== "") {
         alternatives = alternatives + ", " + entities[id]["Name (Latinized)"];
       }
@@ -42,7 +45,7 @@ class Search extends React.Component<SearchProps, SearchState> {
         alternatives = alternatives + ", " + entities[id]["Alternative names"];
       }
       let inputText =
-        entities[id]["Name (Smith & Trzaskoma)"] +
+        entities[id]["Name (house style)"] +
         alternatives +
         ": " +
         entities[id]["Identifying information"];
@@ -76,8 +79,9 @@ class Search extends React.Component<SearchProps, SearchState> {
               .trim();
 
             if (
-              currentInputName === entities[id]["Name (Smith & Trzaskoma)"] ||
+              currentInputName === entities[id]["Name (house style)"] ||
               currentInputName === entities[id]["Name (transliteration)"] ||
+              currentInputName === entities[id]["Name (Greek font)"] ||
               currentInputName === entities[id]["Name (Latinized)"] ||
               currentInputName === entities[id]["Name in Latin texts"] ||
               currentInputName === entities[id]["Alternative names"]

@@ -83,7 +83,7 @@ export const updateComponent = (id: string) => {
   let connections = getAllConnections(id);
   if (
     connections.length > 0 &&
-    connections[0].verb === "is alternative name for"
+    connections[0].predicate === "is alternative name for"
   ) {
     let empty: relationshipInfo = {
       MOTHERS: [],
@@ -114,13 +114,13 @@ export const updateComponent = (id: string) => {
 /******************************************************************************************/
 /* Find all relationships                                                                 */
 /* -------------------------------------------------------------------------------------- */
-/* This function changes all ties (X <verb> Y, Y <verb> X, Z <verb> Y X) to Y <verb> X. */
+/* This function changes all ties (X <predicate> Y, Y <predicate> X, Z <predicate> Y X) to Y <predicate> X. */
 /******************************************************************************************/
 const getAllConnections = (id: string) => {
   var connections: {
     target: string;
     targetID: string;
-    verb: string;
+    predicate: string;
     passage: passageInfo[];
   }[] = [];
 
@@ -132,11 +132,11 @@ const getAllConnections = (id: string) => {
 
       if (entities[tieRow["Subject ID"]]) {
         //check if the entity is just an "alternative name for"
-        //if so, ignore all geneological data gathered so far and just return connections = [{target: "", targetID: "", verb: "is alternative name for", passage:[]}]
+        //if so, ignore all geneological data gathered so far and just return connections = [{target: "", targetID: "", predicate: "is alternative name for", passage:[]}]
 
         if (
           tieRow["Subject ID"] === id &&
-          tieRow["Verb"] === "is alternative name for"
+          tieRow["Predicate"] === "is alternative name for"
         ) {
           let passageInfo: passageInfo[] = [
             {
@@ -153,7 +153,7 @@ const getAllConnections = (id: string) => {
             {
               target: "",
               targetID: tieRow["Direct Object ID"],
-              verb: "is alternative name for",
+              predicate: "is alternative name for",
               passage: passageInfo
             }
           ];
@@ -161,11 +161,11 @@ const getAllConnections = (id: string) => {
         }
 
         /*********************************************************/
-        /* If you are the direct object X, e.g. (Y (verb) X)     */
+        /* If you are the direct object X, e.g. (Y (predicate) X)     */
         /*********************************************************/
         if (
           tieRow["Direct Object ID"] === id &&
-          familyTies.includes(tieRow["Verb"])
+          familyTies.includes(tieRow["Predicate"])
         ) {
           let passageInfo: passageInfo[] = [
             {
@@ -180,29 +180,32 @@ const getAllConnections = (id: string) => {
           ];
 
           // TODO: Fix this temporary solution for gender data not existing for entity
-          if (getGender(tieRow["Subject ID"]) && tieRow["Verb"] === "marries") {
-            tieRow["Verb"] = "is spouse of";
+          if (
+            getGender(tieRow["Subject ID"]) &&
+            tieRow["Predicate"] === "marries"
+          ) {
+            tieRow["Predicate"] = "is spouse of";
           }
 
           // Push connections to the list of connections
           connections.push({
             target: getName(entities[tieRow["Subject ID"]]),
             targetID: tieRow["Subject ID"],
-            verb:
-              tieRow["Verb"] === "is part of" ||
-              tieRow["Verb"] === "is member of"
+            predicate:
+              tieRow["Predicate"] === "is part of" ||
+              tieRow["Predicate"] === "is member of"
                 ? "has members"
-                : tieRow["Verb"],
+                : tieRow["Predicate"],
             passage: passageInfo
           });
         }
 
         /*********************************************************/
-        /* If you are the subject X, e.g. (X (verb) Y)           */
+        /* If you are the subject X, e.g. (X (predicate) Y)           */
         /*********************************************************/
         if (
           tieRow["Subject ID"] === id &&
-          familyTies.includes(tieRow["Verb"])
+          familyTies.includes(tieRow["Predicate"])
         ) {
           let passageInfo: passageInfo[] = [
             {
@@ -214,22 +217,25 @@ const getAllConnections = (id: string) => {
           ];
 
           // Push connections to the list of connections
-          if (tieRow["Verb"] === "is born by autochthony [in/on/at]") {
+          if (tieRow["Predicate"] === "is born by autochthony [in/on/at]") {
             connections.push({
               target: "",
               targetID: "",
-              verb: "is born by autochthony [in/on/at]",
+              predicate: "is born by autochthony [in/on/at]",
               passage: passageInfo
             });
           } else {
             connections.push({
               target: getName(entities[tieRow["Direct Object ID"]]),
               targetID: tieRow["Direct Object ID"],
-              verb:
-                tieRow["Verb"] === "is part of" ||
-                tieRow["Verb"] === "is member of"
+              predicate:
+                tieRow["Predicate"] === "is part of" ||
+                tieRow["Predicate"] === "is member of"
                   ? "is member of"
-                  : reversedVerb(tieRow["Verb"], tieRow["Direct Object ID"]),
+                  : reversedPredicate(
+                      tieRow["Predicate"],
+                      tieRow["Direct Object ID"]
+                    ),
               passage: passageInfo
             });
           }
@@ -239,11 +245,11 @@ const getAllConnections = (id: string) => {
         /* For "Gives in marriage:" - parent gives child in marriage to person */
         /*************************************************************************/
 
-        // If you are the indirect object X, e.g. (Z (verb) Y X)
+        // If you are the indirect object X, e.g. (Z (predicate) Y X)
         if (
           tieRow["Indirect Object (to/for) ID"] &&
           tieRow["Indirect Object (to/for) ID"] === id &&
-          tieRow["Verb"] === "gives in marriage [dir. obj.] [ind. obj.]"
+          tieRow["Predicate"] === "gives in marriage [dir. obj.] [ind. obj.]"
         ) {
           let passageInfo: passageInfo[] = [
             {
@@ -256,16 +262,16 @@ const getAllConnections = (id: string) => {
           connections.push({
             target: getName(entities[tieRow["Direct Object ID"]]),
             targetID: tieRow["Direct Object ID"],
-            verb: "is spouse of",
+            predicate: "is spouse of",
             passage: passageInfo
           });
         }
 
-        // If you are the direct object X, e.g. (Z (verb) X Y)
+        // If you are the direct object X, e.g. (Z (predicate) X Y)
         else if (
           tieRow["Direct Object ID"] &&
           tieRow["Direct Object ID"] === id &&
-          tieRow["Verb"] === "gives in marriage [dir. obj.] [ind. obj.]"
+          tieRow["Predicate"] === "gives in marriage [dir. obj.] [ind. obj.]"
         ) {
           let passageInfo: passageInfo[] = [
             {
@@ -278,7 +284,7 @@ const getAllConnections = (id: string) => {
           connections.push({
             target: getName(entities[tieRow["Indirect Object (to/for) ID"]]),
             targetID: tieRow["Indirect Object (to/for) ID"],
-            verb: "is spouse of",
+            predicate: "is spouse of",
             passage: passageInfo
           });
         }
@@ -318,7 +324,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       targetID: tie.targetID,
       passage: tie.passage,
       type:
-        tie.verb === "is born by autochthony [in/on/at]"
+        tie.predicate === "is born by autochthony [in/on/at]"
           ? ""
           : entities[tie.targetID]
           ? entities[tie.targetID]["Type of entity"]
@@ -328,7 +334,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     /* Categorising the connections, also checking for duplicates */
 
     // X is your MOTHER
-    if (tie.verb === "is mother of") {
+    if (tie.predicate === "is mother of") {
       // If passage is a duplicate / already exists
       // for this entity, or  in the list of connections
       relationships.MOTHERS = checkAndRemoveDuplicates(
@@ -338,7 +344,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     }
 
     // X is your MOTHER by parthenogenesis
-    else if (tie.verb === "is mother by parthenogenesis of") {
+    else if (tie.predicate === "is mother by parthenogenesis of") {
       let m: entityInfo = {
         target: tie.target,
         targetID: tie.targetID,
@@ -356,7 +362,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     }
 
     // X is your FATHER
-    else if (tie.verb === "is father of") {
+    else if (tie.predicate === "is father of") {
       relationships.FATHERS = checkAndRemoveDuplicates(
         relationships.FATHERS,
         d
@@ -364,12 +370,15 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     }
 
     // X is your CHILD
-    else if (tie.verb === "is child of") {
+    else if (tie.predicate === "is child of") {
       childrenTemp = checkAndRemoveDuplicates(childrenTemp, d);
     }
 
     // X is your SIBLING
-    else if (tie.verb === "is sibling of" || tie.verb === "is older than") {
+    else if (
+      tie.predicate === "is sibling of" ||
+      tie.predicate === "is older than"
+    ) {
       relationships.SIBLINGS = checkAndRemoveDuplicates(
         relationships.SIBLINGS,
         d
@@ -377,24 +386,24 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     }
 
     // X is your TWIN
-    else if (tie.verb === "is twin of") {
+    else if (tie.predicate === "is twin of") {
       relationships.TWIN = checkAndRemoveDuplicates(relationships.TWIN, d);
     }
     // X is your WIFE / HUSBAND
-    else if (tie.verb === "is spouse of" || tie.verb === "marries") {
+    else if (tie.predicate === "is spouse of" || tie.predicate === "marries") {
       relationships.SPOUSES = checkAndRemoveDuplicates(
         relationships.SPOUSES,
         d
       );
     }
     // X is a MEMBER of a collective but the main ID
-    else if (tie.verb === "is member of") {
+    else if (tie.predicate === "is member of") {
       members.super = checkAndRemoveDuplicates(members.super, d);
-    } else if (tie.verb === "has members") {
+    } else if (tie.predicate === "has members") {
       members.sub = checkAndRemoveDuplicates(members.sub, d);
     }
     // X is born by autochthony
-    else if (tie.verb === "is born by autochthony [in/on/at]") {
+    else if (tie.predicate === "is born by autochthony [in/on/at]") {
       let a: entityInfo = {
         target: "",
         targetID: "",
@@ -601,22 +610,22 @@ export const getGender = (id: string) => {
 /******************************************************************************************/
 /* Tie reversals                                                   */
 /* -------------------------------------------------------------------------------------- */
-/* This function flips the verb so that X can become the direct object,                   */
+/* This function flips the predicate so that X can become the direct object,                   */
 /* without compromising the validity of the tie                                         */
 /*                                                                                        */
 /* e.g. X <is mother of> Y, where Y is <male>                                             */
-/* => returns verb <is son of>, to let X become the direct object (Y is son of X)         */
+/* => returns predicate <is son of>, to let X become the direct object (Y is son of X)         */
 /******************************************************************************************/
-const reversedVerb = (verb: string, dirObject: string) => {
+const reversedPredicate = (predicate: string, dirObject: string) => {
   // TODO: Fix this temporary solution for gender data not existing for entity
   // PARENT -> CHILD
-  if (verb === "is parent of") {
+  if (predicate === "is parent of") {
     // Uses generic "is child of" since data cards do not show gender specificity for children
     return "is child of";
   }
 
   // CHILD -> PARENT
-  else if (verb === "is child of") {
+  else if (predicate === "is child of") {
     if (getGender(dirObject) === "Female") {
       return "is mother of";
     } else if (getGender(dirObject) === "Male") {
@@ -628,30 +637,30 @@ const reversedVerb = (verb: string, dirObject: string) => {
   }
 
   // TWIN -> TWIN
-  else if (verb === "is twin of") {
+  else if (predicate === "is twin of") {
     return "is twin of";
   }
 
   // SIBLING -> SIBLING
-  else if (verb === "is sibling of" || verb === "is older than") {
+  else if (predicate === "is sibling of" || predicate === "is older than") {
     return "is sibling of";
   }
 
   // WIFE -> HUSBAND
   // HUSBAND -> WIFE
   // No cases of homosexual relationships in the mythology
-  else if (verb === "is spouse of" || verb === "marries") {
+  else if (predicate === "is spouse of" || predicate === "marries") {
     return "is spouse of";
-  } else if (verb === "is member of" || verb === "is part of") {
+  } else if (predicate === "is member of" || predicate === "is part of") {
     return "";
   } else {
     console.log(
       "Unsure of " +
-        verb +
+        predicate +
         " " +
         dirObject +
         " connection, or connection is not relevant for the datacards.",
-      verb,
+      predicate,
       dirObject
     );
     return "";
@@ -701,9 +710,9 @@ const getIndirectSiblings = (
       };
       // Firstly, determine where Y is <child> of A,B
       if (
-        tieRow["Verb"] === "is daughter of" ||
-        tieRow["Verb"] === "is son of" ||
-        tieRow["Verb"] === "is child of"
+        tieRow["Predicate"] === "is daughter of" ||
+        tieRow["Predicate"] === "is son of" ||
+        tieRow["Predicate"] === "is child of"
       ) {
         mothers.forEach(m => {
           if (m.targetID === tieRow["Direct Object ID"]) {
@@ -734,9 +743,9 @@ const getIndirectSiblings = (
       }
       // Then, determine where A is mother of Y, or if parent of Y where A is female
       if (
-        tieRow["Verb"] === "is mother of" ||
-        tieRow["Verb"] === "is divine mother of" ||
-        (tieRow["Verb"] === "is parent of" &&
+        tieRow["Predicate"] === "is mother of" ||
+        tieRow["Predicate"] === "is divine mother of" ||
+        (tieRow["Predicate"] === "is parent of" &&
           entities[tieRow["Subject ID"]] &&
           entities[tieRow["Subject ID"]]["Agent/Coll.: gender"] === "Female")
       ) {
@@ -756,9 +765,9 @@ const getIndirectSiblings = (
       }
       // Then, determine where A is father of Y, or if parent of Y where A is male
       if (
-        tieRow["Verb"] === "is father of" ||
-        tieRow["Verb"] === "is divine father of" ||
-        (tieRow["Verb"] === "is parent of" &&
+        tieRow["Predicate"] === "is father of" ||
+        tieRow["Predicate"] === "is divine father of" ||
+        (tieRow["Predicate"] === "is parent of" &&
           entities[tieRow["Subject ID"]] &&
           entities[tieRow["Subject ID"]]["Agent/Coll.: gender"] === "Male")
       ) {
@@ -817,6 +826,7 @@ export const checkNoMembers = (members: any) => {
 export const getAlternativeNames = (id: string) => {
   let alternatives: string = "";
   alternatives += getNameString("Name (transliteration)", alternatives, id);
+  alternatives += getNameString("Name (Greek font)", alternatives, id);
   alternatives += getNameString("Name (Latinized)", alternatives, id);
   alternatives += getNameString("Name in Latin texts", alternatives, id);
   alternatives += getNameString("Alternative names", alternatives, id);
@@ -845,8 +855,9 @@ const getNameString = (parameter: string, stringSoFar: string, id: string) => {
 /******************************************************************************************/
 export const getName = (entityRow: any) => {
   let possibleNames = [
-    "Name (Smith & Trzaskoma)",
+    "Name (house style)",
     "Name (transliteration)",
+    "Name (Greek font)",
     "Name (Latinized)",
     "Name in Latin texts",
     "Alternative names"
