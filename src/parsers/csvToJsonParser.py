@@ -42,6 +42,25 @@ with open(passagesCsvFilePath) as csvFile:
 with open(passagesJsonFilePath, "w") as jsonFile:
     jsonFile.write(json.dumps(data, indent=4))
     print("Parsed passages.csv to passages.json")
+    
+# ------------------
+# Parse Passages file
+objectsCsvFilePath = "../data/objects.csv"
+objectsJsonFilePath = "../data/objects.json"
+
+# Read from and parse existing passages.csv file
+data = {}
+with open(objectsCsvFilePath) as csvFile:
+    csvReader = csv.DictReader(csvFile)
+
+    for csvRow in csvReader:
+        id = csvRow["\xef\xbb\xbfID"]
+        data[id] = csvRow
+
+# Write contents to a JSON file - datum.json
+with open(objectsJsonFilePath, "w") as jsonFile:
+    jsonFile.write(json.dumps(data, indent=4))
+    print("Parsed objects.csv to objects.json")
 
 # -------------------
 # Parse Entities file
