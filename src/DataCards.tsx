@@ -147,7 +147,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         }
       }
       if (duplicate) {
-        console.log("Test", g[i]);
         let newPassages = grandparents[duplicateIndex].passage.concat(
           g[i].passage
         );
@@ -289,17 +288,25 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     }
   }
 
+  // Check if entity is born by parthenogenesis
+  bornByParthenogenesis() {
+    let isParthenogenesis = false;
+    this.state.relationships.MOTHERS.forEach(m => {
+      if (m.parthenogenesis) {
+        isParthenogenesis = true;
+      }
+    });
+    return isParthenogenesis;
+  }
+
   checkUnusualRelationship(
     entity: any,
     relationship: any,
     showPassage: boolean
   ) {
     let that = this;
-
-    if (
-      (relationship === "MOTHERS" && entity.mother_parthenogenesis) ||
-      (relationship === "FATHERS" && entity.father_parthenogenesis)
-    ) {
+    console.log("PARTTHENO", entity, relationship);
+    if (relationship === "FATHERS" && this.bornByParthenogenesis()) {
       return (
         <span>
           <div
@@ -313,12 +320,20 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             )}
             <span style={{ textDecoration: "underline" }}>{entity.target}</span>
           </div>
-          <span> by pathenogenesis </span>
           {showPassage
             ? entity.passage.map(passage => {
                 return this.getPassageLink(passage);
               })
             : ""}
+          <div>
+            {" "}
+            OR by pathenogenesis
+            {showPassage
+              ? this.state.relationships.MOTHERS[0].passage.map(passage => {
+                  return this.getPassageLink(passage);
+                })
+              : ""}
+          </div>
         </span>
       );
     } else if (relationship === "FATHERS" && entity.autochthony) {

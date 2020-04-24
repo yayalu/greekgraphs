@@ -15,8 +15,7 @@ export type entityInfo = {
   passage: passageInfo[];
   type: string;
   autochthony?: boolean;
-  mother_parthenogenesis?: boolean;
-  father_parthenogenesis?: boolean;
+  parthenogenesis?: boolean; // where the strings are the IDs
 };
 
 type childrenInfo = {
@@ -347,7 +346,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
         type: entities[tie.targetID]
           ? entities[tie.targetID]["Type of entity"]
           : "",
-        mother_parthenogenesis: true
+        parthenogenesis: true
       };
 
       relationships.MOTHERS = checkAndRemoveDuplicates(
@@ -361,23 +360,6 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       relationships.FATHERS = checkAndRemoveDuplicates(
         relationships.FATHERS,
         d
-      );
-    }
-
-    // X is your FATHER by parthenogenesis
-    else if (tie.verb === "is father by parthenogenesis of") {
-      let f: entityInfo = {
-        target: tie.target,
-        targetID: tie.targetID,
-        passage: tie.passage,
-        type: entities[tie.targetID]
-          ? entities[tie.targetID]["Type of entity"]
-          : "",
-        father_parthenogenesis: true
-      };
-      relationships.FATHERS = checkAndRemoveDuplicates(
-        relationships.FATHERS,
-        f
       );
     }
 
