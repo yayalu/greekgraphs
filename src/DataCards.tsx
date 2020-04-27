@@ -34,6 +34,14 @@ type DatumState = {
   members: { sub: any[]; super: any[] };
   type: string;
   validSearch: boolean;
+  unusual: {
+    autochthony: { tf: boolean; passage: any[] };
+    createdWithoutParents: { tf: boolean; passage: any[] };
+    createdByAgent: { tf: boolean; passage: any[]; agentID: string };
+    parthenogenesis: { tf: boolean; passage: any[] };
+    bornFromObject: { tf: boolean; passage: any[]; objectID: string };
+    diesWithoutChildren: { tf: boolean; passage: any[] };
+  };
   alternativeName: { targetID: string; passage: any[] };
 };
 
@@ -59,6 +67,14 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       members: { sub: [], super: [] },
       type: "",
       validSearch: false,
+      unusual: {
+        autochthony: { tf: false, passage: [] },
+        createdWithoutParents: { tf: false, passage: [] },
+        createdByAgent: { tf: false, passage: [], agentID: "" },
+        parthenogenesis: { tf: false, passage: [] },
+        bornFromObject: { tf: false, passage: [], objectID: "" },
+        diesWithoutChildren: { tf: false, passage: [] }
+      },
       alternativeName: { targetID: "", passage: [] }
     };
     /* this.getNameFromID = this.getNameFromID.bind(this);
@@ -240,7 +256,39 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       relationship === "PART OF"
         ? this.state.members.super
         : that.state.relationships[relationship];
-    if (focus.length !== 0) {
+    console.log("Accessed this", relationship);
+
+    // DEAAL WITH CREATED WITHOUT PARAENTS
+    if (
+      (relationship === "MOTHERS" || relationship === "FATHERS") &&
+      that.state.unusual.createdWithoutParents.tf
+    ) {
+      return (
+        <div style={{ clear: "both" }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              float: "left",
+              paddingRight: "1rem",
+              marginTop: "0.5rem"
+            }}
+          >
+            {relationship === "MOTHERS" ? "MOTHER" : "FATHER"}:{" "}
+          </div>
+          <div style={{ float: "left", marginTop: "0.5rem" }}>
+            <div style={{ margin: "0" }} className="entity-button">
+              created without parents
+            </div>
+            {this.state.unusual.createdWithoutParents.passage.map(passage => {
+              return this.getPassageLink(passage);
+            })}
+          </div>
+        </div>
+      );
+    }
+    // IF NUMBER OF ENTITIES IN THE RELATIONSHIP > 0
+    else if (focus.length !== 0) {
       return (
         <div style={{ clear: "both" }}>
           <div
@@ -288,25 +336,19 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     }
   }
 
-  // Check if entity is born by parthenogenesis
-  bornByParthenogenesis() {
-    let isParthenogenesis = false;
-    this.state.relationships.MOTHERS.forEach(m => {
-      if (m.parthenogenesis) {
-        isParthenogenesis = true;
-      }
-    });
-    return isParthenogenesis;
-  }
-
   checkUnusualRelationship(
     entity: any,
     relationship: any,
     showPassage: boolean
   ) {
     let that = this;
-    console.log("PARTTHENO", entity, relationship);
-    if (relationship === "FATHERS" && this.bornByParthenogenesis()) {
+
+    // deal with autochthony, parthenogenesis and creation without parents (father)
+    if (
+      relationship === "FATHERS" &&
+      (that.state.unusual.parthenogenesis.tf ||
+        that.state.unusual.autochthony.tf)
+    ) {
       return (
         <span>
           <div
@@ -327,29 +369,24 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             : ""}
           <div>
             {" "}
-            OR by pathenogenesis
-            {showPassage
-              ? this.state.relationships.MOTHERS[0].passage.map(passage => {
-                  return this.getPassageLink(passage);
-                })
-              : ""}
+            OR by parthenogenesis
+            {this.state.relationships.MOTHERS[0].passage.map(passage => {
+              return this.getPassageLink(passage);
+            })}
           </div>
         </span>
       );
-    } else if (relationship === "FATHERS" && entity.autochthony) {
+    } else if (
+      relationship === "MOTHER" &&
+      that.state.unusual.createdWithoutParents.tf
+    ) {
+      console.log("Accessed");
       return (
         <span>
-          {entity !== that.state.relationships[relationship][0] ? (
-            <span>OR </span>
-          ) : (
-            ""
-          )}
-          <span>By autochthony </span>
-          {showPassage
-            ? entity.passage.map(passage => {
-                return this.getPassageLink(passage);
-              })
-            : ""}
+          created without parents
+          {that.state.unusual.createdWithoutParents.passage.map(passage => {
+            return this.getPassageLink(passage);
+          })}
         </span>
       );
     } else if (relationship === "CHILDREN") {
@@ -627,7 +664,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else {
       //Substitute with ID
       let newState = JSON.parse(relationships[id]);
-      console.log("Hello", newState.name);
       this.setState({
         id: newState.id,
         relationships: newState.relationships,
@@ -635,7 +671,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         name: newState.name,
         type: newState.type,
         validSearch: newState.validSearch,
-        alternativeName: newState.alternativeName
+        alternativeName: newState.alternativeName,
+        unusual: newState.unusual
       });
     }
   }
@@ -657,7 +694,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         name: newState.name,
         type: newState.type,
         validSearch: newState.validSearch,
-        alternativeName: newState.alternativeName
+        alternativeName: newState.alternativeName,
+        unusual: newState.unusual
       });
     }
   }
@@ -706,7 +744,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               }
             ></div>
             {/* If current entity is an alternative name for an existing entity */}
-            {console.log(this.state.relationships)}
             <div>{this.getAlternativePage()}</div>
             {/* If data is available for the subject */}
             {this.state.relationships["MOTHERS"].length +
@@ -716,6 +753,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             ) : (
               ""
             )}
+            {console.log(this.state.relationships)}
             {entities[this.state.id]["Type of entity"] ===
             "Collective (genealogical)"
               ? this.getCollectiveSubheading(this.state.id)

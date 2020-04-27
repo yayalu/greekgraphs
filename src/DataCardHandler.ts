@@ -14,8 +14,6 @@ export type entityInfo = {
   targetID: string;
   passage: passageInfo[];
   type: string;
-  autochthony?: boolean;
-  parthenogenesis?: boolean; // where the strings are the IDs
 };
 
 type childrenInfo = {
@@ -40,6 +38,14 @@ type returningInfo = {
   members: { sub: any[]; super: any[] };
   type: string;
   validSearch: boolean;
+  unusual: {
+    autochthony: { tf: boolean; passage: passageInfo[] };
+    createdWithoutParents: { tf: boolean; passage: passageInfo[] };
+    createdByAgent: { tf: boolean; passage: passageInfo[]; agentID: string };
+    parthenogenesis: { tf: boolean; passage: passageInfo[] };
+    bornFromObject: { tf: boolean; passage: passageInfo[]; objectID: string };
+    diesWithoutChildren: { tf: boolean; passage: passageInfo[] };
+  };
   alternativeName: { targetID: string; passage: passageInfo[] };
 };
 
@@ -71,9 +77,12 @@ let familyTies = [
   "is member of",
 
   /* Unusual relationships */
+  "is born by autochthony [in/on/at]",
+  "comes into being",
+  "creates [agent]",
   "is mother by parthenogenesis of",
-  "is father by parthenogenesis of",
-  "is born by autochthony [in/on/at]"
+  "is born from",
+  "has no children"
 ];
 
 /******************************************************************************************/
@@ -103,6 +112,14 @@ export const updateComponent = (id: string) => {
       alternativeName: {
         targetID: connections[0].targetID,
         passage: connections[0].passage
+      },
+      unusual: {
+        autochthony: { tf: false, passage: [] },
+        createdWithoutParents: { tf: false, passage: [] },
+        createdByAgent: { tf: false, passage: [], agentID: "" },
+        parthenogenesis: { tf: false, passage: [] },
+        bornFromObject: { tf: false, passage: [], objectID: "" },
+        diesWithoutChildren: { tf: false, passage: [] }
       }
     };
     return altNameConnection;
@@ -167,6 +184,7 @@ const getAllConnections = (id: string) => {
           tieRow["Direct Object ID"] === id &&
           familyTies.includes(tieRow["Predicate"])
         ) {
+          // For mother not including parthenogenesis part
           let passageInfo: passageInfo[] = [
             {
               start: tieRow["Passage: start"],
@@ -179,7 +197,6 @@ const getAllConnections = (id: string) => {
             }
           ];
 
-          // TODO: Fix this temporary solution for gender data not existing for entity
           if (
             getGender(tieRow["Subject ID"]) &&
             tieRow["Predicate"] === "marries"
@@ -187,15 +204,20 @@ const getAllConnections = (id: string) => {
             tieRow["Predicate"] = "is spouse of";
           }
 
+          if (
+            tieRow["Predicate"] === "is part of" ||
+            tieRow["Predicate"] === "is member of"
+          ) {
+            tieRow["Predicate"] = "has members";
+          }
+
+          // Unusual relationships X is mother by parthenogenesis of Y, and X creates Y are dealt with here.
+
           // Push connections to the list of connections
           connections.push({
             target: getName(entities[tieRow["Subject ID"]]),
             targetID: tieRow["Subject ID"],
-            predicate:
-              tieRow["Predicate"] === "is part of" ||
-              tieRow["Predicate"] === "is member of"
-                ? "has members"
-                : tieRow["Predicate"],
+            predicate: tieRow["Predicate"],
             passage: passageInfo
           });
         }
@@ -217,14 +239,21 @@ const getAllConnections = (id: string) => {
           ];
 
           // Push connections to the list of connections
-          if (tieRow["Predicate"] === "is born by autochthony [in/on/at]") {
+          if (
+            tieRow["Predicate"] === "is born by autochthony [in/on/at]" ||
+            tieRow["Predicate"] === "comes into being" ||
+            tieRow["Predicate"] === "dies without children"
+          ) {
             connections.push({
               target: "",
               targetID: "",
-              predicate: "is born by autochthony [in/on/at]",
+              predicate: tieRow["Predicate"],
               passage: passageInfo
             });
+          } else if (tieRow["Predicate"] === "is born from [object]") {
+            // TODO: DEAL WITH BORN FROM OBJECT WITH OBJECT IDS HERE
           } else {
+            // If collective member
             connections.push({
               target: getName(entities[tieRow["Direct Object ID"]]),
               targetID: tieRow["Direct Object ID"],
@@ -313,22 +342,35 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     SPOUSES: [],
     CHILDREN: []
   };
+  let Oautochthony = { tf: false, passage: [] };
+  let OcreatedWithoutParents = { tf: false, passage: [] };
+  let OcreatedByAgent = { tf: false, passage: [], agentID: "" };
+  let Oparthenogenesis = { tf: false, passage: [] };
+  let ObornFromObject = { tf: false, passage: [], objectID: "" };
+  let OdiesWithoutChildren = { tf: false, passage: [] };
 
   let childrenTemp: entityInfo[] = [];
   connections.forEach(tie => {
     // For each of the connections already found,
     // build the associated entity object, and
     // populate with existing information
+
+    let tieNoY =
+      tie.predicate === "is born by autochthony [in/or/at]" ||
+      tie.predicate === "comes into being" ||
+      tie.predicate === "has no children"
+        ? true
+        : false;
+    // Checking for X (tie) Y where Y does not exist/is empty
     let d: entityInfo = {
-      target: tie.target,
-      targetID: tie.targetID,
+      target: tieNoY ? "" : tie.target,
+      targetID: tieNoY ? "" : tie.targetID,
       passage: tie.passage,
-      type:
-        tie.predicate === "is born by autochthony [in/on/at]"
-          ? ""
-          : entities[tie.targetID]
-          ? entities[tie.targetID]["Type of entity"]
-          : ""
+      type: tieNoY
+        ? ""
+        : entities[tie.targetID]
+        ? entities[tie.targetID]["Type of entity"]
+        : ""
     };
 
     /* Categorising the connections, also checking for duplicates */
@@ -340,24 +382,6 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
       relationships.MOTHERS = checkAndRemoveDuplicates(
         relationships.MOTHERS,
         d
-      );
-    }
-
-    // X is your MOTHER by parthenogenesis
-    else if (tie.predicate === "is mother by parthenogenesis of") {
-      let m: entityInfo = {
-        target: tie.target,
-        targetID: tie.targetID,
-        passage: tie.passage,
-        type: entities[tie.targetID]
-          ? entities[tie.targetID]["Type of entity"]
-          : "",
-        parthenogenesis: true
-      };
-
-      relationships.MOTHERS = checkAndRemoveDuplicates(
-        relationships.MOTHERS,
-        m
       );
     }
 
@@ -402,19 +426,30 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     } else if (tie.predicate === "has members") {
       members.sub = checkAndRemoveDuplicates(members.sub, d);
     }
-    // X is born by autochthony
+
+    /*
+     *
+     *     UNUSUAL RELATIONSHIPS
+     *
+     */
+
+    // X is your MOTHER by parthenogenesis
     else if (tie.predicate === "is born by autochthony [in/on/at]") {
-      let a: entityInfo = {
-        target: "",
-        targetID: "",
+      Oautochthony = { tf: true, passage: tie.passage };
+    } else if (tie.predicate === "comes into being") {
+      OcreatedWithoutParents = { tf: true, passage: tie.passage };
+    } else if (tie.predicate === "creates [agent]") {
+      OcreatedByAgent = {
+        tf: true,
         passage: tie.passage,
-        type: entities[id] ? entities[id]["Type of entity"] : "",
-        autochthony: true
+        agentID: tie.targetID
       };
-      relationships.FATHERS = checkAndRemoveDuplicates(
-        relationships.FATHERS,
-        a
-      );
+    } else if (tie.predicate === "is mother by parthenogenesis of") {
+      Oparthenogenesis = { tf: true, passage: tie.passage };
+    } else if (tie.predicate === "is born from") {
+      ObornFromObject = { tf: true, passage: tie.passage, objectID: "" }; //TODO: Add object info here, and import object
+    } else if (tie.predicate === "has no children") {
+      OdiesWithoutChildren = { tf: true, passage: tie.passage };
     }
   });
 
@@ -434,12 +469,12 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.SPOUSES = alphabetize(relationships.SPOUSES);
   members.super = alphabetize(members.super);
   members.sub = alphabetize(members.sub);
-
   // Currently very inefficient, but finds the other parent of the child
   relationships.CHILDREN = getOtherParents(id, childrenTemp);
   // relationships.CHILDREN = alphabetizeChildren(relationships.CHILDREN);
 
   /* Return alphabetized, complete list of relationships */
+
   let connection: returningInfo = {
     id: id,
     relationships: relationships,
@@ -447,6 +482,14 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     members: members,
     type: type,
     validSearch: true,
+    unusual: {
+      autochthony: Oautochthony,
+      createdWithoutParents: OcreatedWithoutParents,
+      createdByAgent: OcreatedByAgent,
+      parthenogenesis: Oparthenogenesis,
+      bornFromObject: ObornFromObject,
+      diesWithoutChildren: OdiesWithoutChildren
+    },
     alternativeName: { targetID: "", passage: [] }
   };
   return connection;
