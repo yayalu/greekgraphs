@@ -250,85 +250,16 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     // Generate the data points using getDataPoints and getUnusualConnectionsetc. below
   }
 
-  getDataPoints(relationship: string, showPassage: boolean) {
-    let that = this;
-    let focus =
-      relationship === "PART OF"
-        ? this.state.members.super
-        : that.state.relationships[relationship];
-    console.log("Accessed this", relationship);
-
-    // DEAAL WITH CREATED WITHOUT PARAENTS
-    if (
-      (relationship === "MOTHERS" || relationship === "FATHERS") &&
-      that.state.unusual.createdWithoutParents.tf
-    ) {
-      return (
-        <div style={{ clear: "both" }}>
-          <div
-            style={{
-              fontWeight: "bold",
-              textTransform: "uppercase",
-              float: "left",
-              paddingRight: "1rem",
-              marginTop: "0.5rem"
-            }}
-          >
-            {relationship === "MOTHERS" ? "MOTHER" : "FATHER"}:{" "}
-          </div>
-          <div style={{ float: "left", marginTop: "0.5rem" }}>
-            <div style={{ margin: "0" }} className="entity-button">
-              created without parents
-            </div>
-            {this.state.unusual.createdWithoutParents.passage.map(passage => {
-              return this.getPassageLink(passage);
-            })}
-          </div>
-        </div>
-      );
-    }
-    // IF NUMBER OF ENTITIES IN THE RELATIONSHIP > 0
-    else if (focus.length !== 0) {
-      return (
-        <div style={{ clear: "both" }}>
-          <div
-            style={{
-              fontWeight: "bold",
-              textTransform: "uppercase",
-              float: "left",
-              paddingRight: "1rem",
-              marginTop: "0.5rem"
-            }}
-          >
-            {this.getPluralization(relationship)}
-          </div>
-          <div style={{ float: "left", marginTop: "0.5rem" }}>
-            {focus.map(entity => {
-              return (
-                <div style={{ margin: "0" }}>
-                  {this.checkUnusualRelationship(
-                    entity,
-                    relationship,
-                    showPassage
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  }
-
   getPluralization(relationship: string) {
     if (relationship === "PART OF") {
       return relationship + ": ";
     } else if (relationship === "MOTHERS" || relationship === "FATHERS") {
       return Pluralize.singular(relationship) + ": ";
     } else {
-      if (this.state.relationships[relationship].length === 1) {
+      if (
+        this.state.relationships[relationship].length === 1 ||
+        this.state.relationships[relationship].length === 0
+      ) {
         return Pluralize.singular(relationship) + ": ";
       } else {
         return relationship + ": ";
@@ -336,95 +267,223 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     }
   }
 
-  checkUnusualRelationship(
+  entityNameAndPassage(
     entity: any,
-    relationship: any,
+    relationship: string,
     showPassage: boolean
   ) {
-    let that = this;
-
-    // deal with autochthony, parthenogenesis and creation without parents (father)
-    if (
-      relationship === "FATHERS" &&
-      (that.state.unusual.parthenogenesis.tf ||
-        that.state.unusual.autochthony.tf)
-    ) {
-      return (
-        <span>
-          <div
-            className="entity-button"
-            onClick={() => this.handleNameClicked(entity.targetID)}
-          >
-            {entity !== that.state.relationships[relationship][0] ? (
-              <span>OR </span>
-            ) : (
-              ""
-            )}
-            <span style={{ textDecoration: "underline" }}>{entity.target}</span>
-          </div>
-          {showPassage
-            ? entity.passage.map(passage => {
-                return this.getPassageLink(passage);
-              })
-            : ""}
-          <div>
-            {" "}
-            OR by parthenogenesis
-            {this.state.relationships.MOTHERS[0].passage.map(passage => {
-              return this.getPassageLink(passage);
-            })}
-          </div>
-        </span>
-      );
-    } else if (
-      relationship === "MOTHER" &&
-      that.state.unusual.createdWithoutParents.tf
-    ) {
-      console.log("Accessed");
-      return (
-        <span>
-          created without parents
-          {that.state.unusual.createdWithoutParents.passage.map(passage => {
-            return this.getPassageLink(passage);
-          })}
-        </span>
-      );
-    } else if (relationship === "CHILDREN") {
-      return (
-        <div className="entity-child-wrapper">
-          <div className="entity-child-grouping">
-            {that.getChildParentGrouped(entity)}
-          </div>
-          {that.getOtherParentText(entity.otherParentIDs)}
+    return (
+      <div>
+        <div
+          className="entity-button"
+          onClick={() => this.handleNameClicked(entity.targetID)}
+        >
+          {entity !== this.state.relationships[relationship][0] ? (
+            <span>OR </span>
+          ) : (
+            ""
+          )}
+          <span style={{ textDecoration: "underline" }}>{entity.target}</span>
         </div>
-      );
-    } else {
-      return (
-        <span>
-          <div
-            className="entity-button"
-            onClick={() => this.handleNameClicked(entity.targetID)}
-          >
-            {relationship !== "CHILDREN" &&
-            relationship !== "SIBLINGS" &&
-            relationship !== "SPOUSES" &&
-            relationship !== "PART OF" &&
-            entity !== that.state.relationships[relationship][0] ? (
-              <span>OR </span>
-            ) : (
-              ""
-            )}
-            <span style={{ textDecoration: "underline" }}>{entity.target}</span>
-          </div>
-          {showPassage ? (
-            entity.passage.map(passage => {
+        {showPassage
+          ? entity.passage.map(passage => {
               return this.getPassageLink(passage);
             })
-          ) : (
-            <span style={{ paddingRight: "10rem" }}></span>
-          )}
-        </span>
+          : ""}
+      </div>
+    );
+  }
+
+  getDataPoints(relationship: any) {
+    // FATHER: autochthony, parthenogenesis & multiple fathers
+    if (relationship === "FATHERS") {
+      if (this.state.unusual.parthenogenesis.tf) {
+        return (
+          <div style={{ clear: "both" }}>
+            <div className="relationship-header">
+              {this.getPluralization(relationship)}
+            </div>
+
+            <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+              {this.state.relationships[relationship].map(e => {
+                this.entityNameAndPassage(e, relationship, true);
+              })}
+              {/* parthenogenesis part */}
+              <div className="entity-button">
+                {this.state.relationships[relationship].length === 0
+                  ? "by parthenogenesis"
+                  : "OR by parthenogenesis"}
+              </div>
+              {this.state.unusual.parthenogenesis.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })}
+            </div>
+          </div>
+        );
+      } else if (this.state.unusual.autochthony.tf) {
+        return (
+          <div style={{ clear: "both" }}>
+            <div className="relationship-header">
+              {this.getPluralization(relationship)}
+            </div>
+            <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+              {this.state.relationships[relationship].map(e => {
+                this.entityNameAndPassage(e, relationship, true);
+              })}
+              {/* autochthony part */}
+              <div className="entity-button">
+                {this.state.relationships[relationship].length === 0
+                  ? "by autochthony"
+                  : "OR by autochthony"}
+              </div>
+              {this.state.unusual.autochthony.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })}
+            </div>
+          </div>
+        );
+      } else if (this.state.unusual.createdWithoutParents.tf) {
+        return (
+          <div style={{ clear: "both" }}>
+            <div className="relationship-header">
+              {this.getPluralization(relationship)}
+            </div>
+            <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+              {this.state.relationships[relationship].map(e => {
+                this.entityNameAndPassage(e, relationship, true);
+              })}
+              {/* created without parents part */}
+              <div className="entity-button">
+                {this.state.relationships[relationship].length === 0
+                  ? "created without parents"
+                  : "OR created without parents"}
+              </div>
+              {this.state.unusual.createdWithoutParents.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })}
+            </div>
+          </div>
+        );
+      } else if (this.state.relationships[relationship].length > 0) {
+        return (
+          <div style={{ clear: "both" }}>
+            <div className="relationship-header">
+              {this.getPluralization(relationship)}
+            </div>
+            <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+              {this.state.relationships[relationship].map(e => {
+                return this.entityNameAndPassage(e, relationship, true);
+              })}
+            </div>
+          </div>
+        );
+      } else {
+        return <span></span>;
+      }
+    }
+
+    // MOTHER: creation without parents
+    else if (relationship === "MOTHERS") {
+      if (this.state.unusual.createdWithoutParents.tf) {
+        return (
+          <div style={{ clear: "both" }}>
+            <div className="relationship-header">
+              {this.getPluralization(relationship)}
+            </div>
+            <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+              {this.state.relationships[relationship].map(e =>
+                this.entityNameAndPassage(e, relationship, true)
+              )}
+              <div className="entity-button">
+                {this.state.relationships[relationship].length === 0
+                  ? "created without parents"
+                  : "OR created without parents"}
+              </div>
+              {this.state.unusual.createdWithoutParents.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })}
+            </div>
+          </div>
+        );
+      } else if (this.state.relationships[relationship].length > 0) {
+        return (
+          <div style={{ clear: "both" }}>
+            <div className="relationship-header">
+              {this.getPluralization(relationship)}
+            </div>
+            <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+              {this.state.relationships[relationship].map(e => {
+                return this.entityNameAndPassage(e, relationship, true);
+              })}
+            </div>
+          </div>
+        );
+      } else {
+        return <span></span>;
+      }
+    }
+
+    //CHILDREN:
+    else if (relationship === "CHILDREN") {
+      return (
+        <div style={{ clear: "both" }}>
+          <div className="relationship-header">
+            {this.getPluralization(relationship)}
+          </div>
+          <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+            {this.state.relationships[relationship].map(entity => (
+              <div>
+                <div className="entity-child-wrapper">
+                  <div className="entity-child-grouping">
+                    {this.getChildParentGrouped(entity)}
+                  </div>
+                  {this.getOtherParentText(entity.otherParentIDs)}
+                </div>
+                <p></p>
+              </div>
+            ))}
+          </div>
+        </div>
       );
+
+      //SPOUSES, TWINS, AND SIBLINGS
+    } else if (
+      (relationship === "SPOUSES" ||
+        relationship === "TWIN" ||
+        relationship === "SIBLINGS") &&
+      this.state.relationships[relationship].length > 0
+    ) {
+      return (
+        <div style={{ clear: "both" }}>
+          <div className="relationship-header">
+            {this.getPluralization(relationship)}
+          </div>
+          <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+            {this.state.relationships[relationship].map(e => {
+              return this.entityNameAndPassage(e, relationship, true);
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    //PART OF (COLLECTIVE)
+    else if (relationship === "PART OF") {
+      return (
+        <div style={{ clear: "both" }}>
+          <div className="relationship-header">PART OF: </div>
+          <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+            {this.state.members.super.map(e => {
+              return this.entityNameAndPassage(e, relationship, true);
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    //OTHER UNUSUAL RELATIONSHIP TYPES: CREATOR
+    else {
+      return <div></div>;
     }
   }
 
@@ -753,26 +812,14 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             ) : (
               ""
             )}
-            {console.log(this.state.relationships)}
             {entities[this.state.id]["Type of entity"] ===
             "Collective (genealogical)"
               ? this.getCollectiveSubheading(this.state.id)
               : Object.keys(this.state.relationships).map(key => {
-                  if (
-                    key === "MOTHERS" ||
-                    key === "FATHERS" ||
-                    key === "SPOUSES" ||
-                    key === "TWIN"
-                  ) {
-                    return <div key={key}>{this.getDataPoints(key, true)}</div>;
-                  } else {
-                    return (
-                      <div key={key}>{this.getDataPoints(key, false)}</div>
-                    );
-                  }
+                  return <div key={key}>{this.getDataPoints(key)}</div>;
                 })}
             {this.state.members.super.length !== 0 ? (
-              <div>{this.getDataPoints("PART OF", true)}</div>
+              <div>{this.getDataPoints("PART OF")}</div>
             ) : (
               ""
             )}
