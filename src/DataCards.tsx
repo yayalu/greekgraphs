@@ -59,11 +59,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       relationships: {
         MOTHERS: [],
         FATHERS: [],
+        CREATORS: [],
         SIBLINGS: [],
         TWIN: [],
         SPOUSES: [],
-        CHILDREN: [],
-        CREATOR: []
+        CHILDREN: []
       },
       members: { sub: [], super: [] },
       type: "",
@@ -384,7 +384,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       }
     }
 
-    // MOTHER: creation without parents
+    // MOTHER: autochthony, creation without parents
     else if (relationship === "MOTHERS") {
       if (this.state.unusual.createdWithoutParents.tf) {
         return (
@@ -402,6 +402,28 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                   : "OR created without parents"}
               </div>
               {this.state.unusual.createdWithoutParents.passage.map(passage => {
+                return this.getPassageLink(passage);
+              })}
+            </div>
+          </div>
+        );
+      } else if (this.state.unusual.autochthony.tf) {
+        return (
+          <div style={{ clear: "both" }}>
+            <div className="relationship-header">
+              {this.getPluralization(relationship)}
+            </div>
+            <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+              {this.state.relationships[relationship].map(e => {
+                return this.entityNameAndPassage(e, relationship, true);
+              })}
+              {/* autochthony part */}
+              <div className="entity-button">
+                {this.state.relationships[relationship].length === 0
+                  ? "by autochthony"
+                  : "OR by autochthony"}
+              </div>
+              {this.state.unusual.autochthony.passage.map(passage => {
                 return this.getPassageLink(passage);
               })}
             </div>
@@ -425,9 +447,9 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       }
     }
 
-    //CREATOR:
+    //CREATORS:
     else if (
-      relationship === "CREATOR" &&
+      relationship === "CREATORS" &&
       this.state.relationships[relationship].length > 0
     ) {
       return (
@@ -518,7 +540,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       );
     }
 
-    //OTHER UNUSUAL RELATIONSHIP TYPES: CREATOR
+    //OTHER UNUSUAL RELATIONSHIP TYPES: CREATORS
     else {
       return <div></div>;
     }

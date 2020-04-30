@@ -25,11 +25,11 @@ type childrenInfo = {
 export type relationshipInfo = {
   MOTHERS: entityInfo[];
   FATHERS: entityInfo[];
+  CREATORS: entityInfo[];
   SIBLINGS: entityInfo[];
   TWIN: entityInfo[];
   SPOUSES: entityInfo[];
   CHILDREN: childrenInfo[];
-  CREATOR: entityInfo[];
 };
 
 type returningInfo = {
@@ -98,11 +98,11 @@ export const updateComponent = (id: string) => {
     let empty: relationshipInfo = {
       MOTHERS: [],
       FATHERS: [],
+      CREATORS: [],
       SIBLINGS: [],
       TWIN: [],
       SPOUSES: [],
-      CHILDREN: [],
-      CREATOR: []
+      CHILDREN: []
     };
     let altNameConnection: returningInfo = {
       id: id,
@@ -339,11 +339,11 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   let relationships: relationshipInfo = {
     MOTHERS: [],
     FATHERS: [],
+    CREATORS: [],
     SIBLINGS: [],
     TWIN: [],
     SPOUSES: [],
-    CHILDREN: [],
-    CREATOR: []
+    CHILDREN: []
   };
   let Oautochthony = { tf: false, passage: [] };
   let OcreatedWithoutParents = { tf: false, passage: [] };
@@ -442,8 +442,8 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     } else if (tie.predicate === "comes into being") {
       OcreatedWithoutParents = { tf: true, passage: tie.passage };
     } else if (tie.predicate === "creates [agent]") {
-      relationships.CREATOR = checkAndRemoveDuplicates(
-        relationships.CREATOR,
+      relationships.CREATORS = checkAndRemoveDuplicates(
+        relationships.CREATORS,
         d
       );
       OcreatedByAgent = {
@@ -474,7 +474,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.TWIN = alphabetize(relationships.TWIN);
   relationships.SPOUSES = alphabetize(relationships.SPOUSES);
-  relationships.CREATOR = alphabetize(relationships.CREATOR);
+  relationships.CREATORS = alphabetize(relationships.CREATORS);
   members.super = alphabetize(members.super);
   members.sub = alphabetize(members.sub);
   // Currently very inefficient, but finds the other parent of the child
