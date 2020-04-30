@@ -52,7 +52,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         SIBLINGS: [],
         TWIN: [],
         SPOUSES: [],
-        CHILDREN: []
+        CHILDREN: [],
+        CREATOR: []
       },
       members: { sub: [], super: [] },
       type: "",

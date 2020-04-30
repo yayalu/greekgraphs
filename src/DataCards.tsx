@@ -62,7 +62,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         SIBLINGS: [],
         TWIN: [],
         SPOUSES: [],
-        CHILDREN: []
+        CHILDREN: [],
+        CREATOR: []
       },
       members: { sub: [], super: [] },
       type: "",
@@ -278,7 +279,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           className="entity-button"
           onClick={() => this.handleNameClicked(entity.targetID)}
         >
-          {entity !== this.state.relationships[relationship][0] ? (
+          {entity !== this.state.relationships[relationship][0] &&
+          relationship !== "SIBLINGS" ? (
             <span>OR </span>
           ) : (
             ""
@@ -306,7 +308,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
 
             <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
               {this.state.relationships[relationship].map(e => {
-                this.entityNameAndPassage(e, relationship, true);
+                return this.entityNameAndPassage(e, relationship, true);
               })}
               {/* parthenogenesis part */}
               <div className="entity-button">
@@ -328,7 +330,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             </div>
             <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
               {this.state.relationships[relationship].map(e => {
-                this.entityNameAndPassage(e, relationship, true);
+                return this.entityNameAndPassage(e, relationship, true);
               })}
               {/* autochthony part */}
               <div className="entity-button">
@@ -350,7 +352,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             </div>
             <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
               {this.state.relationships[relationship].map(e => {
-                this.entityNameAndPassage(e, relationship, true);
+                return this.entityNameAndPassage(e, relationship, true);
               })}
               {/* created without parents part */}
               <div className="entity-button">
@@ -423,6 +425,25 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       }
     }
 
+    //CREATOR:
+    else if (
+      relationship === "CREATOR" &&
+      this.state.relationships[relationship].length > 0
+    ) {
+      return (
+        <div style={{ clear: "both" }}>
+          <div className="relationship-header">
+            {this.getPluralization(relationship)}
+          </div>
+          <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+            {this.state.relationships[relationship].map(e => {
+              return this.entityNameAndPassage(e, relationship, true);
+            })}
+          </div>
+        </div>
+      );
+    }
+
     //CHILDREN:
     else if (relationship === "CHILDREN") {
       return (
@@ -431,6 +452,22 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             {this.getPluralization(relationship)}
           </div>
           <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+            {this.state.unusual.diesWithoutChildren.tf ? (
+              <div>
+                <div className="entity-button">dies without children</div>
+                {this.state.unusual.diesWithoutChildren.passage.map(passage => {
+                  return this.getPassageLink(passage);
+                })}
+                {this.state.relationships.CHILDREN.length > 0 ? (
+                  <div>OR</div>
+                ) : (
+                  ""
+                )}
+              </div>
+            ) : (
+              <span></span>
+            )}
+
             {this.state.relationships[relationship].map(entity => (
               <div>
                 <div className="entity-child-wrapper">
@@ -818,6 +855,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               : Object.keys(this.state.relationships).map(key => {
                   return <div key={key}>{this.getDataPoints(key)}</div>;
                 })}
+            <div></div>
             {this.state.members.super.length !== 0 ? (
               <div>{this.getDataPoints("PART OF")}</div>
             ) : (

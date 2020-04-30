@@ -29,6 +29,7 @@ export type relationshipInfo = {
   TWIN: entityInfo[];
   SPOUSES: entityInfo[];
   CHILDREN: childrenInfo[];
+  CREATOR: entityInfo[];
 };
 
 type returningInfo = {
@@ -100,7 +101,8 @@ export const updateComponent = (id: string) => {
       SIBLINGS: [],
       TWIN: [],
       SPOUSES: [],
-      CHILDREN: []
+      CHILDREN: [],
+      CREATOR: []
     };
     let altNameConnection: returningInfo = {
       id: id,
@@ -242,7 +244,7 @@ const getAllConnections = (id: string) => {
           if (
             tieRow["Predicate"] === "is born by autochthony [in/on/at]" ||
             tieRow["Predicate"] === "comes into being" ||
-            tieRow["Predicate"] === "dies without children"
+            tieRow["Predicate"] === "has no children"
           ) {
             connections.push({
               target: "",
@@ -340,7 +342,8 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     SIBLINGS: [],
     TWIN: [],
     SPOUSES: [],
-    CHILDREN: []
+    CHILDREN: [],
+    CREATOR: []
   };
   let Oautochthony = { tf: false, passage: [] };
   let OcreatedWithoutParents = { tf: false, passage: [] };
@@ -439,6 +442,10 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     } else if (tie.predicate === "comes into being") {
       OcreatedWithoutParents = { tf: true, passage: tie.passage };
     } else if (tie.predicate === "creates [agent]") {
+      relationships.CREATOR = checkAndRemoveDuplicates(
+        relationships.CREATOR,
+        d
+      );
       OcreatedByAgent = {
         tf: true,
         passage: tie.passage,
@@ -467,6 +474,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.TWIN = alphabetize(relationships.TWIN);
   relationships.SPOUSES = alphabetize(relationships.SPOUSES);
+  relationships.CREATOR = alphabetize(relationships.CREATOR);
   members.super = alphabetize(members.super);
   members.sub = alphabetize(members.sub);
   // Currently very inefficient, but finds the other parent of the child
