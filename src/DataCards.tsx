@@ -60,6 +60,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         MOTHERS: [],
         FATHERS: [],
         CREATORS: [],
+        BORNFROM: [],
         SIBLINGS: [],
         TWIN: [],
         SPOUSES: [],
@@ -302,6 +303,24 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     );
   }
 
+  objectNameAndPassage(entity: any) {
+    return (
+      <div>
+        <div className="entity-button">
+          {entity !== this.state.relationships["BORNFROM"][0] ? (
+            <span>OR </span>
+          ) : (
+            ""
+          )}
+          {entity.target}
+        </div>
+        {entity.passage.map(passage => {
+          return this.getPassageLink(passage);
+        })}
+      </div>
+    );
+  }
+
   getDataPoints(relationship: any) {
     // FATHER: autochthony, parthenogenesis & multiple fathers
     if (relationship === "FATHERS") {
@@ -472,13 +491,29 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       );
     }
 
+    //BORN FROM:
+    else if (
+      relationship === "BORNFROM" &&
+      this.state.relationships[relationship].length > 0
+    ) {
+      return (
+        <div style={{ clear: "both" }}>
+          <div className="relationship-header">BORN FROM: </div>
+          <div style={{ float: "left", marginTop: "0.5rem", margin: "0" }}>
+            {this.state.relationships[relationship].map(e => {
+              return this.objectNameAndPassage(e);
+            })}
+          </div>
+        </div>
+      );
+    }
+
     //CHILDREN:
     else if (
       relationship === "CHILDREN" &&
       (this.state.relationships[relationship].length > 0 ||
         this.state.unusual.diesWithoutChildren.tf)
     ) {
-      console.log(this.state.relationships[relationship]);
       return (
         <div style={{ clear: "both" }}>
           <div className="relationship-header">

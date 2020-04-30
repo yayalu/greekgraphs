@@ -1,5 +1,6 @@
 var ties = require("./data/ties.json");
 var entities = require("./data/entities.json");
+var objects = require("./data/objects.json");
 var relationships = require("./data/relationships.json");
 
 type passageInfo = {
@@ -26,6 +27,7 @@ export type relationshipInfo = {
   MOTHERS: entityInfo[];
   FATHERS: entityInfo[];
   CREATORS: entityInfo[];
+  BORNFROM: entityInfo[];
   SIBLINGS: entityInfo[];
   TWIN: entityInfo[];
   SPOUSES: entityInfo[];
@@ -82,7 +84,7 @@ let familyTies = [
   "comes into being",
   "creates [agent]",
   "is mother by parthenogenesis of",
-  "is born from",
+  "is born from [object]",
   "has no children"
 ];
 
@@ -99,6 +101,7 @@ export const updateComponent = (id: string) => {
       MOTHERS: [],
       FATHERS: [],
       CREATORS: [],
+      BORNFROM: [],
       SIBLINGS: [],
       TWIN: [],
       SPOUSES: [],
@@ -253,7 +256,12 @@ const getAllConnections = (id: string) => {
               passage: passageInfo
             });
           } else if (tieRow["Predicate"] === "is born from [object]") {
-            // TODO: DEAL WITH BORN FROM OBJECT WITH OBJECT IDS HERE
+            connections.push({
+              target: getName(objects[tieRow["Direct Object ID"]]),
+              targetID: tieRow["Direct Object ID"],
+              predicate: tieRow["Predicate"],
+              passage: passageInfo
+            });
           } else {
             // If collective member
             connections.push({
@@ -340,6 +348,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
     MOTHERS: [],
     FATHERS: [],
     CREATORS: [],
+    BORNFROM: [],
     SIBLINGS: [],
     TWIN: [],
     SPOUSES: [],
@@ -451,6 +460,16 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
         passage: tie.passage,
         agentID: tie.targetID
       };
+    } else if (tie.predicate === "is born from [object]") {
+      relationships.BORNFROM = checkAndRemoveDuplicates(
+        relationships.BORNFROM,
+        d
+      );
+      ObornFromObject = {
+        tf: true,
+        passage: tie.passage,
+        objectID: tie.targetID
+      };
     } else if (tie.predicate === "is mother by parthenogenesis of") {
       Oparthenogenesis = { tf: true, passage: tie.passage };
     } else if (tie.predicate === "is born from") {
@@ -475,6 +494,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   relationships.TWIN = alphabetize(relationships.TWIN);
   relationships.SPOUSES = alphabetize(relationships.SPOUSES);
   relationships.CREATORS = alphabetize(relationships.CREATORS);
+  relationships.BORNFROM = alphabetize(relationships.BORNFROM);
   members.super = alphabetize(members.super);
   members.sub = alphabetize(members.sub);
   // Currently very inefficient, but finds the other parent of the child
