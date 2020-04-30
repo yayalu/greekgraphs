@@ -256,6 +256,12 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       return relationship + ": ";
     } else if (relationship === "MOTHERS" || relationship === "FATHERS") {
       return Pluralize.singular(relationship) + ": ";
+    } else if (
+      relationship === "CHILDREN" &&
+      this.state.relationships[relationship].length === 1 &&
+      this.state.relationships[relationship][0].child.length > 1
+    ) {
+      return relationship + ": ";
     } else {
       if (
         this.state.relationships[relationship].length === 1 ||
@@ -467,7 +473,12 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     }
 
     //CHILDREN:
-    else if (relationship === "CHILDREN") {
+    else if (
+      relationship === "CHILDREN" &&
+      (this.state.relationships[relationship].length > 0 ||
+        this.state.unusual.diesWithoutChildren.tf)
+    ) {
+      console.log(this.state.relationships[relationship]);
       return (
         <div style={{ clear: "both" }}>
           <div className="relationship-header">
