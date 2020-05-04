@@ -17,7 +17,6 @@ import {
   getEntityType
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
-import { objectTypeSpreadProperty, arrayTypeAnnotation } from "@babel/types";
 
 type DatumProps = {
   location: {
@@ -944,6 +943,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             relationshipClicked={this.handleNameClicked}
             // disputeClicked={this.handleDisputeClicked}
           ></EntityGraph> */}
+          <EntityGraph />
         </div>
       </React.Fragment>
     );
