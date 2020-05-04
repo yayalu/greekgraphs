@@ -1,52 +1,54 @@
 // template from: https://konvajs.org/docs/react/index.html
-// Refs (stage and components): https://reactjsexample.com/react-binding-to-canvas-element-via-konva-framework/
 import React, { Component } from "react";
 import Konva from "konva";
-import { Stage, Layer, Star, Text, Rect } from "react-konva";
+import { Stage, Layer, Star, Text } from "react-konva";
 
-class EntityGraph extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount() {
-    // log stage react wrapper (reference)
-    console.log(this.refs.stage);
-    // log Konva.Stage instance (reference)
-    console.log(this.refs.stage.getStage());
-    // Get all children from the stage (equiiv. to stage.layers.<allchildren>)
-    console.log(this.refs.stage.children[0].children);
-  }
-
-  handleMouseOver = e => {
-    e.target.to({
-      strokeWidth: 6
+class EntityGraphExample extends Component {
+  handleDragStart = e => {
+    e.target.setAttrs({
+      shadowOffset: {
+        x: 15,
+        y: 15
+      },
+      scaleX: 1.1,
+      scaleY: 1.1
     });
+    console.log("Starting", e.target.attrs.id, "\n");
   };
-  handleMouseOut = e => {
+  handleDragEnd = e => {
     e.target.to({
-      strokeWidth: 2
+      duration: 0.5,
+      easing: Konva.Easings.ElasticEaseOut,
+      scaleX: 1,
+      scaleY: 1,
+      shadowOffsetX: 5,
+      shadowOffsetY: 5
     });
+    console.log("Ending", e, "\n");
   };
-
   render() {
     return (
-      <Stage ref="stage" width={window.innerWidth} height={window.innerHeight}>
-        <Layer ref="layer">
+      <Stage width={window.innerWidth} height={window.innerHeight}>
+        <Layer>
+          <Text text="Try to drag a star" />
           {[...Array(10)].map((_, i) => (
-            <Rect
-              refs={"rect"}
-              id={"id" + i}
-              name={"name" + i}
+            <Star
+              id={"Hello" + i}
+              name={"Hello" + i}
               x={Math.random() * window.innerWidth}
               y={Math.random() * window.innerHeight}
-              height={100}
-              width={100}
-              fill="#ffffff"
-              stroke="#555"
-              strokeWidth={3}
-              onMouseOver={this.handleMouseOver}
-              onMouseOut={this.handleMouseOut}
+              numPoints={5}
+              innerRadius={20}
+              outerRadius={40}
+              fill="#89b717"
+              opacity={0.8}
+              draggable
+              rotation={Math.random() * 180}
+              shadowColor="black"
+              shadowBlur={10}
+              shadowOpacity={0.6}
+              onDragStart={this.handleDragStart}
+              onDragEnd={this.handleDragEnd}
             />
           ))}
         </Layer>
@@ -55,7 +57,7 @@ class EntityGraph extends Component {
   }
 }
 
-export default EntityGraph;
+export default EntityGraphExample;
 
 /* render() {
     let stageRef = React.useRef();
