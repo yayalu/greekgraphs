@@ -79,6 +79,11 @@ class EntityGraph extends Component {
     return edge;
   };
 
+  handlePageChange = e => {
+    console.log("Push upate of page");
+    this.props.relationshipClicked("8182035");
+  };
+
   render() {
     return (
       <Stage ref="stage" width={window.innerWidth} height={window.innerHeight}>
@@ -114,6 +119,7 @@ class EntityGraph extends Component {
               strokeWidth={4}
               onMouseOver={this.handleMouseOverNode}
               onMouseOut={this.handleMouseOutNode}
+              onClick={this.handlePageChange}
             />
           ))}
           <Line
