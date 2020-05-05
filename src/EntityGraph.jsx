@@ -2,11 +2,16 @@
 // Refs (stage and components): https://reactjsexample.com/react-binding-to-canvas-element-via-konva-framework/
 import React, { Component } from "react";
 import Konva from "konva";
-import { Stage, Layer, Star, Text, Rect } from "react-konva";
+import { Stage, Layer, Star, Text, Rect, Line, Polygon } from "react-konva";
 
 class EntityGraph extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      allShapes: [],
+      stageRef: undefined,
+      connectedShapes: ["edge1", "node3", "node5"]
+    };
   }
 
   componentDidMount() {
@@ -15,40 +20,110 @@ class EntityGraph extends Component {
     // log Konva.Stage instance (reference)
     console.log(this.refs.stage.getStage());
     // Get all children from the stage (equiiv. to stage.layers.<allchildren>)
-    console.log(this.refs.stage.children[0].children);
+    // Get the object with the specified name (use "."+name)
+    console.log(this.refs.stage.find(".name1"));
+    // Use "each()" operator to sift through all items in the collection
+    // Use "each" here and "forEach" everywhere else and when referencinig this.state.allShapes
+    this.refs.stage.children[1].children.each(function(shape) {
+      console.log("Test", shape.attrs.id);
+    });
+    console.log(this.refs.stage.children[1].children);
+    this.setState({
+      allShapes: this.refs.stage.children[1].children,
+      stageRef: this.refs.stage
+    });
   }
 
-  handleMouseOver = e => {
+  handleMouseOverNode = e => {
     e.target.to({
-      strokeWidth: 6
+      strokeWidth: 8
     });
   };
-  handleMouseOut = e => {
+  handleMouseOutNode = e => {
     e.target.to({
-      strokeWidth: 2
+      strokeWidth: 4
     });
+  };
+
+  handleMouseOverLine = e => {
+    if (e.target.attrs.name === "edge1") {
+      this.state.connectedShapes.forEach(s => {
+        let item = this.state.stageRef.find("." + s);
+        if (item.length > 0) {
+          item.to({
+            strokeWidth: 8
+          });
+        }
+      });
+    }
+  };
+  handleMouseOutLine = e => {
+    if (e.target.attrs.name === "edge1") {
+      this.state.connectedShapes.forEach(s => {
+        let item = this.state.stageRef.find("." + s);
+        if (item.length > 0) {
+          item.to({
+            strokeWidth: 4
+          });
+        }
+      });
+    }
+  };
+
+  getRandomPoints = () => {
+    let edge = [];
+    this.state.allShapes.forEach(function(shape) {
+      edge.push(shape.attrs.x + 75);
+      edge.push(shape.attrs.y + 40);
+    });
+    return edge;
   };
 
   render() {
     return (
       <Stage ref="stage" width={window.innerWidth} height={window.innerHeight}>
-        <Layer ref="layer">
+        <Layer>
+          {[...Array(10)].map((_, i) => (
+            <Text
+              x={i * 100}
+              ref="text"
+              y={i * 100}
+              text="The sons of Lacaoon"
+              fontSize={18}
+              fontFamily="Calibri"
+              fontStyle="bold"
+              fill="#000"
+              width={150}
+              height={80}
+              padding={20}
+              align="center"
+            />
+          ))}
+        </Layer>
+        <Layer>
           {[...Array(10)].map((_, i) => (
             <Rect
               refs={"rect"}
-              id={"id" + i}
-              name={"name" + i}
-              x={Math.random() * window.innerWidth}
-              y={Math.random() * window.innerHeight}
-              height={100}
-              width={100}
-              fill="#ffffff"
-              stroke="#555"
-              strokeWidth={3}
-              onMouseOver={this.handleMouseOver}
-              onMouseOut={this.handleMouseOut}
+              // id={"id" + i}
+              name={"node" + i}
+              x={i * 100}
+              y={i * 100}
+              width={150}
+              height={80}
+              stroke="#000"
+              strokeWidth={4}
+              onMouseOver={this.handleMouseOverNode}
+              onMouseOut={this.handleMouseOutNode}
             />
           ))}
+          <Line
+            name={"edge" + "1"}
+            points={this.getRandomPoints()}
+            stroke="#000000"
+            strokeWidth={4}
+            onMouseOver={this.handleMouseOverLine}
+            onMouseOut={this.handleMouseOutLine}
+          />
         </Layer>
       </Stage>
     );
