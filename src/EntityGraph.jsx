@@ -84,16 +84,24 @@ class EntityGraph extends Component {
     this.props.relationshipClicked("8182035");
   };
 
+  getText = () => {
+    if (this.props.id === "8182233") {
+      return "Apollo";
+    } else {
+      return "The sons of Lacaoon";
+    }
+  };
+
   render() {
     return (
-      <Stage ref="stage" width={window.innerWidth} height={window.innerHeight}>
+      <Stage ref="stage" width={4000} height={2000}>
         <Layer>
           {[...Array(10)].map((_, i) => (
             <Text
               x={i * 100}
               ref="text"
               y={i * 100}
-              text="The sons of Lacaoon"
+              text={this.getText()}
               fontSize={18}
               fontFamily="Calibri"
               fontStyle="bold"
