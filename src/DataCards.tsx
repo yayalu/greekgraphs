@@ -946,6 +946,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           <EntityGraph
             relationshipClicked={this.handleNameClicked}
             id={this.state.id}
+            unusual={this.state.unusual}
           />
         </div>
       </React.Fragment>

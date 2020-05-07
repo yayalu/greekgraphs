@@ -3,6 +3,7 @@
 import React, { Component } from "react";
 import Konva from "konva";
 import { Stage, Layer, Star, Text, Rect, Line, Polygon } from "react-konva";
+import relationships from "./data/relationships.json";
 
 class EntityGraph extends Component {
   constructor(props) {
@@ -10,8 +11,16 @@ class EntityGraph extends Component {
     this.state = {
       allShapes: [],
       stageRef: undefined,
-      connectedShapes: ["edge1", "node3", "node5"]
+      connectedShapes: ["edge1", "node3", "node5"], // Nodes and links that are connected with each other
+      depthNodes: {
+        depthNegOne: [],
+        depthZero: [],
+        depthPosOne: []
+      },
+      entityData: {},
+      id: ""
     };
+    this.getDepthNodes = this.getDepthNodes.bind(this);
   }
 
   componentDidMount() {
@@ -28,10 +37,29 @@ class EntityGraph extends Component {
       console.log("Test", shape.attrs.id);
     });
     console.log(this.refs.stage.children[1].children);
+    console.log("IDs:", JSON.parse(relationships[this.props.id]));
+    let entityData = JSON.parse(relationships[this.props.id]);
+
+    // Set states
     this.setState({
       allShapes: this.refs.stage.children[1].children,
-      stageRef: this.refs.stage
+      stageRef: this.refs.stage,
+      id: this.props.id,
+      entityData: entityData,
+      depthNodes: this.getDepthNodes(entityData)
     });
+  }
+
+  componentDidUpdate() {
+    if (this.props.id !== this.state.id) {
+      let entityData = JSON.parse(relationships[this.props.id]);
+      //Substitute with ID
+      this.setState({
+        id: this.props.id,
+        entityData: entityData,
+        depthNodes: this.getDepthNodes(entityData)
+      });
+    }
   }
 
   handleMouseOverNode = e => {
@@ -79,9 +107,52 @@ class EntityGraph extends Component {
     return edge;
   };
 
+  getDepthNodes = entityData => {
+    let depthNegOne = [],
+      depthZero = [],
+      depthPosOne = [];
+
+    console.log("Entity", entityData);
+    //Parents and step-parents depth -1
+    depthNegOne = depthNegOne.concat(entityData.relationships.MOTHERS);
+    depthNegOne = depthNegOne.concat(entityData.relationships.FATHERS);
+    depthNegOne = depthNegOne.concat(entityData.relationships.CREATORS);
+    depthNegOne = depthNegOne.concat(entityData.relationships.BORNFROM);
+    //siblings, twins and spouses depth 0
+    depthZero = depthZero.concat(entityData.relationships.SIBLINGS);
+    depthZero = depthZero.concat(entityData.relationships.TWIN);
+    depthZero = depthZero.concat(entityData.relationships.SPOUSES);
+    // + all other parents
+    //children depth +1
+    for (let d = 0; d < entityData.relationships.CHILDREN.length; d++) {
+      entityData.relationships.CHILDREN[d].child.forEach(c => {
+        depthPosOne = this.checkForDuplicates(depthPosOne, c);
+      });
+      entityData.relationships.CHILDREN[d].otherParentIDs.forEach(p => {
+        depthZero = this.checkForDuplicates(depthZero, p); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
+      });
+    }
+
+    depthZero.splice(Math.ceil(depthZero.length / 2), 0, this.props.id); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
+    return {
+      depthNegOne: depthNegOne,
+      depthZero: depthZero,
+      depthPosOne: depthPosOne
+    };
+  };
+
+  checkForDuplicates = (arr, e) => {
+    if (arr.includes(e)) {
+      return arr;
+    } else {
+      arr.push(e);
+      return arr;
+    }
+  };
+
   handlePageChange = e => {
-    console.log("Push upate of page");
-    this.props.relationshipClicked("8182035");
+    console.log("Page change", e.target.attrs.id);
+    this.props.relationshipClicked(e.target.attrs.id);
   };
 
   getText = () => {
@@ -93,15 +164,50 @@ class EntityGraph extends Component {
   };
 
   render() {
+    {
+      console.log(this.state.depthNodes);
+    }
     return (
       <Stage ref="stage" width={4000} height={2000}>
         <Layer>
-          {[...Array(10)].map((_, i) => (
+          {this.state.depthNodes.depthNegOne.map((e, i) => (
             <Text
-              x={i * 100}
+              x={50 + 200 * i}
               ref="text"
-              y={i * 100}
-              text={this.getText()}
+              y={50}
+              text={typeof e === "string" ? e : e.targetID}
+              fontSize={18}
+              fontFamily="Calibri"
+              fontStyle="bold"
+              fill="#000"
+              width={150}
+              height={80}
+              padding={20}
+              align="center"
+            />
+          ))}
+          {this.state.depthNodes.depthZero.map((e, i) => (
+            <Text
+              x={50 + 200 * i}
+              ref="text"
+              y={250}
+              text={typeof e === "string" ? e : e.targetID}
+              fontSize={18}
+              fontFamily="Calibri"
+              fontStyle="bold"
+              fill="#000"
+              width={150}
+              height={80}
+              padding={20}
+              align="center"
+            />
+          ))}
+          {this.state.depthNodes.depthPosOne.map((e, i) => (
+            <Text
+              x={50 + 200 * i}
+              ref="text"
+              y={450}
+              text={typeof e === "string" ? e : e.targetID}
               fontSize={18}
               fontFamily="Calibri"
               fontStyle="bold"
@@ -114,13 +220,45 @@ class EntityGraph extends Component {
           ))}
         </Layer>
         <Layer>
-          {[...Array(10)].map((_, i) => (
+          {this.state.depthNodes.depthNegOne.map((e, i) => (
             <Rect
               refs={"rect"}
-              // id={"id" + i}
+              id={typeof e === "string" ? e : e.targetID}
               name={"node" + i}
-              x={i * 100}
-              y={i * 100}
+              x={50 + 200 * i}
+              y={50}
+              width={150}
+              height={80}
+              stroke="#000"
+              strokeWidth={4}
+              onMouseOver={this.handleMouseOverNode}
+              onMouseOut={this.handleMouseOutNode}
+              onClick={this.handlePageChange}
+            />
+          ))}
+          {this.state.depthNodes.depthZero.map((e, i) => (
+            <Rect
+              refs={"rect"}
+              id={typeof e === "string" ? e : e.targetID}
+              name={"node" + i}
+              x={50 + 200 * i}
+              y={250}
+              width={150}
+              height={80}
+              stroke="#000"
+              strokeWidth={4}
+              onMouseOver={this.handleMouseOverNode}
+              onMouseOut={this.handleMouseOutNode}
+              onClick={this.handlePageChange}
+            />
+          ))}
+          {this.state.depthNodes.depthPosOne.map((e, i) => (
+            <Rect
+              refs={"rect"}
+              id={typeof e === "string" ? e : e.targetID}
+              name={"node" + i}
+              x={50 + 200 * i}
+              y={450}
               width={150}
               height={80}
               stroke="#000"
