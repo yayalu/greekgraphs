@@ -343,7 +343,7 @@ class EntityGraph extends Component {
           CM_Y = this.state.graphAttr.ZeroY - diff; // Assign PM_Y value here
         } else {
           depth = depthNodes.depthPosOne;
-          CM_Y = this.state.graphAttr.depthPosY - diff; // Assign PM_Y value here
+          CM_Y = this.state.graphAttr.PosOneY - diff; // Assign PM_Y value here
         }
 
         // Add a line from the existing (PM_X, PM_Y) spot to (PM_X, CM_Y)
@@ -358,14 +358,14 @@ class EntityGraph extends Component {
           } else {
             cY = this.state.graphAttr.PosOneY;
           }
-          linePoints.push(PM_X, CM_Y); //PM
-          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //PL
+          linePoints.push(PM_X, CM_Y); //CM
+          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //CL
           linePoints.push(
             initX + cIndex * spaceX + width / 2,
-            cY //P
+            cY //C
           );
-          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //PL
-          linePoints.push(PM_X, CM_Y); //PM
+          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //CL
+          linePoints.push(PM_X, CM_Y); //CM
         });
       }
 
