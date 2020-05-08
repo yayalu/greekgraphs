@@ -77,9 +77,6 @@ class EntityGraph extends Component {
       // Create a connection calculator here
       let connectionsList = this.getConnectionsList(entityData, this.props.id);
 
-      //Test set for getRelationshipLinks
-      let connections = ["8189678", "8188419", "8187829", "8182233"];
-
       this.setState({
         id: this.props.id,
         entityData: entityData,
@@ -236,22 +233,6 @@ class EntityGraph extends Component {
 
   // Create an array holding all relationships between entities, parent+parent->children+siblings [[P,P,C,S], [...]]
   geAllLinePoints = (depthNodes, connections) => {
-    // connections ] [P,P,C,S...]
-
-    // Separate connections by depth
-    // Notice have used all three depths here due to incest possibility
-    /* let d = { depthNegOne: [], depthZero: [], depthPosOne: [] };
-    for (let i = 0; i < connections.length; i++) {
-      if (depthNodes.depthNegOne.includes(connections[i])) {
-        d.depthNegOne.push(connections[i]);
-      } else if (depthNodes.depthZero.includes(connections[i])) {
-        d.depthZero.push(connections[i]);
-      } else if (depthNodes.depthPosOne.includes(connections[i])) {
-        d.depthPosOne.push(connections[i]);
-      } else {
-      }
-    }*/
-
     let allLinePoints = [];
 
     /*
@@ -271,9 +252,8 @@ class EntityGraph extends Component {
      *   (c1)                   (c2)
      */
 
-    // [P1, P1L, P2L, P2, P2L, PM, CU, C1U, C1, C1U, C2U, C2]
+    // [P1, P1L, P2L, P2, P2L, PM] [PM, CU, C1U, C1, C1U, C2U, C2]
     //Connect parent nodes
-    // if (d.depthNegOne.length > 0 && d.depthZero.length > 0) {
     let width = this.state.graphAttr.nodeWidth;
     let height = this.state.graphAttr.nodeHeight;
     let diff = 50;
@@ -369,8 +349,16 @@ class EntityGraph extends Component {
       let name = connections[i].parents
         .concat(connections[i].children)
         .toString();
-      // allLinePoints.push({ name: name, points: linePoints, unusual: {tf: , type: }, disputed:  });
-      allLinePoints.push({ name: name, points: linePoints });
+
+      // TODO: Check if the connection is unusual:
+      // TODO: Check if the connection is disputed
+      allLinePoints.push({
+        name: name,
+        points: linePoints,
+        unusual: { tf: true, type: "autochthony" },
+        disputed: false
+      });
+      // allLinePoints.push({ name: name, points: linePoints });
     }
     return allLinePoints;
   };
@@ -414,11 +402,17 @@ class EntityGraph extends Component {
       strokeWidth: 8
     });
     // thicken the nodes attached to the line
-    let nodeDs = e.target.attrs.name.split(",");
-    nodeDs.forEach(id => {
-      this.state.stageRef.find("." + id).to({
+    let nodeIDs = e.target.attrs.name.split(",");
+    nodeIDs.forEach(id => {
+      let nodeWithID = this.state.stageRef.find("." + id);
+      nodeWithID.to({
         strokeWidth: 8
       });
+      if (e.target.attrs.unusual) {
+        nodeWithID.to({
+          stroke: "#ff0000"
+        });
+      }
     });
   };
 
@@ -432,7 +426,8 @@ class EntityGraph extends Component {
     let nodeDs = e.target.attrs.name.split(",");
     nodeDs.forEach(id => {
       this.state.stageRef.find("." + id).to({
-        strokeWidth: 4
+        strokeWidth: 4,
+        stroke: "#000000"
       });
     });
   };
@@ -555,7 +550,9 @@ class EntityGraph extends Component {
             <Line
               name={e.name}
               points={e.points}
-              stroke="#000000"
+              unusual={e.unusual}
+              disputed={e.disputed}
+              stroke={e.unusual.tf ? "#ff0000" : "#000000"}
               strokeWidth={4}
               onMouseOver={this.handleMouseOverLine}
               onMouseOut={this.handleMouseOutLine}
