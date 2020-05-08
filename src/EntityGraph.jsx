@@ -315,7 +315,7 @@ class EntityGraph extends Component {
           : PM_X;
       console.log(connections[i].parents);
 
-      // Start checking nodes. PM -> PL -> P -> PL -> PM. This joins the lines at the middle point for each connection.
+      // Check parent nodes. PM -> PL -> P -> PL -> PM. This joins the lines at the middle point for each connection.
       connections[i].parents.forEach(p => {
         let pIndex = depth.indexOf(p);
         let pY = 0;
@@ -334,7 +334,7 @@ class EntityGraph extends Component {
         linePoints.push(PM_X, PM_Y); //PM
       });
 
-      // Start checking children nodes
+      // Check children nodes
       if (connections[i].children.length > 0) {
         let CM_Y = 0;
         // Update the Y location to the depth for children
@@ -348,6 +348,25 @@ class EntityGraph extends Component {
 
         // Add a line from the existing (PM_X, PM_Y) spot to (PM_X, CM_Y)
         linePoints.push(PM_X, CM_Y);
+
+        // CM -> CL -> C -> CL -> CM. This joins the lines at the middle point for each connection.
+        connections[i].children.forEach(c => {
+          let cIndex = depth.indexOf(c);
+          let cY = 0;
+          if (connections[i].pNodeDepth === "depthNegOne") {
+            cY = this.state.graphAttr.ZeroY;
+          } else {
+            cY = this.state.graphAttr.PosOneY;
+          }
+          linePoints.push(PM_X, CM_Y); //PM
+          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //PL
+          linePoints.push(
+            initX + cIndex * spaceX + width / 2,
+            cY //P
+          );
+          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //PL
+          linePoints.push(PM_X, CM_Y); //PM
+        });
       }
 
       // END AT THE MIDDLE POINT FOR PARENT (PM)
