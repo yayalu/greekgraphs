@@ -53,7 +53,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     // Agamemnon is 8182035
     // Use Clytaimnestra example, 8188055
     this.state = {
-      id: "8182035", // placeholder
+      id: "8182035", // placeholder: Agamemnon
       name: "",
       relationships: {
         MOTHERS: [],

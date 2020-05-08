@@ -6,6 +6,7 @@ import { Stage, Layer, Star, Text, Rect, Line, Polygon } from "react-konva";
 import relationships from "./data/relationships.json";
 import { getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
+import { formatPrefix } from "d3";
 
 class EntityGraph extends Component {
   constructor(props) {
@@ -75,6 +76,7 @@ class EntityGraph extends Component {
       let depthNodes = this.getDepthNodes(entityData);
 
       // Create a connection calculator here
+      let connectionsList = this.getConnectionsList(entityData, this.props.id);
 
       //Test set for getRelationshipLinks
       let connections = ["8189678", "8188419", "8187829", "8182233"];
@@ -83,7 +85,7 @@ class EntityGraph extends Component {
         id: this.props.id,
         entityData: entityData,
         depthNodes: depthNodes,
-        lineLinks: this.getRelationshipLine(depthNodes, connections)
+        lineLinks: this.geAllLinePoints(depthNodes, connectionsList)
       });
     }
   }
@@ -164,15 +166,84 @@ class EntityGraph extends Component {
     }
   };
 
-  /* GET LINES AND THEIR CONNECTIONS BETWEEN NODES */
+  /* GET THE CONNECTIONS BETWEEN ENTITIES BASED ON THE RELATIONSHIPS GIVEN */
+  /* returns: [{parents: [list of ids], children: [list of ids], pNodeDepth: <depthNegOne, depthZero, depthPosOne>} , {...}] */
+  getConnectionsList = (entityData, id) => {
+    console.log("Return", entityData);
+    let allConnections = [];
+
+    //MOTHER+FATHER -> YOU+SIBLING+TWIN
+    if (
+      entityData.relationships.MOTHERS.length > 0 ||
+      entityData.relationships.FATHERS.length > 0
+    ) {
+      let connection = { parents: [], children: [], pNodeDepth: "" };
+      let parentsDepth = entityData.relationships.MOTHERS.concat(
+        entityData.relationships.FATHERS
+      );
+      parentsDepth.forEach(p => {
+        connection.parents.push(p.targetID);
+      });
+      let childrenDepth = entityData.relationships.SIBLINGS.concat(
+        entityData.relationships.TWIN
+      );
+      childrenDepth.forEach(c => {
+        connection.children.push(c.targetID);
+      });
+      connection.children.push(id);
+      connection.pNodeDepth = "depthNegOne";
+      allConnections.push(connection);
+    }
+
+    //YOU+OTHERPARENTID -> CHILDREN
+    if (entityData.relationships.CHILDREN.length > 0) {
+      entityData.relationships.CHILDREN.forEach(cp => {
+        let connection = { parents: [], children: [], pNodeDepth: "" };
+        cp.child.forEach(c => {
+          connection.children.push(c.targetID);
+        });
+        cp.otherParentIDs.forEach(p => {
+          connection.parents.push(p);
+        });
+        connection.parents.push(id);
+        connection.pNodeDepth = "depthZero";
+        allConnections.push(connection);
+      });
+    }
+
+    //Check if spouse is already listed in otherParentIDs in children. If not, means is connection without children.    //TODO: BORN FROM (OBJECT)
+    if (entityData.relationships.SPOUSES.length > 0) {
+      entityData.relationships.SPOUSES.forEach(s => {
+        if (!this.isSpouseRepeated(s.targetID, allConnections)) {
+          allConnections.push({ parents: [id, s.targetID], children: [] });
+          // TODO: Deal with children is empty when spouse without children
+        }
+      });
+    }
+
+    //TODO: CREATED (BY AGENT)
+
+    //TODO: AUTOCHTHONY
+
+    //TODO: CREATED WITHOUT PARENTS
+
+    //TODO: PARTHENOGENESIS
+
+    //TODO: DIES WITHOUT CHILDREN
+
+    console.log(allConnections);
+    return allConnections;
+  };
+
+  /* GET LINE POINTS BASED ON THE LINE CONNECTIONS FOUND */
 
   // Create an array holding all relationships between entities, parent+parent->children+siblings [[P,P,C,S], [...]]
-  getRelationshipLine = (depthNodes, connections) => {
+  geAllLinePoints = (depthNodes, connections) => {
     // connections ] [P,P,C,S...]
 
     // Separate connections by depth
     // Notice have used all three depths here due to incest possibility
-    let d = { depthNegOne: [], depthZero: [], depthPosOne: [] };
+    /* let d = { depthNegOne: [], depthZero: [], depthPosOne: [] };
     for (let i = 0; i < connections.length; i++) {
       if (depthNodes.depthNegOne.includes(connections[i])) {
         d.depthNegOne.push(connections[i]);
@@ -182,9 +253,9 @@ class EntityGraph extends Component {
         d.depthPosOne.push(connections[i]);
       } else {
       }
-    }
+    }*/
 
-    let linePoints = [];
+    let allLinePoints = [];
 
     /*
      *    (p1)                  (p2)
@@ -212,58 +283,136 @@ class EntityGraph extends Component {
     let initX = this.state.graphAttr.initX;
     let spaceX = this.state.graphAttr.spaceX;
 
-    // if (d.depthNegOne.length === 2) {
-    //Test with Leto+Zeus->Apollo&Artemis for now
-    let parentOneIndex = depthNodes.depthNegOne.indexOf(d.depthNegOne[0]);
-    let parentTwoIndex = depthNodes.depthNegOne.indexOf(d.depthNegOne[1]);
-    let childOneIndex = depthNodes.depthZero.indexOf(d.depthZero[0]);
-    let childTwoIndex = depthNodes.depthZero.indexOf(d.depthZero[1]);
-    // X values
-    let P1_X = initX + parentOneIndex * spaceX + width / 2; // P1_X & P1L_X
-    let P2_X = initX + parentTwoIndex * spaceX + width / 2; // P1_Y & P1L_Y
-    let PM_X = (P1_X + P2_X) / 2; //PM_X & CM_X
-    let C1_X = initX + childOneIndex * spaceX + width / 2; //C1_X & C2U_X
-    let C2_X = initX + childTwoIndex * spaceX + width / 2; //C2_X & C2U_X
-    // Y values
-    let P_Y = this.state.graphAttr.NegOneY + height; //P1_Y & P2_Y
-    let PL_Y = P_Y + diff; //P1L_Y & P2L_Y & PM_Y
-    let C_Y = this.state.graphAttr.ZeroY; //C1_Y & C2_Y
-    let CU_Y = C_Y - diff; //C1U_Y & C2U_Y & CM_Y
+    /* TODO: FIX THIS FOR GENERATION-ANONYMOUS */
+    for (let i = 0; i < connections.length; i++) {
+      // connections[INDEX] = {parents: [id1, id2, ...], children: [id1, id2, ...]}
 
-    // Push line
-    linePoints = [
-      P1_X,
-      P_Y,
-      P1_X,
-      PL_Y,
-      P2_X,
-      PL_Y,
-      P2_X,
-      P_Y,
-      P2_X,
-      PL_Y,
-      PM_X,
-      PL_Y,
-      PM_X,
-      CU_Y,
-      C1_X,
-      CU_Y,
-      C1_X,
-      C_Y,
-      C1_X,
-      CU_Y,
-      C2_X,
-      CU_Y,
-      C2_X,
-      C_Y
-    ];
-    /*  }
+      // TODO: Make the following more efficient
+
+      let linePoints = [];
+
+      let PM_Y = 0,
+        PM_X = 0;
+
+      // Get the depth of the nodes
+      let depth;
+      if (connections[i].pNodeDepth === "depthNegOne") {
+        depth = depthNodes.depthNegOne;
+        PM_Y = this.state.graphAttr.NegOneY + height + diff; // Assign PM_Y value here
+      } else {
+        depth = depthNodes.depthZero;
+        PM_Y = this.state.graphAttr.ZeroY + height + diff; // Assign PM_Y value here
+      }
+
+      // Get middle X location first (average of all X values)
+      connections[i].parents.forEach(p => {
+        let pX = initX + depth.indexOf(p) * spaceX;
+        PM_X = PM_X + pX;
+      });
+      PM_X =
+        connections[i].parents.length > 0 // Removes division by 0 error
+          ? (PM_X + width / 2) / connections[i].parents.length
+          : PM_X;
+      console.log(connections[i].parents);
+
+      // Start checking nodes. PM -> PL -> P -> PL -> PM. This joins the lines at the middle point for each connection.
+      connections[i].parents.forEach(p => {
+        let pIndex = depth.indexOf(p);
+        let pY = 0;
+        if (connections[i].pNodeDepth === "depthNegOne") {
+          pY = this.state.graphAttr.NegOneY + height;
+        } else {
+          pY = this.state.graphAttr.ZeroY + height;
+        }
+        linePoints.push(PM_X, PM_Y); //PM
+        linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
+        linePoints.push(
+          initX + pIndex * spaceX + width / 2,
+          pY //P
+        );
+        linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
+        linePoints.push(PM_X, PM_Y); //PM
+      });
+
+      // END AT THE MIDDLE POINT FOR PARENT (PM)
+
+      // For x number of children
+
+      /* let parentOneIndex = depthNodes.depthNegOne.indexOf(
+        connections[i].parents[0]
+      );
+      let parentTwoIndex = depthNodes.depthNegOne.indexOf(
+        connections[i].parents[1]
+      );
+      let childOneIndex = depthNodes.depthZero.indexOf(
+        connections[i].children[0]
+      );
+      let childTwoIndex = depthNodes.depthZero.indexOf(
+        connections[i].children[1]
+      );
+      // X values
+      let P1_X = initX + parentOneIndex * spaceX + width / 2; // P1_X & P1L_X
+      let P2_X = initX + parentTwoIndex * spaceX + width / 2; // P1_Y & P1L_Y
+      let C1_X = initX + childOneIndex * spaceX + width / 2; //C1_X & C2U_X
+      let C2_X = initX + childTwoIndex * spaceX + width / 2; //C2_X & C2U_X
+      // Y values
+      let P_Y = this.state.graphAttr.NegOneY + height; //P1_Y & P2_Y
+      let PL_Y = P_Y + diff; //P1L_Y & P2L_Y & PM_Y
+      let C_Y = this.state.graphAttr.ZeroY; //C1_Y & C2_Y
+      let CU_Y = C_Y - diff; //C1U_Y & C2U_Y & CM_Y
+
+      // Push line
+      let linePoints = [
+        P1_X,
+        P_Y,
+        P1_X,
+        PL_Y,
+        P2_X,
+        PL_Y,
+        P2_X,
+        P_Y,
+        P2_X,
+        PL_Y,
+        PM_X,
+        PL_Y,
+        PM_X,
+        CU_Y,
+        C1_X,
+        CU_Y,
+        C1_X,
+        C_Y,
+        C1_X,
+        CU_Y,
+        C2_X,
+        CU_Y,
+        C2_X,
+        C_Y
+      ];
+      /*  }
     } else if (d.depthZero.length > 0 && d.depthPosOne.length > 0) {
     } else {
       //deal with the intergenerational/incestual relationships here
     } */
-    console.log("linePoints", linePoints);
-    return linePoints;
+      allLinePoints.push(linePoints);
+      console.log(
+        "Connections:",
+        connections[i],
+        "and linepoints:",
+        linePoints
+      );
+    }
+    return allLinePoints;
+  };
+
+  isSpouseRepeated = (sID, allConnections) => {
+    for (let i = 0; i < allConnections.length; i++) {
+      for (let j = 0; j < allConnections[i].length; j++) {
+        if (sID === allConnections[i][j]) {
+          return true;
+        }
+      }
+    }
+    return false;
   };
 
   /****************************************************
@@ -439,14 +588,16 @@ class EntityGraph extends Component {
               onClick={this.handlePageChange}
             />
           ))}
-          <Line
-            name={"edge" + "1"}
-            points={this.state.lineLinks}
-            stroke="#000000"
-            strokeWidth={4}
-            onMouseOver={this.handleMouseOverLine}
-            onMouseOut={this.handleMouseOutLine}
-          />
+          {this.state.lineLinks.map((e, i) => (
+            <Line
+              name={"blah"}
+              points={e}
+              stroke="#000000"
+              strokeWidth={4}
+              onMouseOver={this.handleMouseOverLine}
+              onMouseOut={this.handleMouseOutLine}
+            />
+          ))}
         </Layer>
       </Stage>
     );
