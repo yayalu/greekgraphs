@@ -2,11 +2,10 @@
 // Refs (stage and components): https://reactjsexample.com/react-binding-to-canvas-element-via-konva-framework/
 import React, { Component } from "react";
 import Konva from "konva";
-import { Stage, Layer, Star, Text, Rect, Line, Polygon } from "react-konva";
+import { Stage, Layer, Text, Rect, Line } from "react-konva";
 import relationships from "./data/relationships.json";
 import { getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
-import { formatPrefix } from "d3";
 
 class EntityGraph extends Component {
   constructor(props) {
@@ -308,9 +307,9 @@ class EntityGraph extends Component {
         PM_X = PM_X + pX;
       });
       PM_X =
-        connections[i].parents.length > 0 // Removes division by 0 error
+        connections[i].parents.length > 1 // Removes division by 0 error
           ? (PM_X + width) / connections[i].parents.length
-          : PM_X;
+          : PM_X + width / 2;
 
       // Check parent nodes. PM -> PL -> P -> PL -> PM. This joins the lines at the middle point for each connection.
       connections[i].parents.forEach(p => {
@@ -370,6 +369,7 @@ class EntityGraph extends Component {
       let name = connections[i].parents
         .concat(connections[i].children)
         .toString();
+      // allLinePoints.push({ name: name, points: linePoints, unusual: {tf: , type: }, disputed:  });
       allLinePoints.push({ name: name, points: linePoints });
     }
     return allLinePoints;
@@ -451,7 +451,7 @@ class EntityGraph extends Component {
 
   render() {
     return (
-      <Stage ref="stage" width={4000} height={2000}>
+      <Stage ref="stage" width={6000} height={2000}>
         <Layer>
           {this.state.depthNodes.depthNegOne.map((e, i) => (
             <Text
