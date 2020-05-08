@@ -355,8 +355,8 @@ class EntityGraph extends Component {
       allLinePoints.push({
         name: name,
         points: linePoints,
-        unusual: { tf: true, type: "autochthony" },
-        disputed: false
+        unusual: { tf: false, type: "" },
+        disputed: true
       });
       // allLinePoints.push({ name: name, points: linePoints });
     }
@@ -411,6 +411,11 @@ class EntityGraph extends Component {
       if (e.target.attrs.unusual) {
         nodeWithID.to({
           stroke: "#ff0000"
+        });
+      }
+      if (e.target.attrs.disputed) {
+        nodeWithID.to({
+          stroke: "#0000ff"
         });
       }
     });
@@ -552,7 +557,9 @@ class EntityGraph extends Component {
               points={e.points}
               unusual={e.unusual}
               disputed={e.disputed}
-              stroke={e.unusual.tf ? "#ff0000" : "#000000"}
+              stroke={
+                e.unusual.tf ? "#ff0000" : e.disputed ? "#0000ff" : "#000000"
+              }
               strokeWidth={4}
               onMouseOver={this.handleMouseOverLine}
               onMouseOut={this.handleMouseOutLine}
