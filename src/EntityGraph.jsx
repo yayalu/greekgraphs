@@ -169,7 +169,6 @@ class EntityGraph extends Component {
   /* GET THE CONNECTIONS BETWEEN ENTITIES BASED ON THE RELATIONSHIPS GIVEN */
   /* returns: [{parents: [list of ids], children: [list of ids], pNodeDepth: <depthNegOne, depthZero, depthPosOne>} , {...}] */
   getConnectionsList = (entityData, id) => {
-    console.log("Return", entityData);
     let allConnections = [];
 
     //MOTHER+FATHER -> YOU+SIBLING+TWIN
@@ -231,7 +230,6 @@ class EntityGraph extends Component {
 
     //TODO: DIES WITHOUT CHILDREN
 
-    console.log(allConnections);
     return allConnections;
   };
 
@@ -313,7 +311,6 @@ class EntityGraph extends Component {
         connections[i].parents.length > 0 // Removes division by 0 error
           ? (PM_X + width) / connections[i].parents.length
           : PM_X;
-      console.log(connections[i].parents);
 
       // Check parent nodes. PM -> PL -> P -> PL -> PM. This joins the lines at the middle point for each connection.
       connections[i].parents.forEach(p => {
@@ -369,72 +366,11 @@ class EntityGraph extends Component {
         });
       }
 
-      // END AT THE MIDDLE POINT FOR PARENT (PM)
-
-      // For x number of children
-
-      /* let parentOneIndex = depthNodes.depthNegOne.indexOf(
-        connections[i].parents[0]
-      );
-      let parentTwoIndex = depthNodes.depthNegOne.indexOf(
-        connections[i].parents[1]
-      );
-      let childOneIndex = depthNodes.depthZero.indexOf(
-        connections[i].children[0]
-      );
-      let childTwoIndex = depthNodes.depthZero.indexOf(
-        connections[i].children[1]
-      );
-      // X values
-      let P1_X = initX + parentOneIndex * spaceX + width / 2; // P1_X & P1L_X
-      let P2_X = initX + parentTwoIndex * spaceX + width / 2; // P1_Y & P1L_Y
-      let C1_X = initX + childOneIndex * spaceX + width / 2; //C1_X & C2U_X
-      let C2_X = initX + childTwoIndex * spaceX + width / 2; //C2_X & C2U_X
-      // Y values
-      let P_Y = this.state.graphAttr.NegOneY + height; //P1_Y & P2_Y
-      let PL_Y = P_Y + diff; //P1L_Y & P2L_Y & PM_Y
-      let C_Y = this.state.graphAttr.ZeroY; //C1_Y & C2_Y
-      let CU_Y = C_Y - diff; //C1U_Y & C2U_Y & CM_Y
-
-      // Push line
-      let linePoints = [
-        P1_X,
-        P_Y,
-        P1_X,
-        PL_Y,
-        P2_X,
-        PL_Y,
-        P2_X,
-        P_Y,
-        P2_X,
-        PL_Y,
-        PM_X,
-        PL_Y,
-        PM_X,
-        CU_Y,
-        C1_X,
-        CU_Y,
-        C1_X,
-        C_Y,
-        C1_X,
-        CU_Y,
-        C2_X,
-        CU_Y,
-        C2_X,
-        C_Y
-      ];
-      /*  }
-    } else if (d.depthZero.length > 0 && d.depthPosOne.length > 0) {
-    } else {
-      //deal with the intergenerational/incestual relationships here
-    } */
-      allLinePoints.push(linePoints);
-      console.log(
-        "Connections:",
-        connections[i],
-        "and linepoints:",
-        linePoints
-      );
+      //Create line name (aka. all the nodes involved)
+      let name = connections[i].parents
+        .concat(connections[i].children)
+        .toString();
+      allLinePoints.push({ name: name, points: linePoints });
     }
     return allLinePoints;
   };
@@ -472,41 +408,36 @@ class EntityGraph extends Component {
   };
 
   handleMouseOverLine = e => {
-    /* if (e.target.attrs.name === "edge1") {
-      this.state.connectedShapes.forEach(s => {
-        let item = this.state.stageRef.find("." + s);
-        if (item.length > 0) { 
-          item.to({
-            strokeWidth: 8
-          });
-        }
-      });
-    }*/
+    // thicken the main line
     document.body.style.cursor = "pointer";
     e.target.to({
       strokeWidth: 8
     });
-  };
-  handleMouseOutLine = e => {
-    /*
-    if (e.target.attrs.name === "edge1") {
-      this.state.connectedShapes.forEach(s => {
-        let item = this.state.stageRef.find("." + s);
-        if (item.length > 0) {
-          item.to({
-            strokeWidth: 4
-          });
-        }
+    // thicken the nodes attached to the line
+    let nodeDs = e.target.attrs.name.split(",");
+    nodeDs.forEach(id => {
+      this.state.stageRef.find("." + id).to({
+        strokeWidth: 8
       });
-    } */
+    });
+  };
+
+  handleMouseOutLine = e => {
+    // thin the main line
     document.body.style.cursor = "default";
     e.target.to({
       strokeWidth: 4
     });
+    // thicken the nodes attached to the line
+    let nodeDs = e.target.attrs.name.split(",");
+    nodeDs.forEach(id => {
+      this.state.stageRef.find("." + id).to({
+        strokeWidth: 4
+      });
+    });
   };
 
   handlePageChange = e => {
-    console.log("Page change", e.target.attrs.id);
     this.props.relationshipClicked(e.target.attrs.id);
   };
 
@@ -519,9 +450,6 @@ class EntityGraph extends Component {
    ****************************************************/
 
   render() {
-    {
-      console.log(this.state.depthNodes);
-    }
     return (
       <Stage ref="stage" width={4000} height={2000}>
         <Layer>
@@ -579,7 +507,7 @@ class EntityGraph extends Component {
             <Rect
               refs={"rect"}
               id={e}
-              name={"node" + i}
+              name={e}
               x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
               y={this.state.graphAttr.NegOneY}
               width={this.state.graphAttr.nodeWidth}
@@ -595,7 +523,7 @@ class EntityGraph extends Component {
             <Rect
               refs={"rect"}
               id={e}
-              name={"node" + i}
+              name={e}
               x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
               y={this.state.graphAttr.ZeroY}
               width={this.state.graphAttr.nodeWidth}
@@ -611,7 +539,7 @@ class EntityGraph extends Component {
             <Rect
               refs={"rect"}
               id={e}
-              name={"node" + i}
+              name={e}
               x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
               y={this.state.graphAttr.PosOneY}
               width={this.state.graphAttr.nodeWidth}
@@ -625,8 +553,8 @@ class EntityGraph extends Component {
           ))}
           {this.state.lineLinks.map((e, i) => (
             <Line
-              name={"blah"}
-              points={e}
+              name={e.name}
+              points={e.points}
               stroke="#000000"
               strokeWidth={4}
               onMouseOver={this.handleMouseOverLine}
