@@ -14,7 +14,7 @@ class EntityGraph extends Component {
       allShapes: [],
       stageRef: undefined,
       graphAttr: {
-        initX: 50,
+        initX: 150,
         spaceX: 200,
         nodeWidth: 150,
         nodeHeight: 80,
@@ -81,7 +81,7 @@ class EntityGraph extends Component {
         id: this.props.id,
         entityData: entityData,
         depthNodes: depthNodes,
-        lineLinks: this.geAllLinePoints(depthNodes, connectionsList)
+        lineLinks: this.geAllLinePoints(depthNodes, entityData, connectionsList)
       });
     }
   }
@@ -232,7 +232,7 @@ class EntityGraph extends Component {
   /* GET LINE POINTS BASED ON THE LINE CONNECTIONS FOUND */
 
   // Create an array holding all relationships between entities, parent+parent->children+siblings [[P,P,C,S], [...]]
-  geAllLinePoints = (depthNodes, connections) => {
+  geAllLinePoints = (depthNodes, entityData, connections) => {
     let allLinePoints = [];
 
     /*
@@ -350,13 +350,79 @@ class EntityGraph extends Component {
         .concat(connections[i].children)
         .toString();
 
-      // TODO: Check if the connection is unusual:
+      // TODO: Check if the connection is unusual or disputed;
+      let unusual = { tf: false, type: "" };
+      let disputed = false;
+
+      // Check Parent -> Main Node
+      if (connections[i].pNodeDepth === "depthNegOne") {
+        // UNUSUAL: Since the depth in question is depth -1 => one of the children must be the main entity
+        // Only check unusual status and disputed status of the main entity
+        if (entityData.unusual.autochthony.tf) {
+          unusual = { tf: true, type: "autochthony" };
+        } else if (entityData.unusual.createdWithoutParents.tf) {
+          unusual = { tf: true, type: "createdWithoutParents" };
+        } else if (entityData.unusual.createdByAgent.tf) {
+          unusual = { tf: true, type: "createdByAgent" };
+        } else if (entityData.unusual.parthenogenesis.tf) {
+          unusual = { tf: true, type: "parthenogenesis" };
+        } else if (entityData.unusual.bornFromObject.tf) {
+          unusual = { tf: true, type: "bornFromObject" };
+        } else if (entityData.unusual.diesWithoutChildren.tf) {
+          //TODO: deal with this in a more suitable place
+          unusual = { tf: true, type: "diesWithoutChildren" };
+        } else {
+          // Leave unusual as false
+        }
+
+        // DISPUTED: Check if the main entity has > two parents. If so, is disputed
+        // TODO: Make this more complex - note what Greta said about the complexity of disputed relationships
+        if (connections[i].parents.length > 2) {
+          disputed = true;
+        }
+      }
+      // Check Main Node -> Children
+      else if (connections[i].pNodeDepth === "depthZero") {
+        // UNUSUAL: Since the main node is one of the parents,
+        // loop through every child for unusuality
+        connections[i].children.forEach(c => {
+          let cRelationships = JSON.parse(relationships[c]);
+
+          // Check for unusualness
+          if (cRelationships.unusual.autochthony.tf) {
+            unusual = { tf: true, type: "autochthony" };
+          } else if (cRelationships.unusual.createdWithoutParents.tf) {
+            unusual = { tf: true, type: "createdWithoutParents" };
+          } else if (cRelationships.unusual.createdByAgent.tf) {
+            unusual = { tf: true, type: "createdByAgent" };
+          } else if (cRelationships.unusual.parthenogenesis.tf) {
+            unusual = { tf: true, type: "parthenogenesis" };
+          } else if (cRelationships.unusual.bornFromObject.tf) {
+            unusual = { tf: true, type: "bornFromObject" };
+          } else if (cRelationships.unusual.diesWithoutChildren.tf) {
+            //TODO: deal with this in a more suitable place
+            unusual = { tf: true, type: "diesWithoutChildren" };
+          } else {
+            // Leave overall connection unusualness as false
+          }
+
+          // DISPUTED: Check if the child has > two parents (one of which is the main character). If so, is disputed
+          // TODO: Make this more complex - note what Greta said about the complexity of disputed relationships
+          if (
+            cRelationships.relationships.MOTHERS.length +
+              cRelationships.relationships.FATHERS.length >
+            2
+          ) {
+            disputed = true;
+          }
+        });
+      }
       // TODO: Check if the connection is disputed
       allLinePoints.push({
         name: name,
         points: linePoints,
-        unusual: { tf: false, type: "" },
-        disputed: true
+        unusual: unusual,
+        disputed: disputed
       });
       // allLinePoints.push({ name: name, points: linePoints });
     }
@@ -397,9 +463,9 @@ class EntityGraph extends Component {
 
   handleMouseOverLine = e => {
     // thicken the main line
-    document.body.style.cursor = "pointer";
     e.target.to({
-      strokeWidth: 8
+      strokeWidth: 8,
+      opacity: 1
     });
     // thicken the nodes attached to the line
     let nodeIDs = e.target.attrs.name.split(",");
@@ -408,12 +474,14 @@ class EntityGraph extends Component {
       nodeWithID.to({
         strokeWidth: 8
       });
-      if (e.target.attrs.unusual) {
+      if (e.target.attrs.unusual.tf) {
+        document.body.style.cursor = "pointer";
         nodeWithID.to({
           stroke: "#ff0000"
         });
       }
       if (e.target.attrs.disputed) {
+        document.body.style.cursor = "pointer";
         nodeWithID.to({
           stroke: "#0000ff"
         });
@@ -425,7 +493,8 @@ class EntityGraph extends Component {
     // thin the main line
     document.body.style.cursor = "default";
     e.target.to({
-      strokeWidth: 4
+      strokeWidth: 4,
+      opacity: e.target.attrs.unusual.tf || e.target.attrs.disputed ? 1 : 0.3
     });
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
@@ -560,6 +629,7 @@ class EntityGraph extends Component {
               stroke={
                 e.unusual.tf ? "#ff0000" : e.disputed ? "#0000ff" : "#000000"
               }
+              opacity={e.unusual.tf || e.disputed ? 1 : 0.3}
               strokeWidth={4}
               onMouseOver={this.handleMouseOverLine}
               onMouseOut={this.handleMouseOutLine}
