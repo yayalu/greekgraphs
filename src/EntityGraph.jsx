@@ -19,9 +19,9 @@ class EntityGraph extends Component {
         spaceX: 200,
         nodeWidth: 150,
         nodeHeight: 80,
-        NegOneY: 50,
-        ZeroY: 250,
-        PosOneY: 450
+        NegOneY: 100,
+        ZeroY: 400,
+        PosOneY: 700
       },
       connectedShapes: ["edge1", "node3", "node5"], // Nodes and links that are connected with each other
       depthNodes: {
@@ -311,7 +311,7 @@ class EntityGraph extends Component {
       });
       PM_X =
         connections[i].parents.length > 0 // Removes division by 0 error
-          ? (PM_X + width / 2) / connections[i].parents.length
+          ? (PM_X + width) / connections[i].parents.length
           : PM_X;
       console.log(connections[i].parents);
 
@@ -333,6 +333,22 @@ class EntityGraph extends Component {
         linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
         linePoints.push(PM_X, PM_Y); //PM
       });
+
+      // Start checking children nodes
+      if (connections[i].children.length > 0) {
+        let CM_Y = 0;
+        // Update the Y location to the depth for children
+        if (connections[i].pNodeDepth === "depthNegOne") {
+          depth = depthNodes.depthZero;
+          CM_Y = this.state.graphAttr.ZeroY - diff; // Assign PM_Y value here
+        } else {
+          depth = depthNodes.depthPosOne;
+          CM_Y = this.state.graphAttr.depthPosY - diff; // Assign PM_Y value here
+        }
+
+        // Add a line from the existing (PM_X, PM_Y) spot to (PM_X, CM_Y)
+        linePoints.push(PM_X, CM_Y);
+      }
 
       // END AT THE MIDDLE POINT FOR PARENT (PM)
 
