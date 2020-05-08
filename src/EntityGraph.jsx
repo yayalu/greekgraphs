@@ -28,7 +28,7 @@ class EntityGraph extends Component {
         depthZero: [],
         depthPosOne: []
       },
-      relationshipLine: [],
+      lineLinks: [],
       entityData: {},
       id: ""
     };
@@ -203,42 +203,67 @@ class EntityGraph extends Component {
      *   (c1)                   (c2)
      */
 
+    // [P1, P1L, P2L, P2, P2L, PM, CU, C1U, C1, C1U, C2U, C2]
     //Connect parent nodes
-    /* if (d.depthNegOne.length > 0 && d.depthZero.length > 0) {
-      if (d.depthNegOne.length === 2) {
-        let parentOneIndex = depthNodes.indexOf(d.depthNegOne[0]);
-        let parentTwoIndex = depthNodes.indexOf(d.depthNegOne[1]);
-        //a->a lower
-        linePoints.push(
-          this.state.graphAttr.initX +
-            this.state.graphAttr.spaceX * parentOneIndex +
-            this.state.graphAttr.nodeWidth / 2
-        );
-        linePoints.push(
-          this.state.graphAttr.NegOneY + this.state.graphAttr.nodeHeight
-        );
-        linePoints.push(
-          this.state.graphAttr.initX +
-            this.state.graphAttr.spaceX * parentOneIndex +
-            this.state.graphAttr.nodeWidth / 2
-        );
-        linePoints.push(
-          this.state.graphAttr.NegOneY + this.state.graphAttr.nodeHeight + 50
-        );
-        //a lower -> b lower
-        linePoints.push(
-          this.state.graphAttr.initX +
-            this.state.graphAttr.spaceX * parentOneIndex +
-            this.state.graphAttr.nodeWidth / 2
-        );
-        linePoints.push(
-          this.state.graphAttr.NegOneY + this.state.graphAttr.nodeHeight
-        );
-      }
+    // if (d.depthNegOne.length > 0 && d.depthZero.length > 0) {
+    let width = this.state.graphAttr.nodeWidth;
+    let height = this.state.graphAttr.nodeHeight;
+    let diff = 50;
+    let initX = this.state.graphAttr.initX;
+    let spaceX = this.state.graphAttr.spaceX;
+
+    // if (d.depthNegOne.length === 2) {
+    //Test with Leto+Zeus->Apollo&Artemis for now
+    let parentOneIndex = depthNodes.depthNegOne.indexOf(d.depthNegOne[0]);
+    let parentTwoIndex = depthNodes.depthNegOne.indexOf(d.depthNegOne[1]);
+    let childOneIndex = depthNodes.depthZero.indexOf(d.depthZero[0]);
+    let childTwoIndex = depthNodes.depthZero.indexOf(d.depthZero[1]);
+    // X values
+    let P1_X = initX + parentOneIndex * spaceX + width / 2; // P1_X & P1L_X
+    let P2_X = initX + parentTwoIndex * spaceX + width / 2; // P1_Y & P1L_Y
+    let PM_X = (P1_X + P2_X) / 2; //PM_X & CM_X
+    let C1_X = initX + childOneIndex * spaceX + width / 2; //C1_X & C2U_X
+    let C2_X = initX + childTwoIndex * spaceX + width / 2; //C2_X & C2U_X
+    // Y values
+    let P_Y = this.state.graphAttr.NegOneY + height; //P1_Y & P2_Y
+    let PL_Y = P_Y + diff; //P1L_Y & P2L_Y & PM_Y
+    let C_Y = this.state.graphAttr.ZeroY; //C1_Y & C2_Y
+    let CU_Y = C_Y - diff; //C1U_Y & C2U_Y & CM_Y
+
+    // Push line
+    linePoints = [
+      P1_X,
+      P_Y,
+      P1_X,
+      PL_Y,
+      P2_X,
+      PL_Y,
+      P2_X,
+      P_Y,
+      P2_X,
+      PL_Y,
+      PM_X,
+      PL_Y,
+      PM_X,
+      CU_Y,
+      C1_X,
+      CU_Y,
+      C1_X,
+      C_Y,
+      C1_X,
+      CU_Y,
+      C2_X,
+      CU_Y,
+      C2_X,
+      C_Y
+    ];
+    /*  }
     } else if (d.depthZero.length > 0 && d.depthPosOne.length > 0) {
     } else {
       //deal with the intergenerational/incestual relationships here
     } */
+    console.log("linePoints", linePoints);
+    return linePoints;
   };
 
   /****************************************************
@@ -263,18 +288,23 @@ class EntityGraph extends Component {
   };
 
   handleMouseOverLine = e => {
-    if (e.target.attrs.name === "edge1") {
+    /* if (e.target.attrs.name === "edge1") {
       this.state.connectedShapes.forEach(s => {
         let item = this.state.stageRef.find("." + s);
-        if (item.length > 0) {
+        if (item.length > 0) { 
           item.to({
             strokeWidth: 8
           });
         }
       });
-    }
+    }*/
+    document.body.style.cursor = "pointer";
+    e.target.to({
+      strokeWidth: 8
+    });
   };
   handleMouseOutLine = e => {
+    /*
     if (e.target.attrs.name === "edge1") {
       this.state.connectedShapes.forEach(s => {
         let item = this.state.stageRef.find("." + s);
@@ -284,7 +314,11 @@ class EntityGraph extends Component {
           });
         }
       });
-    }
+    } */
+    document.body.style.cursor = "default";
+    e.target.to({
+      strokeWidth: 4
+    });
   };
 
   handlePageChange = e => {
@@ -407,7 +441,7 @@ class EntityGraph extends Component {
           ))}
           <Line
             name={"edge" + "1"}
-            points={[200, 500, 300, 200]}
+            points={this.state.lineLinks}
             stroke="#000000"
             strokeWidth={4}
             onMouseOver={this.handleMouseOverLine}
