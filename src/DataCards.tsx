@@ -286,7 +286,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           onClick={() => this.handleNameClicked(entity.targetID)}
         >
           {entity !== this.state.relationships[relationship][0] &&
-          relationship !== "SIBLINGS" ? (
+          relationship !== "SIBLINGS" &&
+          relationship !== "SPOUSES" ? (
             <span>OR </span>
           ) : (
             ""

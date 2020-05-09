@@ -352,7 +352,7 @@ class EntityGraph extends Component {
 
       // TODO: Check if the connection is unusual or disputed;
       let unusual = { tf: false, type: "" };
-      let disputed = false;
+      let disputed = { tf: false, type: "", passage: undefined };
 
       // Check Parent -> Main Node
       if (connections[i].pNodeDepth === "depthNegOne") {
@@ -378,7 +378,11 @@ class EntityGraph extends Component {
         // DISPUTED: Check if the main entity has > two parents. If so, is disputed
         // TODO: Make this more complex - note what Greta said about the complexity of disputed relationships
         if (connections[i].parents.length > 2) {
-          disputed = true;
+          disputed = {
+            tf: true,
+            type: "Disputed tradition",
+            passageLink: ""
+          }; //TODO: INPUT REAL INFO
         }
       }
       // Check Main Node -> Children
@@ -413,7 +417,11 @@ class EntityGraph extends Component {
               cRelationships.relationships.FATHERS.length >
             2
           ) {
-            disputed = true;
+            disputed = {
+              tf: true,
+              type: "Disputed tradition",
+              passageLink: ""
+            }; //TODO: INPUT REAL INFO
           }
         });
       }
@@ -480,7 +488,7 @@ class EntityGraph extends Component {
           stroke: "#ff0000"
         });
       }
-      if (e.target.attrs.disputed) {
+      if (e.target.attrs.disputed.tf) {
         document.body.style.cursor = "pointer";
         nodeWithID.to({
           stroke: "#0000ff"
@@ -494,7 +502,7 @@ class EntityGraph extends Component {
     document.body.style.cursor = "default";
     e.target.to({
       strokeWidth: 4,
-      opacity: e.target.attrs.unusual.tf || e.target.attrs.disputed ? 1 : 0.3
+      opacity: e.target.attrs.unusual.tf || e.target.attrs.disputed.tf ? 1 : 0.3
     });
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
@@ -627,9 +635,9 @@ class EntityGraph extends Component {
               unusual={e.unusual}
               disputed={e.disputed}
               stroke={
-                e.unusual.tf ? "#ff0000" : e.disputed ? "#0000ff" : "#000000"
+                e.unusual.tf ? "#ff0000" : e.disputed.tf ? "#0000ff" : "#000000"
               }
-              opacity={e.unusual.tf || e.disputed ? 1 : 0.3}
+              opacity={e.unusual.tf || e.disputed.tf ? 1 : 0.3}
               strokeWidth={4}
               onMouseOver={this.handleMouseOverLine}
               onMouseOut={this.handleMouseOutLine}
