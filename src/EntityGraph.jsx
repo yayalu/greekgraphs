@@ -57,20 +57,32 @@ class EntityGraph extends Component {
     });
     console.log(this.refs.stage.children[1].children);
     console.log("IDs:", JSON.parse(relationships[this.props.id]));
-    let entityData = JSON.parse(relationships[this.props.id]);
 
+    // THE FOOLLOWING POPULATES THE GRAPH WITH DEFUALT RELATIONSHIP INFORMATION (AGAMEMNON) AS THIS DEALS WIIH UNDEFINED ERRORS
+    // SPACE-WASTING BUT WORKS AS A TEMPORARY SOLUTION
+    let entityData = JSON.parse(relationships[this.props.id]);
+    let connectionsList = this.getConnectionsList(entityData, this.props.id);
     // Set states
     this.setState({
       allShapes: this.refs.stage.children[1].children,
       stageRef: this.refs.stage,
       id: this.props.id,
       entityData: entityData,
-      depthNodes: this.getDepthNodes(entityData)
+      depthNodes: this.getDepthNodes(entityData),
+      lineLinks: this.geAllLinePoints(
+        this.getDepthNodes(entityData),
+        entityData,
+        connectionsList
+      )
     });
   }
 
   componentDidUpdate() {
+    const params = window.location.href.split("?id=")[1];
+    //  const id = params.id as string;
+    //  if (!params.id) {
     if (this.props.id !== this.state.id) {
+      // deal with agamemnon (default value) not showing up
       let entityData = JSON.parse(relationships[this.props.id]);
       let depthNodes = this.getDepthNodes(entityData);
 
