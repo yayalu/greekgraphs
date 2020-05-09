@@ -231,9 +231,6 @@ class DataCards extends React.Component<DatumProps, DatumState> {
                         {entity.target}
                       </span>
                     </div>
-                    {entity.passage.map(passage => {
-                      return this.getPassageLink(passage);
-                    })}
                   </span>
                 </div>
               );
