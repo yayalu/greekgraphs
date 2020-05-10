@@ -496,39 +496,6 @@ class EntityGraph extends Component {
     return false;
   };
 
-  getORX(d) {
-    if (this.props.id === this.state.id) {
-      let sumX = 0;
-      d.disputedParents.forEach(d => {
-        /* sumX =
-        this.state.stageRef.find("." + d.targetID).attrs.x +
-        this.state.width / 2; */
-        console.log(this.state.stageRef, this.props.id, this.state.id);
-        this.state.stageRef.children[1].children.each(function(shape) {
-          console.log(
-            "orig",
-            d.targetID,
-            "name",
-            shape.attrs.name,
-            "equals",
-            d.targetID === shape.attrs.name
-          );
-          if (d.targetID === shape.attrs.name) {
-            sumX = sumX + shape.attrs.x;
-            return;
-          }
-        });
-      });
-      return sumX / d.disputedParents.length;
-    } else {
-      return 0;
-    }
-  }
-
-  getORY(d) {
-    return 50;
-  }
-
   /****************************************************
    *
    *
@@ -576,6 +543,31 @@ class EntityGraph extends Component {
         });
       }
     });
+
+    if (e.target.attrs.disputed.tf) {
+      let sumX = 0;
+      let y = 0;
+      e.target.attrs.disputed.disputedParents.forEach(p => {
+        let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
+        sumX = sumX + pAttrs.x;
+        y = pAttrs.y;
+      });
+      console.log("target", this.state.graphAttr.nodeWidth);
+      let x = (sumX + this.state.graphAttr.nodeWidth) / 2 - 40;
+      let ORText = new Konva.Text({
+        name: "ORText",
+        x: x,
+        y: y + 30,
+        text: "OR",
+        fontSize: 15,
+        fontStyle: "bold",
+        fill: "#0000ff",
+        width: 80,
+        height: 80,
+        align: "center"
+      });
+      this.state.stageRef.children[1].add(ORText);
+    }
   };
 
   handleMouseOutLine = e => {
@@ -593,6 +585,11 @@ class EntityGraph extends Component {
         stroke: "#000000"
       });
     });
+
+    if (e.target.attrs.disputed.tf) {
+      console.log(this.state.stageRef.children[1].find(".ORText")[0]);
+      this.state.stageRef.children[1].find(".ORText")[0].remove();
+    }
   };
 
   handlePageChange = e => {
@@ -728,23 +725,6 @@ class EntityGraph extends Component {
                 onMouseOver={this.handleMouseOverLine}
                 onMouseOut={this.handleMouseOutLine}
               />
-              {e.disputed.tf ? (
-                <Text
-                  x={this.getORX(e.disputed)}
-                  y={this.getORY(e.disputed)}
-                  text="OR"
-                  fontSize={15}
-                  fontFamily="Calibri"
-                  fontStyle="bold"
-                  fill="#0000ff"
-                  width={80}
-                  height={80}
-                  padding={20}
-                  align="center"
-                />
-              ) : (
-                <React.Fragment />
-              )}
             </React.Fragment>
           ))}
         </Layer>
