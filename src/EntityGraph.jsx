@@ -159,7 +159,13 @@ class EntityGraph extends Component {
       });
     }
 
-    depthZero.splice(Math.ceil(depthZero.length / 2), 0, this.props.id); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
+    // Add the central node in the graph. Removes 3-parent dispute resulting in "OR" on the main node, see Aerope
+    if (depthZero.length > 2) {
+      depthZero.splice(Math.ceil(depthZero.length / 2), 0, this.props.id); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
+    } else {
+      depthZero.splice(0, 0, this.props.id);
+    }
+
     return {
       depthNegOne: depthNegOne,
       depthZero: depthZero,
