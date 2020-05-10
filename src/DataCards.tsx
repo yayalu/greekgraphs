@@ -276,13 +276,19 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     relationship: string,
     showPassage: boolean
   ) {
+    let firstElement;
+    if (relationship === "PART OF") {
+      firstElement = this.state.members.super[0];
+    } else {
+      firstElement = this.state.relationships[relationship][0];
+    }
     return (
       <div>
         <div
           className="entity-button"
           onClick={() => this.handleNameClicked(entity.targetID)}
         >
-          {entity !== this.state.relationships[relationship][0] &&
+          {entity != firstElement &&
           relationship !== "SIBLINGS" &&
           relationship !== "SPOUSES" ? (
             <span>OR </span>
