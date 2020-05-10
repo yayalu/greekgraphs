@@ -90,6 +90,8 @@ class EntityGraph extends Component {
       let connectionsList = this.getConnectionsList(entityData, this.props.id);
 
       this.setState({
+        allShapes: this.refs.stage.children[1].children,
+        stageRef: this.refs.stage,
         id: this.props.id,
         entityData: entityData,
         depthNodes: depthNodes,
@@ -390,11 +392,28 @@ class EntityGraph extends Component {
         // DISPUTED: Check if the main entity has > two parents. If so, is disputed
         // TODO: Make this more complex - note what Greta said about the complexity of disputed relationships
         if (connections[i].parents.length > 2) {
+          // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
+          let disputedParents = [];
+          let passageLinks = [];
+          if (entityData.relationships.MOTHERS.length > 1) {
+            disputedParents = entityData.relationships.MOTHERS;
+            entityData.relationships.MOTHERS.forEach(m => {
+              passageLinks.push(m.passage);
+            });
+          } else {
+            // (entityData.relationships.FATHERS.length > 1) {
+            disputedParents = entityData.relationships.FATHERS;
+            entityData.relationships.MOTHERS.forEach(m => {
+              passageLinks.push(m.passage);
+            });
+          }
           disputed = {
             tf: true,
             type: "Disputed tradition",
-            passageLink: ""
-          }; //TODO: INPUT REAL INFO
+            passageLinks: passageLinks,
+            disputedParents: disputedParents
+          }; // disputedParents - the list of all parents that are disputed, e.g. disputed mothers, disputed fathers
+          console.log(disputed);
         }
       }
       // Check Main Node -> Children
@@ -429,11 +448,28 @@ class EntityGraph extends Component {
               cRelationships.relationships.FATHERS.length >
             2
           ) {
+            // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
+            let disputedParents = [];
+            let passageLinks = [];
+            if (cRelationships.relationships.MOTHERS.length > 1) {
+              disputedParents = cRelationships.relationships.MOTHERS;
+              cRelationships.relationships.MOTHERS.forEach(m => {
+                passageLinks.push(m.passage);
+              });
+            } else {
+              // (entityData.relationships.FATHERS.length > 1) {
+              disputedParents = cRelationships.relationships.FATHERS;
+              cRelationships.relationships.MOTHERS.forEach(m => {
+                passageLinks.push(m.passage);
+              });
+            }
             disputed = {
               tf: true,
               type: "Disputed tradition",
-              passageLink: ""
-            }; //TODO: INPUT REAL INFO
+              passageLinks: passageLinks,
+              disputedParents: disputedParents
+            }; // disputedParents - the list of all parents that are disputed, e.g. disputed mothers, disputed fathers
+            console.log(disputed);
           }
         });
       }
@@ -459,6 +495,39 @@ class EntityGraph extends Component {
     }
     return false;
   };
+
+  getORX(d) {
+    if (this.props.id === this.state.id) {
+      let sumX = 0;
+      d.disputedParents.forEach(d => {
+        /* sumX =
+        this.state.stageRef.find("." + d.targetID).attrs.x +
+        this.state.width / 2; */
+        console.log(this.state.stageRef, this.props.id, this.state.id);
+        this.state.stageRef.children[1].children.each(function(shape) {
+          console.log(
+            "orig",
+            d.targetID,
+            "name",
+            shape.attrs.name,
+            "equals",
+            d.targetID === shape.attrs.name
+          );
+          if (d.targetID === shape.attrs.name) {
+            sumX = sumX + shape.attrs.x;
+            return;
+          }
+        });
+      });
+      return sumX / d.disputedParents.length;
+    } else {
+      return 0;
+    }
+  }
+
+  getORY(d) {
+    return 50;
+  }
 
   /****************************************************
    *
@@ -641,19 +710,42 @@ class EntityGraph extends Component {
             />
           ))}
           {this.state.lineLinks.map((e, i) => (
-            <Line
-              name={e.name}
-              points={e.points}
-              unusual={e.unusual}
-              disputed={e.disputed}
-              stroke={
-                e.unusual.tf ? "#ff0000" : e.disputed.tf ? "#0000ff" : "#000000"
-              }
-              opacity={e.unusual.tf || e.disputed.tf ? 1 : 0.3}
-              strokeWidth={4}
-              onMouseOver={this.handleMouseOverLine}
-              onMouseOut={this.handleMouseOutLine}
-            />
+            <React.Fragment>
+              <Line
+                name={e.name}
+                points={e.points}
+                unusual={e.unusual}
+                disputed={e.disputed}
+                stroke={
+                  e.unusual.tf
+                    ? "#ff0000"
+                    : e.disputed.tf
+                    ? "#0000ff"
+                    : "#000000"
+                }
+                opacity={e.unusual.tf || e.disputed.tf ? 1 : 0.3}
+                strokeWidth={4}
+                onMouseOver={this.handleMouseOverLine}
+                onMouseOut={this.handleMouseOutLine}
+              />
+              {e.disputed.tf ? (
+                <Text
+                  x={this.getORX(e.disputed)}
+                  y={this.getORY(e.disputed)}
+                  text="OR"
+                  fontSize={15}
+                  fontFamily="Calibri"
+                  fontStyle="bold"
+                  fill="#0000ff"
+                  width={80}
+                  height={80}
+                  padding={20}
+                  align="center"
+                />
+              ) : (
+                <React.Fragment />
+              )}
+            </React.Fragment>
           ))}
         </Layer>
       </Stage>
