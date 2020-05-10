@@ -554,14 +554,23 @@ class EntityGraph extends Component {
 
     if (e.target.attrs.disputed.tf) {
       let sumX = 0;
+      let numExistingDisputeNodes = 0;
       let y = 0;
+      let padding = 40;
       e.target.attrs.disputed.disputedParents.forEach(p => {
-        let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
-        sumX = sumX + pAttrs.x;
-        y = pAttrs.y;
+        if (this.state.stageRef.find("." + p.targetID)[0]) {
+          let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
+          sumX = sumX + pAttrs.x;
+          numExistingDisputeNodes++;
+          y = pAttrs.y;
+        } else {
+          // Only occurs if the relationship is disputed but the dsputed parent is not shown, e.g. Atreus
+          padding = 15;
+        }
       });
-      console.log("target", this.state.graphAttr.nodeWidth);
-      let x = (sumX + this.state.graphAttr.nodeWidth) / 2 - 40;
+      let x =
+        (sumX + this.state.graphAttr.nodeWidth) / numExistingDisputeNodes -
+        padding;
       let ORText = new Konva.Text({
         name: "ORText",
         x: x,
@@ -595,7 +604,6 @@ class EntityGraph extends Component {
     });
 
     if (e.target.attrs.disputed.tf) {
-      console.log(this.state.stageRef.children[1].find(".ORText")[0]);
       this.state.stageRef.children[1].find(".ORText")[0].remove();
     }
   };
