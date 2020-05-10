@@ -186,6 +186,7 @@ class EntityGraph extends Component {
   /* returns: [{parents: [list of ids], children: [list of ids], pNodeDepth: <depthNegOne, depthZero, depthPosOne>} , {...}] */
   getConnectionsList = (entityData, id) => {
     let allConnections = [];
+    console.log("Hello?", allConnections);
 
     //MOTHER+FATHER -> YOU+SIBLING+TWIN
     if (
@@ -492,14 +493,15 @@ class EntityGraph extends Component {
   };
 
   isSpouseRepeated = (sID, allConnections) => {
+    let repeated = false;
     for (let i = 0; i < allConnections.length; i++) {
-      for (let j = 0; j < allConnections[i].length; j++) {
-        if (sID === allConnections[i][j]) {
-          return true;
+      allConnections[i].parents.forEach(pID => {
+        if (sID === pID) {
+          repeated = true;
         }
-      }
+      });
     }
-    return false;
+    return repeated;
   };
 
   /****************************************************
