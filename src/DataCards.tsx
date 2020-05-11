@@ -942,11 +942,15 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               : "no-display"
           }
         >
-          {/* <EntityGraph
-            id={this.state.id}
-            relationshipClicked={this.handleNameClicked}
-            // disputeClicked={this.handleDisputeClicked}
-          ></EntityGraph> */}
+          {/* Legend */}
+          <div style={{ textAlign: "center" }}>
+            <h1>Graph Legend</h1>
+            <img src={require("./images/legend.png")}></img>
+            <p></p>Hover over elements to show the connections. Clicking on the
+            nodes will direct you to the graph for that node.
+          </div>
+
+          {/* Entity Graph */}
           <EntityGraph
             relationshipClicked={this.handleNameClicked}
             id={this.state.id}
