@@ -83,7 +83,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     this.reversedVerb = this.reversedVerb.bind(this);
     this.getDataPoints = this.getDataPoints.bind(this); */
     this.handleNameClicked = this.handleNameClicked.bind(this);
-    // this.handleDisputeClicked = this.handleDisputeClicked.bind(this);
+    // this.handleContestClicked = this.handleContestClicked.bind(this);
     /* this.getAlternativeNames = this.getAlternativeNames.bind(this); */
   }
 
@@ -143,10 +143,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     this.props.history.push("/datacards?id=" + targetID);
   }
 
-  /* handleDisputeClicked(edge: any, id: string) {
+  /* handleContestClicked(edge: any, id: string) {
     console.log("edge", edge, "id", id);
     this.setState({
-      openInfoPage: { showDisputePage: true, showUnusualPage: false }
+      openInfoPage: { showContestPage: true, showUnusualPage: false }
     });
   } */
 
@@ -942,19 +942,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
               : "no-display"
           }
         >
-          {/* Legend */}
-          <div style={{ textAlign: "center" }}>
-            <h1>Graph Legend</h1>
-            <img src={require("./images/legend.png")}></img>
-            <p></p>Hover over elements to show the connections. Clicking on the
-            nodes will direct you to the graph for that node.
-          </div>
-
           {/* Entity Graph */}
           <EntityGraph
             relationshipClicked={this.handleNameClicked}
             id={this.state.id}
-            unusual={this.state.unusual}
           />
         </div>
       </React.Fragment>

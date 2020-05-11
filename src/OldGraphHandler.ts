@@ -189,7 +189,7 @@ const getAllRelationshipLinks = (id: string, relationships: any) => {
           to: relationships.CHILDREN[i].otherParentIDs[j],
           relation: "co-parent",
           style: "",
-          disputed: "co-parent"
+          contested: "co-parent"
         };
       } else {
         edge = {

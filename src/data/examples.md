@@ -21,7 +21,7 @@ Then Oceanus + Tethys -> Clymene
 Then Iapetus + Clymene
 
 `Iapetus is uncle of Clymene but also spouse of`
-`Note this is also a disputed relationship due to inconsistency in name of Clymene - could also be Themis`
+`Note this is also a contested relationship due to inconsistency in name of Clymene - could also be Themis`
 
 ## Cousin incest (2 degrees)
 

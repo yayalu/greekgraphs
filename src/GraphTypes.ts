@@ -17,15 +17,15 @@ export type nodeType = {
     from: the starting point of the edge
     to: the end point of the edge
     relation: the relationship between from and to
-    disputed: whether the connection has been disputed, and what type of dispute it is (e.g. other parent)
+    contested: whether the connection has been contested, and what type of contest it is (e.g. other parent)
     unusual: whether the connection is unusual, and why it is unusual (e.g. incest)
-    style: the style string for the edge, e.g. undirected vs directed, dashed for co-parents not spouses, coloured for unusual & disputed
+    style: the style string for the edge, e.g. undirected vs directed, dashed for co-parents not spouses, coloured for unusual & contested
 */
 export type edgeType = {
   from: string;
   to: string;
   relation: string;
-  disputed?: string;
+  contested?: string;
   unusual?: string;
   style: string;
 };

@@ -22,7 +22,7 @@ class OldEntityGraph extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      openInfoPage: { showDisputePage: false, showUnusualPage: false },
+      openInfoPage: { showContestPage: false, showUnusualPage: false },
       nodeWidth: 80,
       nodeHeight: 30,
       nodeHorizontalSpacing: 60,
@@ -62,12 +62,12 @@ class OldEntityGraph extends React.Component {
       parent2,
       siblings,
       y,
-      disputed
+      contested
     } = props;
     let parent1X = nodePositions[parent1].x1 + this.state.nodeWidth / 2;
     let parent2X = nodePositions[parent2].x1 + this.state.nodeWidth / 2;
     ctx.beginPath();
-    if (disputed) {
+    if (contested) {
       ctx.strokeStyle = "#f00";
     }
     ctx.moveTo(parent1X, y + this.state.nodeHeight);
@@ -94,7 +94,7 @@ class OldEntityGraph extends React.Component {
   childEdge(props) {
     const { ctx, nodePositions, parents, children, nodeYOffset } = props;
     if (parents.length > 1) {
-      // disputed parentage
+      // contested parentage
       ctx.strokeStyle = "#f00";
     }
     let newNodeYOffset = nodeYOffset;
@@ -370,7 +370,7 @@ class OldEntityGraph extends React.Component {
         connectedSiblings[s.targetID] = nodePositions[s.targetID];
       });
       // Get parents
-      let disputed = mothers.length > 1 || fathers.length > 1;
+      let contested = mothers.length > 1 || fathers.length > 1;
       let parentGroupings = [];
       if (mothers.length > 1) {
         mothers.forEach(m => {
@@ -391,7 +391,7 @@ class OldEntityGraph extends React.Component {
           });
         });
       } else {
-        // No disputed connections
+        // No contested connections
         // TODO: Add when only one parent is known
         if (mothers.length !== 0 && fathers.length !== 0) {
           parentGroupings.push({
@@ -409,7 +409,7 @@ class OldEntityGraph extends React.Component {
           parent2: p.parent2,
           y: level,
           siblings: connectedSiblings,
-          disputed: disputed
+          contested: contested
         });
       });
 
@@ -443,7 +443,7 @@ class OldEntityGraph extends React.Component {
           </div>
           <div style={{ marginBottom: "2rem" }}>
             <span id="legend-relationedge">Genealogical connection</span>
-            <span id="legend-disputededge">Disputed tradition</span>
+            <span id="legend-contestededge">Contested tradition</span>
             <span id="legend-unusualedge">Unusual connection</span>
             <span id="legend-memberedge">Member of collective</span>
           </div>

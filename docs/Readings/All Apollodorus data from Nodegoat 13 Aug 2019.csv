@@ -1,4 +1,4 @@
-﻿nodegoat ID,Name,Passage: start,Passage: start ID,Passage: end,Passage: end ID,Subject,Subject ID,Verb,Verb ID,Direct Object,Direct Object ID,Indirect Object (to/for),Indirect Object (to/for) ID,in/on/at,in/on/at ID,near ID,from,from ID,to (motion),to (motion) ID,Uncertainty expressed,Dispute expressed
+﻿nodegoat ID,Name,Passage: start,Passage: start ID,Passage: end,Passage: end ID,Subject,Subject ID,Verb,Verb ID,Direct Object,Direct Object ID,Indirect Object (to/for),Indirect Object (to/for) ID,in/on/at,in/on/at ID,near ID,from,from ID,to (motion),to (motion) ID,Uncertainty expressed,DContestexpressed
 ngMi2T576NSfxLikeNV95Yyj,Apollodorus Epitome 1.1 Theseus kills Phaia,Apollodorus Epitome 1.1,8187570,,,Theseus,8188822,kills,8188672,Phaia,8187571,,,Crommyon,8188810,,,,,,no,no
 ngNj2U677NTg8MjJfN80wZzA,"Apollodorus Epitome 1.1 Phaia is daughter of Echidna, Typhon",Apollodorus Epitome 1.1,8187570,,,Phaia,8187571,is daughter of,8188650,Echidna,8188202,,,,,,,,,,no,no
 ngNj2U677NTg8MjJfN80wZzA,"Apollodorus Epitome 1.1 Phaia is daughter of Echidna, Typhon",Apollodorus Epitome 1.1,8187570,,,Phaia,8187571,is daughter of,8188650,Typhon,8188824,,,,,,,,,,no,no

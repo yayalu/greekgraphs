@@ -562,8 +562,8 @@ const checkAndRemoveParentDuplicates = (
   // This function removes duplicates but also groups children by the "other" parent
   // returns childrenInfo object: {child: <list of associated children>, otherParentIDs}
 
-  // If the same child appears under two different "otherParent"s, then dispute is expressed
-  // The child will be under {child: <list of children>, otherParents: <list of all parents + disputed>}
+  // If the same child appears under two different "otherParent"s, then contest is expressed
+  // The child will be under {child: <list of children>, otherParents: <list of all parents + contested>}
   let parentDuplicate = false;
   let childDuplicate = false;
 

@@ -31,7 +31,8 @@ class EntityGraph extends Component {
       },
       lineLinks: [],
       entityData: {},
-      id: ""
+      id: "",
+      openInfoPage: { showContestPage: false, showUnusualPage: false }
     };
     this.getDepthNodes = this.getDepthNodes.bind(this);
   }
@@ -176,8 +177,8 @@ class EntityGraph extends Component {
       });
     }
 
-    // Add the central node in the graph. Removes 3-parent dispute resulting in "OR" on the main node, see Aerope
-    if (depthZero.length > 2) {
+    // Add the central node in the graph. Removes 3-parent contest resulting in "OR" on the main node, see Aerope
+    if (depthZero.length > 3) {
       depthZero.splice(Math.ceil(depthZero.length / 2), 0, this.props.id); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
     } else {
       depthZero.splice(0, 0, this.props.id);
@@ -392,56 +393,78 @@ class EntityGraph extends Component {
         .concat(connections[i].children)
         .toString();
 
-      // TODO: Check if the connection is unusual or disputed;
-      let unusual = { tf: false, type: "" };
-      let disputed = { tf: false, type: "", passage: undefined };
+      // TODO: Check if the connection is unusual or contested;
+      let unusual = { tf: false, type: "", passage: undefined };
+      let contested = { tf: false, type: "", passage: undefined };
 
       // Check Parent -> Main Node
       if (connections[i].pNodeDepth === "depthNegOne") {
         // UNUSUAL: Since the depth in question is depth -1 => one of the children must be the main entity
-        // Only check unusual status and disputed status of the main entity
+        // Only check unusual status and contested status of the main entity
         if (entityData.unusual.autochthony.tf) {
-          unusual = { tf: true, type: "autochthony" };
+          unusual = {
+            tf: true,
+            type: "autochthony",
+            passage: entityData.unusual.autochthony.passage
+          };
         } else if (entityData.unusual.createdWithoutParents.tf) {
-          unusual = { tf: true, type: "createdWithoutParents" };
+          unusual = {
+            tf: true,
+            type: "createdWithoutParents",
+            passage: entityData.unusual.createdWithoutParents.passage
+          };
         } else if (entityData.unusual.createdByAgent.tf) {
-          unusual = { tf: true, type: "createdByAgent" };
+          unusual = {
+            tf: true,
+            type: "createdByAgent",
+            passage: entityData.unusual.createdByAgent.passage
+          };
         } else if (entityData.unusual.parthenogenesis.tf) {
-          unusual = { tf: true, type: "parthenogenesis" };
+          unusual = {
+            tf: true,
+            type: "parthenogenesis",
+            passage: entityData.unusual.parthenogenessis.passage
+          };
         } else if (entityData.unusual.bornFromObject.tf) {
-          unusual = { tf: true, type: "bornFromObject" };
+          unusual = {
+            tf: true,
+            type: "bornFromObject",
+            passage: entityData.unusual.bornFromObject.passage
+          };
         } else if (entityData.unusual.diesWithoutChildren.tf) {
           //TODO: deal with this in a more suitable place
-          unusual = { tf: true, type: "diesWithoutChildren" };
-        } else {
-          // Leave unusual as false
+          unusual = {
+            tf: true,
+            type: "diesWithoutChildren",
+            passage: entityData.unusual.diesWithoutChildren.passage
+          };
         }
 
-        // DISPUTED: Check if the main entity has > two parents. If so, is disputed
-        // TODO: Make this more complex - note what Greta said about the complexity of disputed relationships
+        // CONTESTED: Check if the main entity has > two parents. If so, is contested
+        // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
         if (connections[i].parents.length > 2) {
           // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
-          let disputedParents = [];
+          let contestedParents = [];
           let passageLinks = [];
           if (entityData.relationships.MOTHERS.length > 1) {
-            disputedParents = entityData.relationships.MOTHERS;
+            contestedParents = entityData.relationships.MOTHERS;
             entityData.relationships.MOTHERS.forEach(m => {
               passageLinks.push(m.passage);
             });
           } else {
             // (entityData.relationships.FATHERS.length > 1) {
-            disputedParents = entityData.relationships.FATHERS;
+            contestedParents = entityData.relationships.FATHERS;
             entityData.relationships.MOTHERS.forEach(m => {
               passageLinks.push(m.passage);
             });
           }
-          disputed = {
+          contested = {
             tf: true,
-            type: "Disputed tradition",
+            type: "Contested tradition",
             passageLinks: passageLinks,
-            disputedParents: disputedParents
-          }; // disputedParents - the list of all parents that are disputed, e.g. disputed mothers, disputed fathers
-          console.log(disputed);
+            contestedParents: contestedParents
+          }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
+          console.log(contested);
         }
       }
       // Check Main Node -> Children
@@ -469,44 +492,44 @@ class EntityGraph extends Component {
             // Leave overall connection unusualness as false
           }
 
-          // DISPUTED: Check if the child has > two parents (one of which is the main character). If so, is disputed
-          // TODO: Make this more complex - note what Greta said about the complexity of disputed relationships
+          // CONTESTED: Check if the child has > two parents (one of which is the main character). If so, is contested
+          // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
           if (
             cRelationships.relationships.MOTHERS.length +
               cRelationships.relationships.FATHERS.length >
             2
           ) {
             // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
-            let disputedParents = [];
+            let contestedParents = [];
             let passageLinks = [];
             if (cRelationships.relationships.MOTHERS.length > 1) {
-              disputedParents = cRelationships.relationships.MOTHERS;
+              contestedParents = cRelationships.relationships.MOTHERS;
               cRelationships.relationships.MOTHERS.forEach(m => {
                 passageLinks.push(m.passage);
               });
             } else {
               // (entityData.relationships.FATHERS.length > 1) {
-              disputedParents = cRelationships.relationships.FATHERS;
+              contestedParents = cRelationships.relationships.FATHERS;
               cRelationships.relationships.MOTHERS.forEach(m => {
                 passageLinks.push(m.passage);
               });
             }
-            disputed = {
+            contested = {
               tf: true,
-              type: "Disputed tradition",
+              type: "Contested tradition",
               passageLinks: passageLinks,
-              disputedParents: disputedParents
-            }; // disputedParents - the list of all parents that are disputed, e.g. disputed mothers, disputed fathers
-            console.log(disputed);
+              contestedParents: contestedParents
+            }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
+            console.log(contested);
           }
         });
       }
-      // TODO: Check if the connection is disputed
+      // TODO: Check if the connection is contested
       allLinePoints.push({
         name: name,
         points: linePoints,
         unusual: unusual,
-        disputed: disputed
+        contested: contested
       });
       // allLinePoints.push({ name: name, points: linePoints });
     }
@@ -551,7 +574,7 @@ class EntityGraph extends Component {
     this.props.relationshipClicked(e.target.attrs.id);
   };
 
-  /* Line handling (disputed + unusual) */
+  /* Line handling (contested + unusual) */
   handleMouseOverLine = e => {
     // thicken the main line
     e.target.to({
@@ -572,7 +595,7 @@ class EntityGraph extends Component {
             stroke: "#ff0000"
           });
         }
-        if (e.target.attrs.disputed.tf) {
+        if (e.target.attrs.contested.tf) {
           document.body.style.cursor = "pointer";
           nodeWithID.to({
             stroke: "#0000ff"
@@ -581,24 +604,24 @@ class EntityGraph extends Component {
       }
     });
 
-    if (e.target.attrs.disputed.tf) {
+    if (e.target.attrs.contested.tf) {
       let sumX = 0;
-      let numExistingDisputeNodes = 0;
+      let numExistingContestNodes = 0;
       let y = 0;
       let padding = 40;
-      e.target.attrs.disputed.disputedParents.forEach(p => {
+      e.target.attrs.contested.contestedParents.forEach(p => {
         if (this.state.stageRef.find("." + p.targetID)[0]) {
           let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
           sumX = sumX + pAttrs.x;
-          numExistingDisputeNodes++;
+          numExistingContestNodes++;
           y = pAttrs.y;
         } else {
-          // Only occurs if the relationship is disputed but the dsputed parent is not shown, e.g. Atreus
+          // Only occurs if the relationship is contested but the dsputed parent is not shown, e.g. Atreus
           padding = 15;
         }
       });
       let x =
-        (sumX + this.state.graphAttr.nodeWidth) / numExistingDisputeNodes -
+        (sumX + this.state.graphAttr.nodeWidth) / numExistingContestNodes -
         padding;
       let ORText = new Konva.Text({
         name: "ORText",
@@ -621,7 +644,8 @@ class EntityGraph extends Component {
     document.body.style.cursor = "default";
     e.target.to({
       strokeWidth: 4,
-      opacity: e.target.attrs.unusual.tf || e.target.attrs.disputed.tf ? 1 : 0.3
+      opacity:
+        e.target.attrs.unusual.tf || e.target.attrs.contested.tf ? 1 : 0.3
     });
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
@@ -634,25 +658,33 @@ class EntityGraph extends Component {
       }
     });
 
-    if (e.target.attrs.disputed.tf) {
+    if (e.target.attrs.contested.tf) {
       this.state.stageRef.children[1].find(".ORText")[0].remove();
     }
   };
 
   handleClickedLine = e => {
     if (e.target.attrs.unusual.tf) {
-      console.log("Unusual", e.target.attrs.unusual);
-    } else if (e.target.attrs.disputed.tf) {
-      console.log("Disputed", e.target.attrs.disputed);
-      // this.props.clickedDisputedLine(e.target.attrs.id);
+      console.log("Unusual", e.target.attrs);
+      //this.props.handleUnusualClicked = e.target.attrs.unusual;
+      this.setState({
+        openInfoPage: { showContestPage: false, showUnusualPage: true }
+      });
+    } else if (e.target.attrs.contested.tf) {
+      console.log("Contested", e.target.attrs);
+      this.setState({
+        openInfoPage: { showContestPage: true, showUnusualPage: false }
+      });
     } else {
-      //  Is a normal relationship line, do nothing
+      this.setState({
+        openInfoPage: { showContestPage: false, showUnusualPage: false }
+      }); //  Is a normal relationship line, do nothing
     }
   };
 
   // Clicked icons
   handleClickedIcons = e => {
-    console.log("Rock clicked");
+    console.log("Icon clicked", e);
   };
 
   /****************************************************
@@ -682,59 +714,103 @@ class EntityGraph extends Component {
     };
 
     return (
-      <Stage ref="stage" width={6000} height={2000}>
-        <Layer>
-          {this.state.depthNodes.depthNegOne.map((e, i) => (
-            <Text
-              x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-              ref="text"
-              y={this.state.graphAttr.NegOneY}
-              text={getName(entities[e])}
-              fontSize={18}
-              fontFamily="Calibri"
-              fontStyle="bold"
-              fill="#000"
-              width={this.state.graphAttr.nodeWidth}
-              height={this.state.graphAttr.nodeHeight}
-              padding={20}
-              align="center"
-            />
-          ))}
-          {this.state.depthNodes.depthZero.map((e, i) => (
-            <Text
-              x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-              ref="text"
-              y={this.state.graphAttr.ZeroY}
-              text={getName(entities[e])}
-              fontSize={18}
-              fontFamily="Calibri"
-              fontStyle="bold"
-              fill="#000"
-              width={this.state.graphAttr.nodeWidth}
-              height={this.state.graphAttr.nodeHeight}
-              padding={20}
-              align="center"
-            />
-          ))}
-          {this.state.depthNodes.depthPosOne.map((e, i) => (
-            <Text
-              x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-              ref="text"
-              y={this.state.graphAttr.PosOneY}
-              text={getName(entities[e])}
-              fontSize={18}
-              fontFamily="Calibri"
-              fontStyle="bold"
-              fill="#000"
-              width={this.state.graphAttr.nodeWidth}
-              height={this.state.graphAttr.nodeHeight}
-              padding={20}
-              align="center"
-            />
-          ))}
-        </Layer>
-        <Layer>
-          <React.Fragment>
+      <React.Fragment>
+        {/* Legend */}
+        <div style={{ textAlign: "center" }}>
+          <h1>Graph Legend</h1>
+          <img
+            src={require("./images/legend.png")}
+            style={{ maxWidth: "80%" }}
+          ></img>
+          <p></p>Hover over elements to show the connections. Clicking on the
+          nodes will direct you to the graph for that node.
+        </div>
+        {/* Info pages for unusual and contested relationships */}
+        {this.state.openInfoPage.showContestPage ? (
+          <div
+            style={{
+              margin: "20px 96px 20px 96px",
+              border: "3px dashed #0000ff",
+              textAlign: "center",
+              padding: "0 20px 0 20px"
+            }}
+          >
+            <h2>Contested Tradition </h2>
+            <p></p>
+            <p style={{ fontStyle: "italic" }}>
+              (inconsistencies between retellings of the tradition)
+            </p>
+            <p style={{ textAlign: "left" }}>
+              Contestation is an inherent part of Greek myth. Because the
+              ancient mythic tradition was tolerant of plurality, there were
+              frequently several variant traditions about who the parents of a
+              god or hero were.
+            </p>
+            <p>In this case, the contestation is:</p>
+          </div>
+        ) : (
+          <span></span>
+        )}
+        {this.state.openInfoPage.showUnusualPage ? (
+          <div>
+            <img src={require("./images/autochthony.png")}></img>
+          </div>
+        ) : (
+          <span></span>
+        )}
+        {/* Graph rendering with KonvajS */}
+        <Stage ref="stage" width={6000} height={2000}>
+          <Layer>
+            {this.state.depthNodes.depthNegOne.map((e, i) => (
+              <Text
+                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
+                ref="text"
+                y={this.state.graphAttr.NegOneY}
+                text={getName(entities[e])}
+                fontSize={18}
+                fontFamily="Calibri"
+                fontStyle="bold"
+                fill="#000"
+                width={this.state.graphAttr.nodeWidth}
+                height={this.state.graphAttr.nodeHeight}
+                padding={20}
+                align="center"
+              />
+            ))}
+            {this.state.depthNodes.depthZero.map((e, i) => (
+              <Text
+                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
+                ref="text"
+                y={this.state.graphAttr.ZeroY}
+                text={getName(entities[e])}
+                fontSize={18}
+                fontFamily="Calibri"
+                fontStyle="bold"
+                fill="#000"
+                width={this.state.graphAttr.nodeWidth}
+                height={this.state.graphAttr.nodeHeight}
+                padding={20}
+                align="center"
+              />
+            ))}
+            {this.state.depthNodes.depthPosOne.map((e, i) => (
+              <Text
+                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
+                ref="text"
+                y={this.state.graphAttr.PosOneY}
+                text={getName(entities[e])}
+                fontSize={18}
+                fontFamily="Calibri"
+                fontStyle="bold"
+                fill="#000"
+                width={this.state.graphAttr.nodeWidth}
+                height={this.state.graphAttr.nodeHeight}
+                padding={20}
+                align="center"
+              />
+            ))}
+          </Layer>
+          <Layer>
             {this.state.depthNodes.depthNegOne.map((e, i) =>
               e === "autochthony_NegOne" ? (
                 <AutochthonyIcon
@@ -801,24 +877,24 @@ class EntityGraph extends Component {
                 name={e.name}
                 points={e.points}
                 unusual={e.unusual}
-                disputed={e.disputed}
+                contested={e.contested}
                 stroke={
                   e.unusual.tf
                     ? "#ff0000"
-                    : e.disputed.tf
+                    : e.contested.tf
                     ? "#0000ff"
                     : "#000000"
                 }
-                opacity={e.unusual.tf || e.disputed.tf ? 1 : 0.3}
+                opacity={e.unusual.tf || e.contested.tf ? 1 : 0.3}
                 strokeWidth={4}
                 onMouseOver={this.handleMouseOverLine}
                 onMouseOut={this.handleMouseOutLine}
                 onClick={this.handleClickedLine}
               />
             ))}
-          </React.Fragment>
-        </Layer>
-      </Stage>
+          </Layer>
+        </Stage>
+      </React.Fragment>
     );
   }
 }
