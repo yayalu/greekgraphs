@@ -138,6 +138,22 @@ class EntityGraph extends Component {
       depthNegOne.push(b.targetID);
     });
 
+    // Create unusual nodes, and add them to the end of depth -1
+    // TODO deal with depth Zero nodes too
+    if (entityData.unusual.autochthony.tf) {
+      depthNegOne.push("autochthony_NegOne");
+    } else if (entityData.unusual.parthenogenesis.tf) {
+      depthNegOne.push("parthenogenesis_NegOne");
+    } else if (entityData.unusual.bornFromObject.tf) {
+      depthNegOne.push("bornFromObject_NegOne");
+    } else if (entityData.unusual.createdByAgent.tf) {
+      depthNegOne.push("createdByAgent_NegOne");
+    } else if (entityData.unusual.createdWithoutParents.tf) {
+      depthNegOne.push("createdWithoutParents_NegOne");
+    } else if (entityData.unusual.diesWithoutChildren.tf) {
+      depthNegOne.push("diesWithoutChildren_NegOne");
+    }
+
     //siblings, twins and spouses depth 0
     entityData.relationships.SIBLINGS.forEach(s => {
       depthZero.push(s.targetID);
@@ -237,15 +253,19 @@ class EntityGraph extends Component {
       });
     }
 
-    //TODO: CREATED (BY AGENT)
-
-    //TODO: AUTOCHTHONY
-
-    //TODO: CREATED WITHOUT PARENTS
-
-    //TODO: PARTHENOGENESIS
-
-    //TODO: DIES WITHOUT CHILDREN
+    //IF UNUSUAL RELATIONSHIP:
+    if (entityData.unusual.autochthony.tf) {
+      allConnections.push({
+        parents: ["autochthony_NegOne"],
+        children: [id],
+        pNodeDepth: "depthNegOne"
+      });
+    } else if (entityData.unusual.parthenogenesis.tf) {
+    } else if (entityData.unusual.bornFromObject.tf) {
+    } else if (entityData.unusual.createdByAgent.tf) {
+    } else if (entityData.unusual.createdWithoutParents.tf) {
+    } else if (entityData.unusual.diesWithoutChildren.tf) {
+    }
 
     return allConnections;
   };
@@ -254,6 +274,7 @@ class EntityGraph extends Component {
 
   // Create an array holding all relationships between entities, parent+parent->children+siblings [[P,P,C,S], [...]]
   geAllLinePoints = (depthNodes, entityData, connections) => {
+    console.log(connections);
     let allLinePoints = [];
 
     /*
@@ -286,7 +307,6 @@ class EntityGraph extends Component {
       // connections[INDEX] = {parents: [id1, id2, ...], children: [id1, id2, ...]}
 
       // TODO: Make the following more efficient
-
       let linePoints = [];
 
       let PM_Y = 0,
@@ -306,6 +326,7 @@ class EntityGraph extends Component {
       connections[i].parents.forEach(p => {
         let pX = initX + depth.indexOf(p) * spaceX;
         PM_X = PM_X + pX;
+        console.log(p, depth, depth.indexOf(p), PM_X);
       });
       PM_X =
         connections[i].parents.length > 1 // Removes division by 0 error
@@ -540,21 +561,23 @@ class EntityGraph extends Component {
     // thicken the nodes attached to the line
     let nodeIDs = e.target.attrs.name.split(",");
     nodeIDs.forEach(id => {
-      let nodeWithID = this.state.stageRef.find("." + id);
-      nodeWithID.to({
-        strokeWidth: 8
-      });
-      if (e.target.attrs.unusual.tf) {
-        document.body.style.cursor = "pointer";
+      if (id != "autochthony_NegOne") {
+        let nodeWithID = this.state.stageRef.find("." + id);
         nodeWithID.to({
-          stroke: "#ff0000"
+          strokeWidth: 8
         });
-      }
-      if (e.target.attrs.disputed.tf) {
-        document.body.style.cursor = "pointer";
-        nodeWithID.to({
-          stroke: "#0000ff"
-        });
+        if (e.target.attrs.unusual.tf) {
+          document.body.style.cursor = "pointer";
+          nodeWithID.to({
+            stroke: "#ff0000"
+          });
+        }
+        if (e.target.attrs.disputed.tf) {
+          document.body.style.cursor = "pointer";
+          nodeWithID.to({
+            stroke: "#0000ff"
+          });
+        }
       }
     });
 
@@ -603,10 +626,12 @@ class EntityGraph extends Component {
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
     nodeDs.forEach(id => {
-      this.state.stageRef.find("." + id).to({
-        strokeWidth: 4,
-        stroke: "#000000"
-      });
+      if (id != "autochthony_NegOne") {
+        this.state.stageRef.find("." + id).to({
+          strokeWidth: 4,
+          stroke: "#000000"
+        });
+      }
     });
 
     if (e.target.attrs.disputed.tf) {
@@ -619,7 +644,7 @@ class EntityGraph extends Component {
       console.log("Unusual", e.target.attrs.unusual);
     } else if (e.target.attrs.disputed.tf) {
       console.log("Disputed", e.target.attrs.disputed);
-      this.props.clickedDisputedLine(e.target.attrs.id);
+      // this.props.clickedDisputedLine(e.target.attrs.id);
     } else {
       //  Is a normal relationship line, do nothing
     }
@@ -640,13 +665,15 @@ class EntityGraph extends Component {
 
   render() {
     //Icons for unusual relationships
-    const AutochthonyIcon = onClickHandler => {
+    const AutochthonyIcon = e => {
       const [image] = useImage(require("./images/autochthony.png"));
+      console.log(e.name, e.x, e.y);
       return (
         <Image
           image={image}
-          x={100}
-          y={100}
+          name={e.name}
+          x={e.x + 20}
+          y={e.y}
           width={100}
           height={80}
           onClick={this.handleClickedIcons}
@@ -708,22 +735,34 @@ class EntityGraph extends Component {
         </Layer>
         <Layer>
           <React.Fragment>
-            {this.state.depthNodes.depthNegOne.map((e, i) => (
-              <Rect
-                refs={"rect"}
-                id={e}
-                name={e}
-                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-                y={this.state.graphAttr.NegOneY}
-                width={this.state.graphAttr.nodeWidth}
-                height={this.state.graphAttr.nodeHeight}
-                stroke="#000"
-                strokeWidth={4}
-                onMouseOver={this.handleMouseOverNode}
-                onMouseOut={this.handleMouseOutNode}
-                onClick={this.handlePageChange}
-              />
-            ))}
+            {this.state.depthNodes.depthNegOne.map((e, i) =>
+              e === "autochthony_NegOne" ? (
+                <AutochthonyIcon
+                  name="autochthony_NegOne"
+                  x={
+                    this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
+                  }
+                  y={this.state.graphAttr.NegOneY}
+                />
+              ) : (
+                <Rect
+                  refs={"rect"}
+                  id={e}
+                  name={e}
+                  x={
+                    this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
+                  }
+                  y={this.state.graphAttr.NegOneY}
+                  width={this.state.graphAttr.nodeWidth}
+                  height={this.state.graphAttr.nodeHeight}
+                  stroke="#000"
+                  strokeWidth={4}
+                  onMouseOver={this.handleMouseOverNode}
+                  onMouseOut={this.handleMouseOutNode}
+                  onClick={this.handlePageChange}
+                />
+              )
+            )}
             {this.state.depthNodes.depthZero.map((e, i) => (
               <Rect
                 refs={"rect"}
@@ -756,7 +795,7 @@ class EntityGraph extends Component {
                 onClick={this.handlePageChange}
               />
             ))}
-            <AutochthonyIcon onClick={this.handleClickedLine} />
+
             {this.state.lineLinks.map((e, i) => (
               <Line
                 name={e.name}
