@@ -2,10 +2,11 @@
 // Refs (stage and components): https://reactjsexample.com/react-binding-to-canvas-element-via-konva-framework/
 import React, { Component } from "react";
 import Konva from "konva";
-import { Stage, Layer, Text, Rect, Line } from "react-konva";
+import { Stage, Layer, Text, Rect, Line, Image } from "react-konva";
 import relationships from "./data/relationships.json";
 import { getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
+import useImage from "use-image";
 
 class EntityGraph extends Component {
   constructor(props) {
@@ -58,7 +59,7 @@ class EntityGraph extends Component {
     console.log(this.refs.stage.children[1].children);
     console.log("IDs:", JSON.parse(relationships[this.props.id]));
 
-    // THE FOOLLOWING POPULATES THE GRAPH WITH DEFUALT RELATIONSHIP INFORMATION (AGAMEMNON) AS THIS DEALS WIIH UNDEFINED ERRORS
+    // THE FOLLOWING POPULATES THE GRAPH WITH DEFUALT RELATIONSHIP INFORMATION (AGAMEMNON) AS THIS DEALS WIIH UNDEFINED ERRORS
     // SPACE-WASTING BUT WORKS AS A TEMPORARY SOLUTION
     let entityData = JSON.parse(relationships[this.props.id]);
     let connectionsList = this.getConnectionsList(entityData, this.props.id);
@@ -186,7 +187,6 @@ class EntityGraph extends Component {
   /* returns: [{parents: [list of ids], children: [list of ids], pNodeDepth: <depthNegOne, depthZero, depthPosOne>} , {...}] */
   getConnectionsList = (entityData, id) => {
     let allConnections = [];
-    console.log("Hello?", allConnections);
 
     //MOTHER+FATHER -> YOU+SIBLING+TWIN
     if (
@@ -512,6 +512,7 @@ class EntityGraph extends Component {
    *
    ****************************************************/
 
+  /* Node handling */
   handleMouseOverNode = e => {
     document.body.style.cursor = "pointer";
     e.target.to({
@@ -525,6 +526,11 @@ class EntityGraph extends Component {
     });
   };
 
+  handlePageChange = e => {
+    this.props.relationshipClicked(e.target.attrs.id);
+  };
+
+  /* Line handling (disputed + unusual) */
   handleMouseOverLine = e => {
     // thicken the main line
     e.target.to({
@@ -608,8 +614,20 @@ class EntityGraph extends Component {
     }
   };
 
-  handlePageChange = e => {
-    this.props.relationshipClicked(e.target.attrs.id);
+  handleClickedLine = e => {
+    if (e.target.attrs.unusual.tf) {
+      console.log("Unusual", e.target.attrs.unusual);
+    } else if (e.target.attrs.disputed.tf) {
+      console.log("Disputed", e.target.attrs.disputed);
+      this.props.clickedDisputedLine(e.target.attrs.id);
+    } else {
+      //  Is a normal relationship line, do nothing
+    }
+  };
+
+  // Clicked icons
+  handleClickedIcons = e => {
+    console.log("Rock clicked");
   };
 
   /****************************************************
@@ -621,6 +639,21 @@ class EntityGraph extends Component {
    ****************************************************/
 
   render() {
+    //Icons for unusual relationships
+    const AutochthonyIcon = onClickHandler => {
+      const [image] = useImage(require("./images/autochthony.png"));
+      return (
+        <Image
+          image={image}
+          x={100}
+          y={100}
+          width={100}
+          height={80}
+          onClick={this.handleClickedIcons}
+        />
+      );
+    };
+
     return (
       <Stage ref="stage" width={6000} height={2000}>
         <Layer>
@@ -674,56 +707,57 @@ class EntityGraph extends Component {
           ))}
         </Layer>
         <Layer>
-          {this.state.depthNodes.depthNegOne.map((e, i) => (
-            <Rect
-              refs={"rect"}
-              id={e}
-              name={e}
-              x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-              y={this.state.graphAttr.NegOneY}
-              width={this.state.graphAttr.nodeWidth}
-              height={this.state.graphAttr.nodeHeight}
-              stroke="#000"
-              strokeWidth={4}
-              onMouseOver={this.handleMouseOverNode}
-              onMouseOut={this.handleMouseOutNode}
-              onClick={this.handlePageChange}
-            />
-          ))}
-          {this.state.depthNodes.depthZero.map((e, i) => (
-            <Rect
-              refs={"rect"}
-              id={e}
-              name={e}
-              x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-              y={this.state.graphAttr.ZeroY}
-              width={this.state.graphAttr.nodeWidth}
-              height={this.state.graphAttr.nodeHeight}
-              stroke="#000"
-              strokeWidth={4}
-              onMouseOver={this.handleMouseOverNode}
-              onMouseOut={this.handleMouseOutNode}
-              onClick={this.handlePageChange}
-            />
-          ))}
-          {this.state.depthNodes.depthPosOne.map((e, i) => (
-            <Rect
-              refs={"rect"}
-              id={e}
-              name={e}
-              x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-              y={this.state.graphAttr.PosOneY}
-              width={this.state.graphAttr.nodeWidth}
-              height={this.state.graphAttr.nodeHeight}
-              stroke="#000"
-              strokeWidth={4}
-              onMouseOver={this.handleMouseOverNode}
-              onMouseOut={this.handleMouseOutNode}
-              onClick={this.handlePageChange}
-            />
-          ))}
-          {this.state.lineLinks.map((e, i) => (
-            <React.Fragment>
+          <React.Fragment>
+            {this.state.depthNodes.depthNegOne.map((e, i) => (
+              <Rect
+                refs={"rect"}
+                id={e}
+                name={e}
+                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
+                y={this.state.graphAttr.NegOneY}
+                width={this.state.graphAttr.nodeWidth}
+                height={this.state.graphAttr.nodeHeight}
+                stroke="#000"
+                strokeWidth={4}
+                onMouseOver={this.handleMouseOverNode}
+                onMouseOut={this.handleMouseOutNode}
+                onClick={this.handlePageChange}
+              />
+            ))}
+            {this.state.depthNodes.depthZero.map((e, i) => (
+              <Rect
+                refs={"rect"}
+                id={e}
+                name={e}
+                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
+                y={this.state.graphAttr.ZeroY}
+                width={this.state.graphAttr.nodeWidth}
+                height={this.state.graphAttr.nodeHeight}
+                stroke="#000"
+                strokeWidth={4}
+                onMouseOver={this.handleMouseOverNode}
+                onMouseOut={this.handleMouseOutNode}
+                onClick={this.handlePageChange}
+              />
+            ))}
+            {this.state.depthNodes.depthPosOne.map((e, i) => (
+              <Rect
+                refs={"rect"}
+                id={e}
+                name={e}
+                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
+                y={this.state.graphAttr.PosOneY}
+                width={this.state.graphAttr.nodeWidth}
+                height={this.state.graphAttr.nodeHeight}
+                stroke="#000"
+                strokeWidth={4}
+                onMouseOver={this.handleMouseOverNode}
+                onMouseOut={this.handleMouseOutNode}
+                onClick={this.handlePageChange}
+              />
+            ))}
+            <AutochthonyIcon onClick={this.handleClickedLine} />
+            {this.state.lineLinks.map((e, i) => (
               <Line
                 name={e.name}
                 points={e.points}
@@ -740,9 +774,10 @@ class EntityGraph extends Component {
                 strokeWidth={4}
                 onMouseOver={this.handleMouseOverLine}
                 onMouseOut={this.handleMouseOutLine}
+                onClick={this.handleClickedLine}
               />
-            </React.Fragment>
-          ))}
+            ))}
+          </React.Fragment>
         </Layer>
       </Stage>
     );
