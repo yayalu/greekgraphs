@@ -7,6 +7,7 @@ import relationships from "./data/relationships.json";
 import { getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import useImage from "use-image";
+import passages from "./data/passages.json";
 
 class EntityGraph extends Component {
   constructor(props) {
@@ -32,7 +33,12 @@ class EntityGraph extends Component {
       lineLinks: [],
       entityData: {},
       id: "",
-      openInfoPage: { showContestPage: false, showUnusualPage: false }
+      openInfoPage: {
+        showContestPage: false,
+        contest: undefined,
+        showUnusualPage: false,
+        unusual: undefined
+      }
     };
     this.getDepthNodes = this.getDepthNodes.bind(this);
   }
@@ -80,9 +86,6 @@ class EntityGraph extends Component {
   }
 
   componentDidUpdate() {
-    const params = window.location.href.split("?id=")[1];
-    //  const id = params.id as string;
-    //  if (!params.id) {
     if (this.props.id !== this.state.id) {
       // deal with agamemnon (default value) not showing up
       let entityData = JSON.parse(relationships[this.props.id]);
@@ -395,7 +398,14 @@ class EntityGraph extends Component {
 
       // TODO: Check if the connection is unusual or contested;
       let unusual = { tf: false, type: "", passage: undefined };
-      let contested = { tf: false, type: "", passage: undefined };
+      let contested = {
+        tf: false,
+        type: "",
+        passageLinks: undefined,
+        contestedParents: undefined,
+        uncontestedParents: undefined,
+        child: undefined
+      };
 
       // Check Parent -> Main Node
       if (connections[i].pNodeDepth === "depthNegOne") {
@@ -445,26 +455,30 @@ class EntityGraph extends Component {
         if (connections[i].parents.length > 2) {
           // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
           let contestedParents = [];
+          let uncontestedParents;
           let passageLinks = [];
           if (entityData.relationships.MOTHERS.length > 1) {
             contestedParents = entityData.relationships.MOTHERS;
             entityData.relationships.MOTHERS.forEach(m => {
               passageLinks.push(m.passage);
             });
+            uncontestedParents = entityData.relationships.FATHERS[0];
           } else {
             // (entityData.relationships.FATHERS.length > 1) {
             contestedParents = entityData.relationships.FATHERS;
             entityData.relationships.MOTHERS.forEach(m => {
               passageLinks.push(m.passage);
             });
+            uncontestedParents = entityData.relationships.MOTHERS[0];
           }
           contested = {
             tf: true,
             type: "Contested tradition",
             passageLinks: passageLinks,
-            contestedParents: contestedParents
+            contestedParents: contestedParents,
+            uncontestedParents: uncontestedParents,
+            child: entityData.id
           }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
-          console.log(contested);
         }
       }
       // Check Main Node -> Children
@@ -501,26 +515,30 @@ class EntityGraph extends Component {
           ) {
             // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
             let contestedParents = [];
+            let uncontestedParents; //uncontested parents (singular)
             let passageLinks = [];
             if (cRelationships.relationships.MOTHERS.length > 1) {
               contestedParents = cRelationships.relationships.MOTHERS;
               cRelationships.relationships.MOTHERS.forEach(m => {
                 passageLinks.push(m.passage);
               });
+              uncontestedParents = cRelationships.relationships.FATHERS[0];
             } else {
               // (entityData.relationships.FATHERS.length > 1) {
               contestedParents = cRelationships.relationships.FATHERS;
               cRelationships.relationships.MOTHERS.forEach(m => {
                 passageLinks.push(m.passage);
               });
+              uncontestedParents = cRelationships.relationships.MOTHERS[0];
             }
             contested = {
               tf: true,
               type: "Contested tradition",
               passageLinks: passageLinks,
-              contestedParents: contestedParents
+              contestedParents: contestedParents,
+              uncontestedParents: uncontestedParents,
+              child: c
             }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
-            console.log(contested);
           }
         });
       }
@@ -547,6 +565,49 @@ class EntityGraph extends Component {
     }
     return repeated;
   };
+
+  getPassageLink(passage) {
+    let id = passage.startID;
+    console.log("ID", passage);
+    let author = passages[id].Author;
+    let title = passages[id].Title;
+    let start = passages[id].Passage;
+    let end = passage.endID;
+
+    // Dealing with multiple URNs
+    let URN = "";
+    let URNsplit = passages[id]["CTS URN"].split(", ");
+    if (URNsplit.length >= 2) {
+      URN = URNsplit[1];
+    } else {
+      URN = passages[id]["CTS URN"];
+    }
+
+    URN = "https://scaife.perseus.org/reader/" + URN;
+    if (passage.endID !== "") {
+      end = passages[end].Passage;
+      URN = URN + "-" + end;
+    }
+    URN = URN + "/?right=perseus-eng2";
+
+    return (
+      <span>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={URN}
+          style={{
+            color: "grey",
+            fontSize: "16px"
+          }}
+        >
+          {author + ", "}
+          <span style={{ fontStyle: "italic" }}>{title}</span> {start}
+          {start !== end && end !== "" ? "-" + end : ""}
+        </a>
+      </span>
+    );
+  }
 
   /****************************************************
    *
@@ -584,7 +645,7 @@ class EntityGraph extends Component {
     // thicken the nodes attached to the line
     let nodeIDs = e.target.attrs.name.split(",");
     nodeIDs.forEach(id => {
-      if (id != "autochthony_NegOne") {
+      if (id !== "autochthony_NegOne") {
         let nodeWithID = this.state.stageRef.find("." + id);
         nodeWithID.to({
           strokeWidth: 8
@@ -650,7 +711,7 @@ class EntityGraph extends Component {
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
     nodeDs.forEach(id => {
-      if (id != "autochthony_NegOne") {
+      if (id !== "autochthony_NegOne") {
         this.state.stageRef.find("." + id).to({
           strokeWidth: 4,
           stroke: "#000000"
@@ -668,16 +729,30 @@ class EntityGraph extends Component {
       console.log("Unusual", e.target.attrs);
       //this.props.handleUnusualClicked = e.target.attrs.unusual;
       this.setState({
-        openInfoPage: { showContestPage: false, showUnusualPage: true }
+        openInfoPage: {
+          showContestPage: false,
+          contest: undefined,
+          showUnusualPage: true,
+          unusual: e.target.attrs.unusual
+        }
       });
     } else if (e.target.attrs.contested.tf) {
-      console.log("Contested", e.target.attrs);
       this.setState({
-        openInfoPage: { showContestPage: true, showUnusualPage: false }
+        openInfoPage: {
+          showContestPage: true,
+          contestedParents: e.target.attrs.contested,
+          showUnusualPage: false,
+          unusual: undefined
+        }
       });
     } else {
       this.setState({
-        openInfoPage: { showContestPage: false, showUnusualPage: false }
+        openInfoPage: {
+          showContestPage: false,
+          contest: undefined,
+          showUnusualPage: false,
+          unusual: undefined
+        }
       }); //  Is a normal relationship line, do nothing
     }
   };
@@ -716,9 +791,10 @@ class EntityGraph extends Component {
     return (
       <React.Fragment>
         {/* Legend */}
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1>Graph Legend</h1>
           <img
+            alt="graph legend"
             src={require("./images/legend.png")}
             style={{ maxWidth: "80%" }}
           ></img>
@@ -731,29 +807,90 @@ class EntityGraph extends Component {
             style={{
               margin: "20px 96px 20px 96px",
               border: "3px dashed #0000ff",
-              textAlign: "center",
-              padding: "0 20px 0 20px"
+              padding: "2rem 4rem 4rem 4rem"
             }}
           >
-            <h2>Contested Tradition </h2>
+            <h2 style={{ textAlign: "center" }}>Contested Tradition </h2>
             <p></p>
-            <p style={{ fontStyle: "italic" }}>
+            <p style={{ fontStyle: "italic", textAlign: "center" }}>
               (inconsistencies between retellings of the tradition)
             </p>
-            <p style={{ textAlign: "left" }}>
+            <p>
               Contestation is an inherent part of Greek myth. Because the
               ancient mythic tradition was tolerant of plurality, there were
               frequently several variant traditions about who the parents of a
               god or hero were.
             </p>
             <p>In this case, the contestation is:</p>
+            {this.state.openInfoPage.contestedParents.contestedParents.map(
+              (c, i) => {
+                return (
+                  <div>
+                    <span style={{ fontWeight: "bold" }}>
+                      {getName(
+                        entities[this.state.openInfoPage.contestedParents.child]
+                      )}
+                    </span>{" "}
+                    is child of{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {getName(
+                        entities[
+                          this.state.openInfoPage.contestedParents
+                            .uncontestedParents.targetID
+                        ]
+                      )}
+                    </span>{" "}
+                    and{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {getName(entities[c.targetID])}
+                    </span>{" "}
+                    according to{" "}
+                    <span>
+                      {this.state.openInfoPage.contestedParents.passageLinks[
+                        i
+                      ].map((p, i) => {
+                        if (
+                          i ===
+                          this.state.openInfoPage.contestedParents.passageLinks[
+                            i
+                          ].length -
+                            1
+                        ) {
+                          return this.getPassageLink(p);
+                        } else {
+                          return (
+                            <span>
+                              {this.getPassageLink}
+                              {" and"}
+                            </span>
+                          );
+                        }
+                      })}
+                    </span>
+                    {i ===
+                    this.state.openInfoPage.contestedParents.contestedParents
+                      .length -
+                      1 ? (
+                      ""
+                    ) : (
+                      <div>
+                        <p></p>OR<p></p>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+            )}
           </div>
         ) : (
           <span></span>
         )}
         {this.state.openInfoPage.showUnusualPage ? (
           <div>
-            <img src={require("./images/autochthony.png")}></img>
+            <img
+              alt="autochthony icon"
+              src={require("./images/autochthony.png")}
+            ></img>
           </div>
         ) : (
           <span></span>

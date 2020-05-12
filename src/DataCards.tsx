@@ -13,8 +13,7 @@ import {
   checkNoRelations,
   getAlternativeNames,
   getGender,
-  getName,
-  getEntityType
+  getName
 } from "./DataCardHandler";
 import Pluralize from "pluralize";
 
@@ -288,7 +287,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
           className="entity-button"
           onClick={() => this.handleNameClicked(entity.targetID)}
         >
-          {entity != firstElement &&
+          {entity !== firstElement &&
           relationship !== "SIBLINGS" &&
           relationship !== "SPOUSES" ? (
             <span>OR </span>
