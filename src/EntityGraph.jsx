@@ -806,81 +806,93 @@ class EntityGraph extends Component {
           <div
             style={{
               margin: "20px 96px 20px 96px",
-              border: "3px dashed #0000ff",
-              padding: "2rem 4rem 4rem 4rem"
+              border: "1px solid #000000",
+              boxShadow: "2px 2px 4px 2px #bbbbbb",
+              background: "#ffffff"
             }}
           >
-            <h2 style={{ textAlign: "center" }}>Contested Tradition </h2>
-            <p></p>
-            <p style={{ fontStyle: "italic", textAlign: "center" }}>
-              (inconsistencies between retellings of the tradition)
-            </p>
-            <p>
-              Contestation is an inherent part of Greek myth. Because the
-              ancient mythic tradition was tolerant of plurality, there were
-              frequently several variant traditions about who the parents of a
-              god or hero were.
-            </p>
-            <p>In this case, the contestation is:</p>
-            {this.state.openInfoPage.contestedParents.contestedParents.map(
-              (c, i) => {
-                return (
-                  <div>
-                    <span style={{ fontWeight: "bold" }}>
-                      {getName(
-                        entities[this.state.openInfoPage.contestedParents.child]
+            <div
+              style={{
+                margin: "20px",
+                border: "3px solid #0000ff",
+                padding: "2rem 4rem 4rem 4rem"
+              }}
+            >
+              <h2 style={{ textAlign: "center" }}>Contested Tradition </h2>
+              <p></p>
+              <p style={{ fontStyle: "italic", textAlign: "center" }}>
+                (inconsistencies between retellings of the tradition)
+              </p>
+              <p>
+                Contestation is an inherent part of Greek myth. Because the
+                ancient mythic tradition was tolerant of plurality, there were
+                frequently several variant traditions about who the parents of a
+                god or hero were.
+              </p>
+              <p>In this case, the contestation is:</p>
+              {this.state.openInfoPage.contestedParents.contestedParents.map(
+                (c, i) => {
+                  return (
+                    <div
+                      style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}
+                    >
+                      <span style={{ fontWeight: "bold" }}>
+                        {getName(
+                          entities[
+                            this.state.openInfoPage.contestedParents.child
+                          ]
+                        )}
+                      </span>{" "}
+                      is child of{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {getName(
+                          entities[
+                            this.state.openInfoPage.contestedParents
+                              .uncontestedParents.targetID
+                          ]
+                        )}
+                      </span>{" "}
+                      and{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {getName(entities[c.targetID])}
+                      </span>{" "}
+                      according to{" "}
+                      <span>
+                        {this.state.openInfoPage.contestedParents.passageLinks[
+                          i
+                        ].map((p, i) => {
+                          if (
+                            i ===
+                            this.state.openInfoPage.contestedParents
+                              .passageLinks[i].length -
+                              1
+                          ) {
+                            return this.getPassageLink(p);
+                          } else {
+                            return (
+                              <span>
+                                {this.getPassageLink}
+                                {" and"}
+                              </span>
+                            );
+                          }
+                        })}
+                      </span>
+                      {i ===
+                      this.state.openInfoPage.contestedParents.contestedParents
+                        .length -
+                        1 ? (
+                        ""
+                      ) : (
+                        <div>
+                          <p></p>OR<p></p>
+                        </div>
                       )}
-                    </span>{" "}
-                    is child of{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {getName(
-                        entities[
-                          this.state.openInfoPage.contestedParents
-                            .uncontestedParents.targetID
-                        ]
-                      )}
-                    </span>{" "}
-                    and{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {getName(entities[c.targetID])}
-                    </span>{" "}
-                    according to{" "}
-                    <span>
-                      {this.state.openInfoPage.contestedParents.passageLinks[
-                        i
-                      ].map((p, i) => {
-                        if (
-                          i ===
-                          this.state.openInfoPage.contestedParents.passageLinks[
-                            i
-                          ].length -
-                            1
-                        ) {
-                          return this.getPassageLink(p);
-                        } else {
-                          return (
-                            <span>
-                              {this.getPassageLink}
-                              {" and"}
-                            </span>
-                          );
-                        }
-                      })}
-                    </span>
-                    {i ===
-                    this.state.openInfoPage.contestedParents.contestedParents
-                      .length -
-                      1 ? (
-                      ""
-                    ) : (
-                      <div>
-                        <p></p>OR<p></p>
-                      </div>
-                    )}
-                  </div>
-                );
-              }
-            )}
+                    </div>
+                  );
+                }
+              )}
+            </div>
           </div>
         ) : (
           <span></span>
