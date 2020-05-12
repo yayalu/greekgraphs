@@ -41,6 +41,7 @@ class EntityGraph extends Component {
       }
     };
     this.getDepthNodes = this.getDepthNodes.bind(this);
+    this.getPassageLink = this.getPassageLink.bind(this);
   }
 
   /*****************************************************
@@ -81,7 +82,13 @@ class EntityGraph extends Component {
         this.getDepthNodes(entityData),
         entityData,
         connectionsList
-      )
+      ),
+      openInfoPage: {
+        showContestPage: false,
+        contest: undefined,
+        showUnusualPage: false,
+        unusual: undefined
+      }
     });
   }
 
@@ -100,7 +107,17 @@ class EntityGraph extends Component {
         id: this.props.id,
         entityData: entityData,
         depthNodes: depthNodes,
-        lineLinks: this.geAllLinePoints(depthNodes, entityData, connectionsList)
+        lineLinks: this.geAllLinePoints(
+          depthNodes,
+          entityData,
+          connectionsList
+        ),
+        openInfoPage: {
+          showContestPage: false,
+          contest: undefined,
+          showUnusualPage: false,
+          unusual: undefined
+        }
       });
     }
   }
@@ -740,7 +757,7 @@ class EntityGraph extends Component {
       this.setState({
         openInfoPage: {
           showContestPage: true,
-          contestedParents: e.target.attrs.contested,
+          contest: e.target.attrs.contested,
           showUnusualPage: false,
           unusual: undefined
         }
@@ -802,53 +819,54 @@ class EntityGraph extends Component {
           nodes will direct you to the graph for that node.
         </div>
         {/* Info pages for unusual and contested relationships */}
-        {this.state.openInfoPage.showContestPage ? (
+        <div
+          style={{
+            margin: "20px 96px 20px 96px",
+            border: "1px solid #000000",
+            boxShadow: "2px 2px 4px 2px #bbbbbb",
+            background: "#ffffff"
+          }}
+          className={
+            this.state.openInfoPage.showContestPage ? "" : "no-display"
+          }
+        >
           <div
             style={{
-              margin: "20px 96px 20px 96px",
-              border: "1px solid #000000",
-              boxShadow: "2px 2px 4px 2px #bbbbbb",
-              background: "#ffffff"
+              margin: "20px",
+              border: "3px solid #0000ff",
+              padding: "2rem 4rem 4rem 4rem"
             }}
           >
-            <div
-              style={{
-                margin: "20px",
-                border: "3px solid #0000ff",
-                padding: "2rem 4rem 4rem 4rem"
-              }}
-            >
-              <h2 style={{ textAlign: "center" }}>Contested Tradition </h2>
-              <p></p>
-              <p style={{ fontStyle: "italic", textAlign: "center" }}>
-                (inconsistencies between retellings of the tradition)
-              </p>
-              <p>
-                Contestation is an inherent part of Greek myth. Because the
-                ancient mythic tradition was tolerant of plurality, there were
-                frequently several variant traditions about who the parents of a
-                god or hero were.
-              </p>
-              <p>In this case, the contestation is:</p>
-              {this.state.openInfoPage.contestedParents.contestedParents.map(
-                (c, i) => {
+            <h2 style={{ textAlign: "center" }}>Contested Tradition </h2>
+            <p></p>
+            <p style={{ fontStyle: "italic", textAlign: "center" }}>
+              (inconsistencies between retellings of the tradition)
+            </p>
+            <p>
+              Contestation is an inherent part of Greek myth. Because the
+              ancient mythic tradition was tolerant of plurality, there were
+              frequently several variant traditions about who the parents of a
+              god or hero were.
+            </p>
+            <p>In this case, the contestation is:</p>
+            {console.log(this.state.openInfoPage)}
+            {this.state.openInfoPage.contest
+              ? this.state.openInfoPage.contest.contestedParents.map((c, i) => {
                   return (
                     <div
                       style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}
                     >
                       <span style={{ fontWeight: "bold" }}>
                         {getName(
-                          entities[
-                            this.state.openInfoPage.contestedParents.child
-                          ]
+                          entities[this.state.openInfoPage.contest.child]
                         )}
                       </span>{" "}
                       is child of{" "}
                       <span style={{ fontWeight: "bold" }}>
                         {getName(
                           entities[
-                            this.state.openInfoPage.contestedParents
-                              .uncontestedParents.targetID
+                            this.state.openInfoPage.contest.uncontestedParents
+                              .targetID
                           ]
                         )}
                       </span>{" "}
@@ -858,29 +876,28 @@ class EntityGraph extends Component {
                       </span>{" "}
                       according to{" "}
                       <span>
-                        {this.state.openInfoPage.contestedParents.passageLinks[
-                          i
-                        ].map((p, i) => {
-                          if (
-                            i ===
-                            this.state.openInfoPage.contestedParents
-                              .passageLinks[i].length -
-                              1
-                          ) {
-                            return this.getPassageLink(p);
-                          } else {
-                            return (
-                              <span>
-                                {this.getPassageLink}
-                                {" and"}
-                              </span>
-                            );
+                        {this.state.openInfoPage.contest.passageLinks[i].map(
+                          (p, i) => {
+                            if (
+                              i ===
+                              this.state.openInfoPage.contest.passageLinks[i]
+                                .length -
+                                1
+                            ) {
+                              return this.getPassageLink(p);
+                            } else {
+                              return (
+                                <span>
+                                  {this.getPassageLink}
+                                  {" and"}
+                                </span>
+                              );
+                            }
                           }
-                        })}
+                        )}
                       </span>
                       {i ===
-                      this.state.openInfoPage.contestedParents.contestedParents
-                        .length -
+                      this.state.openInfoPage.contest.contestedParents.length -
                         1 ? (
                         ""
                       ) : (
@@ -890,13 +907,10 @@ class EntityGraph extends Component {
                       )}
                     </div>
                   );
-                }
-              )}
-            </div>
+                })
+              : ""}
           </div>
-        ) : (
-          <span></span>
-        )}
+        </div>
         {this.state.openInfoPage.showUnusualPage ? (
           <div>
             <img
