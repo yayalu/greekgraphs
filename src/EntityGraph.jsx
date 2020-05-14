@@ -431,40 +431,45 @@ class EntityGraph extends Component {
         if (entityData.unusual.autochthony.tf) {
           unusual = {
             tf: true,
-            type: "autochthony",
+            type: "Autochthony",
             passage: entityData.unusual.autochthony.passage,
             child: entityData.id
           };
         } else if (entityData.unusual.createdWithoutParents.tf) {
           unusual = {
             tf: true,
-            type: "createdWithoutParents",
-            passage: entityData.unusual.createdWithoutParents.passage
+            type: "Creation Without Parents",
+            passage: entityData.unusual.createdWithoutParents.passage,
+            child: entityData.id
           };
         } else if (entityData.unusual.createdByAgent.tf) {
           unusual = {
             tf: true,
-            type: "createdByAgent",
-            passage: entityData.unusual.createdByAgent.passage
+            type: "Created by an Agent",
+            passage: entityData.unusual.createdByAgent.passage,
+            child: entityData.id
           };
         } else if (entityData.unusual.parthenogenesis.tf) {
           unusual = {
             tf: true,
-            type: "parthenogenesis",
-            passage: entityData.unusual.parthenogenesis.passage
+            type: "Parthenogenesis",
+            passage: entityData.unusual.parthenogenesis.passage,
+            child: entityData.id
           };
         } else if (entityData.unusual.bornFromObject.tf) {
           unusual = {
             tf: true,
-            type: "bornFromObject",
-            passage: entityData.unusual.bornFromObject.passage
+            type: "Born from an Object",
+            passage: entityData.unusual.bornFromObject.passage,
+            child: entityData.id
           };
         } else if (entityData.unusual.diesWithoutChildren.tf) {
           //TODO: deal with this in a more suitable place
           unusual = {
             tf: true,
-            type: "diesWithoutChildren",
-            passage: entityData.unusual.diesWithoutChildren.passage
+            type: "Dies without children",
+            passage: entityData.unusual.diesWithoutChildren.passage,
+            child: entityData.id
           };
         }
 
@@ -507,6 +512,7 @@ class EntityGraph extends Component {
           let cRelationships = JSON.parse(relationships[c]);
 
           // Check for unusualness
+          /* TODO: unusual relationships for children 
           if (cRelationships.unusual.autochthony.tf) {
             unusual = {
               tf: true,
@@ -528,6 +534,7 @@ class EntityGraph extends Component {
           } else {
             // Leave overall connection unusualness as false
           }
+          */
 
           // CONTESTED: Check if the child has > two parents (one of which is the main character). If so, is contested
           // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
@@ -828,10 +835,12 @@ class EntityGraph extends Component {
   handleClickedIcons = e => {
     let unusual;
     if (e.target.attrs.name.split("_")[0] === "autochthony") {
+      //UPDATE TO ALLOW CASES OF DEPTHPOSONE CASES OF AUTOCHTHONY TOO
       unusual = {
         tf: true,
         type: "Autochthony",
-        passage: e.target.attrs.info.passage
+        passage: e.target.attrs.info.passage,
+        child: this.state.id
       };
     }
     this.setState({
@@ -1032,7 +1041,7 @@ class EntityGraph extends Component {
                 })}
               </div>
               <div style={{ marginTop: "4rem", color: "#808080" }}>
-                Some other examples of autochthony:
+                Some other examples of {this.state.openInfoPage.unusual.type}:
               </div>
               <ul>
                 {this.getOtherUnusualExamples(
