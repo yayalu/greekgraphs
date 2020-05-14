@@ -24,7 +24,6 @@ class EntityGraph extends Component {
         ZeroY: 400,
         PosOneY: 700
       },
-      connectedShapes: ["edge1", "node3", "node5"], // Nodes and links that are connected with each other
       depthNodes: {
         depthNegOne: [],
         depthZero: [],
@@ -42,6 +41,7 @@ class EntityGraph extends Component {
     };
     this.getDepthNodes = this.getDepthNodes.bind(this);
     this.getPassageLink = this.getPassageLink.bind(this);
+    this.handleInTextPageChange = this.handleInTextPageChange.bind(this);
   }
 
   /*****************************************************
@@ -134,7 +134,7 @@ class EntityGraph extends Component {
   /*****************************************************
    *
    *
-   *   GETTERS AND SETTERS
+   *   GETTERS AND SETTERS (GRAPHING)
    *
    *
    *****************************************************/
@@ -432,7 +432,8 @@ class EntityGraph extends Component {
           unusual = {
             tf: true,
             type: "autochthony",
-            passage: entityData.unusual.autochthony.passage
+            passage: entityData.unusual.autochthony.passage,
+            child: entityData.id
           };
         } else if (entityData.unusual.createdWithoutParents.tf) {
           unusual = {
@@ -450,7 +451,7 @@ class EntityGraph extends Component {
           unusual = {
             tf: true,
             type: "parthenogenesis",
-            passage: entityData.unusual.parthenogenessis.passage
+            passage: entityData.unusual.parthenogenesis.passage
           };
         } else if (entityData.unusual.bornFromObject.tf) {
           unusual = {
@@ -507,7 +508,12 @@ class EntityGraph extends Component {
 
           // Check for unusualness
           if (cRelationships.unusual.autochthony.tf) {
-            unusual = { tf: true, type: "autochthony" };
+            unusual = {
+              tf: true,
+              type: "autochthony",
+              passage: c.unusual.autochthony.passage,
+              child: c
+            };
           } else if (cRelationships.unusual.createdWithoutParents.tf) {
             unusual = { tf: true, type: "createdWithoutParents" };
           } else if (cRelationships.unusual.createdByAgent.tf) {
@@ -583,6 +589,14 @@ class EntityGraph extends Component {
     return repeated;
   };
 
+  /*****************************************************
+   *
+   *
+   *   GETTERS AND SETTERS (INFO CONTENT)
+   *
+   *
+   *****************************************************/
+
   getPassageLink(passage) {
     let id = passage.startID;
     console.log("ID", passage);
@@ -626,6 +640,39 @@ class EntityGraph extends Component {
     );
   }
 
+  getUnusualExplanation = type => {
+    if (type === "Autochthony") {
+      return "Local heroes are sometimes said to have sprung up out of the ground. These stories often strengthen a community’s claim to long and uncontested ownership of a territory.";
+    }
+  };
+
+  getUnusualVerb = type => {
+    if (type === "Autochthony") {
+      return " is born by autochthony";
+    }
+  };
+
+  //currentExample = id of current entity. This is to remove duplicate suggestions for the same unusual relationship.
+  //returns list of IDs that are of this unusual type, excluding the main entity
+  //if list is empty, return in main section "no other examples exist"
+  getOtherUnusualExamples = (currentExampleID, type) => {
+    if (type === "Autochthony") {
+      //List of IDs of other entities with autochthony
+      let allExamples = [
+        "8359949",
+        "8189143",
+        "8189080",
+        "8189673",
+        "8187960",
+        "8188080",
+        "8182143"
+      ];
+      //Return list of IDs excluding the main entity ID
+      allExamples.splice(allExamples.indexOf(currentExampleID), 1);
+      return allExamples;
+    }
+  };
+
   /****************************************************
    *
    *
@@ -650,6 +697,9 @@ class EntityGraph extends Component {
 
   handlePageChange = e => {
     this.props.relationshipClicked(e.target.attrs.id);
+  };
+  handleInTextPageChange = id => {
+    this.props.relationshipClicked(id);
   };
 
   /* Line handling (contested + unusual) */
@@ -776,7 +826,26 @@ class EntityGraph extends Component {
 
   // Clicked icons
   handleClickedIcons = e => {
-    console.log("Icon clicked", e);
+    let unusual;
+    if (e.target.attrs.name.split("_")[0] === "autochthony") {
+      unusual = {
+        tf: true,
+        type: "Autochthony",
+        passage: e.target.attrs.info.passage
+      };
+    }
+    this.setState({
+      openInfoPage: {
+        showContestPage: false,
+        contest: undefined,
+        showUnusualPage: true,
+        unusual: unusual
+      }
+
+      // For this.state.liveinks, split by "," and check if any of the arrays .includes(autochthony ID depth neg one)
+      // If so, put unususal: this.state.livelinkp(x) and chec if info page responds to
+      // Contested relationships
+    });
   };
 
   /****************************************************
@@ -796,11 +865,14 @@ class EntityGraph extends Component {
         <Image
           image={image}
           name={e.name}
+          info={this.state.entityData.unusual.autochthony}
           x={e.x + 20}
           y={e.y}
           width={100}
           height={80}
           onClick={this.handleClickedIcons}
+          onMouseOver={this.handleMouseOverNode}
+          onMouseOut={this.handleMouseOutNode}
         />
       );
     };
@@ -818,7 +890,7 @@ class EntityGraph extends Component {
           <p></p>Hover over elements to show the connections. Clicking on the
           nodes will direct you to the graph for that node.
         </div>
-        {/* Info pages for unusual and contested relationships */}
+        {/* Info pages for contested relationships */}
         <div
           style={{
             margin: "20px 96px 20px 96px",
@@ -849,7 +921,6 @@ class EntityGraph extends Component {
               god or hero were.
             </p>
             <p>In this case, the contestation is:</p>
-            {console.log(this.state.openInfoPage)}
             {this.state.openInfoPage.contest
               ? this.state.openInfoPage.contest.contestedParents.map((c, i) => {
                   return (
@@ -911,15 +982,79 @@ class EntityGraph extends Component {
               : ""}
           </div>
         </div>
-        {this.state.openInfoPage.showUnusualPage ? (
-          <div>
-            <img
-              alt="autochthony icon"
-              src={require("./images/autochthony.png")}
-            ></img>
+        {/* Info pages for contested relationships */}
+        {this.state.openInfoPage.unusual ? (
+          <div
+            style={{
+              margin: "20px 96px 20px 96px",
+              border: "1px solid #000000",
+              boxShadow: "2px 2px 4px 2px #bbbbbb",
+              background: "#ffffff"
+            }}
+            className={
+              this.state.openInfoPage.showUnusualPage ? "" : "no-display"
+            }
+          >
+            <div
+              style={{
+                margin: "20px",
+                border: "3px solid #ff0000",
+                padding: "2rem 4rem 4rem 4rem"
+              }}
+            >
+              <p style={{ textAlign: "center", color: "#808080" }}>
+                Unusual relationship
+              </p>
+
+              <h2 style={{ textAlign: "center" }}>
+                {this.state.openInfoPage.unusual.type}
+              </h2>
+              <p></p>
+              <p>
+                {this.getUnusualExplanation(
+                  this.state.openInfoPage.unusual.type
+                )}
+              </p>
+              <p>In this case:</p>
+              <div
+                style={{
+                  fontSize: "1.3rem",
+                  margin: "1rem 0 1rem 0"
+                }}
+              >
+                <span style={{ fontWeight: "bold" }}>
+                  {this.state.entityData.name}
+                </span>
+                {this.getUnusualVerb(this.state.openInfoPage.unusual.type)}
+                {/*TODO: Fix for not just autochthony for current entity */}
+                {this.state.openInfoPage.unusual.passage.map((p, i) => {
+                  return <span> ({this.getPassageLink(p)}) </span>;
+                })}
+              </div>
+              <div style={{ marginTop: "4rem", color: "#808080" }}>
+                Some other examples of autochthony:
+              </div>
+              <ul>
+                {this.getOtherUnusualExamples(
+                  this.state.entityData.id,
+                  this.state.openInfoPage.unusual.type
+                ).map(id => {
+                  return (
+                    <li
+                      onClick={() => {
+                        this.handleInTextPageChange(id);
+                      }}
+                      style={{ textDecoration: "underline", cursor: "pointer" }}
+                    >
+                      {getName(entities[id])}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         ) : (
-          <span></span>
+          ""
         )}
         {/* Graph rendering with KonvajS */}
         <Stage ref="stage" width={6000} height={2000}>
@@ -1034,7 +1169,7 @@ class EntityGraph extends Component {
                 onClick={this.handlePageChange}
               />
             ))}
-
+            {console.log("Line links", this.state.lineLinks)}
             {this.state.lineLinks.map((e, i) => (
               <Line
                 name={e.name}
