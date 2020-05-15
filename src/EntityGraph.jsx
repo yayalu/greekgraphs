@@ -281,10 +281,15 @@ class EntityGraph extends Component {
         children: [id],
         pNodeDepth: "depthNegOne"
       });
+    } else if (entityData.unusual.createdWithoutParents.tf) {
+      allConnections.push({
+        parents: ["createdWithoutParents_NegOne"],
+        children: [id],
+        pNodeDepth: "depthNegOne"
+      });
     } else if (entityData.unusual.parthenogenesis.tf) {
     } else if (entityData.unusual.bornFromObject.tf) {
     } else if (entityData.unusual.createdByAgent.tf) {
-    } else if (entityData.unusual.createdWithoutParents.tf) {
     } else if (entityData.unusual.diesWithoutChildren.tf) {
     }
 
@@ -295,7 +300,10 @@ class EntityGraph extends Component {
 
   // Create an array holding all relationships between entities, parent+parent->children+siblings [[P,P,C,S], [...]]
   geAllLinePoints = (depthNodes, entityData, connections) => {
-    console.log(connections);
+    /************************/
+    /*  GET LINE POINTS 
+    /************************/
+
     let allLinePoints = [];
 
     /*
@@ -347,7 +355,6 @@ class EntityGraph extends Component {
       connections[i].parents.forEach(p => {
         let pX = initX + depth.indexOf(p) * spaceX;
         PM_X = PM_X + pX;
-        console.log(p, depth, depth.indexOf(p), PM_X);
       });
       PM_X =
         connections[i].parents.length > 1 // Removes division by 0 error
@@ -413,8 +420,15 @@ class EntityGraph extends Component {
         .concat(connections[i].children)
         .toString();
 
-      // TODO: Check if the connection is unusual or contested;
-      let unusual = { tf: false, type: "", passage: undefined };
+      /*****************************************************/
+      /*  CHECK IF THE CONNECTION IS UNUSUAL OR CONTESTED
+      /*****************************************************/
+      let unusual = {
+        tf: false,
+        type: "",
+        passage: undefined,
+        child: undefined
+      };
       let contested = {
         tf: false,
         type: "",
@@ -438,7 +452,7 @@ class EntityGraph extends Component {
         } else if (entityData.unusual.createdWithoutParents.tf) {
           unusual = {
             tf: true,
-            type: "Creation Without Parents",
+            type: "Created Without Parents",
             passage: entityData.unusual.createdWithoutParents.passage,
             child: entityData.id
           };
@@ -572,14 +586,13 @@ class EntityGraph extends Component {
           }
         });
       }
-      // TODO: Check if the connection is contested
+
       allLinePoints.push({
         name: name,
         points: linePoints,
         unusual: unusual,
         contested: contested
       });
-      // allLinePoints.push({ name: name, points: linePoints });
     }
     return allLinePoints;
   };
@@ -606,7 +619,6 @@ class EntityGraph extends Component {
 
   getPassageLink(passage) {
     let id = passage.startID;
-    console.log("ID", passage);
     let author = passages[id].Author;
     let title = passages[id].Title;
     let start = passages[id].Passage;
@@ -650,12 +662,16 @@ class EntityGraph extends Component {
   getUnusualExplanation = type => {
     if (type === "Autochthony") {
       return "Local heroes are sometimes said to have sprung up out of the ground. These stories often strengthen a community’s claim to long and uncontested ownership of a territory.";
+    } else if (type === "Created Without Parents") {
+      return "At the very beginnings of mythical time, some primeval gods – often personifications of basic elemental forces – are said to have simply come into being.";
     }
   };
 
   getUnusualVerb = type => {
     if (type === "Autochthony") {
       return " is born by autochthony";
+    } else if (type === "Created Without Parents") {
+      return " is created without parents";
     }
   };
 
@@ -674,6 +690,12 @@ class EntityGraph extends Component {
         "8188080",
         "8182143"
       ];
+      //Return list of IDs excluding the main entity ID
+      allExamples.splice(allExamples.indexOf(currentExampleID), 1);
+      return allExamples;
+    } else if (type === "Created Without Parents") {
+      //List of IDs of other entities with autochthony
+      let allExamples = ["8188388"];
       //Return list of IDs excluding the main entity ID
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
@@ -719,7 +741,11 @@ class EntityGraph extends Component {
     // thicken the nodes attached to the line
     let nodeIDs = e.target.attrs.name.split(",");
     nodeIDs.forEach(id => {
-      if (id !== "autochthony_NegOne") {
+      //Remove highlighting of icon border
+      if (
+        id !== "autochthony_NegOne" &&
+        id !== "createdWithoutParents_NegOne"
+      ) {
         let nodeWithID = this.state.stageRef.find("." + id);
         nodeWithID.to({
           strokeWidth: 8
@@ -800,7 +826,6 @@ class EntityGraph extends Component {
 
   handleClickedLine = e => {
     if (e.target.attrs.unusual.tf) {
-      console.log("Unusual", e.target.attrs);
       //this.props.handleUnusualClicked = e.target.attrs.unusual;
       this.setState({
         openInfoPage: {
@@ -842,6 +867,14 @@ class EntityGraph extends Component {
         passage: e.target.attrs.info.passage,
         child: this.state.id
       };
+    } else if (e.target.attrs.name.split("_")[0] === "createdWithoutParents") {
+      //UPDATE TO ALLOW CASES OF DEPTHPOSONE CASES OF AUTOCHTHONY TOO
+      unusual = {
+        tf: true,
+        type: "Created Without Parents",
+        passage: e.target.attrs.info.passage,
+        child: this.state.id
+      };
     }
     this.setState({
       openInfoPage: {
@@ -869,13 +902,29 @@ class EntityGraph extends Component {
     //Icons for unusual relationships
     const AutochthonyIcon = e => {
       const [image] = useImage(require("./images/autochthony.png"));
-      console.log(e.name, e.x, e.y);
       return (
         <Image
           image={image}
           name={e.name}
           info={this.state.entityData.unusual.autochthony}
           x={e.x + 20}
+          y={e.y}
+          width={100}
+          height={80}
+          onClick={this.handleClickedIcons}
+          onMouseOver={this.handleMouseOverNode}
+          onMouseOut={this.handleMouseOutNode}
+        />
+      );
+    };
+    const CreatedWithoutParentsIcon = e => {
+      const [image] = useImage(require("./images/createdWithoutParents.png"));
+      return (
+        <Image
+          image={image}
+          name={e.name}
+          info={this.state.entityData.unusual.createdWithoutParents}
+          x={e.x + 24}
           y={e.y}
           width={100}
           height={80}
@@ -1040,26 +1089,44 @@ class EntityGraph extends Component {
                   return <span> ({this.getPassageLink(p)}) </span>;
                 })}
               </div>
-              <div style={{ marginTop: "4rem", color: "#808080" }}>
-                Some other examples of {this.state.openInfoPage.unusual.type}:
-              </div>
-              <ul>
-                {this.getOtherUnusualExamples(
-                  this.state.entityData.id,
-                  this.state.openInfoPage.unusual.type
-                ).map(id => {
-                  return (
-                    <li
-                      onClick={() => {
-                        this.handleInTextPageChange(id);
-                      }}
-                      style={{ textDecoration: "underline", cursor: "pointer" }}
-                    >
-                      {getName(entities[id])}
-                    </li>
-                  );
-                })}
-              </ul>
+              {this.getOtherUnusualExamples(
+                this.state.entityData.id,
+                this.state.openInfoPage.unusual.type
+              ).length > 0 ? (
+                <React.Fragment>
+                  <div style={{ marginTop: "4rem", color: "#808080" }}>
+                    Some other examples of{" "}
+                    {this.state.openInfoPage.unusual.type}:
+                  </div>
+                  <ul>
+                    {this.getOtherUnusualExamples(
+                      this.state.entityData.id,
+                      this.state.openInfoPage.unusual.type
+                    ).map(id => {
+                      return (
+                        <li
+                          onClick={() => {
+                            this.handleInTextPageChange(id);
+                          }}
+                          style={{
+                            textDecoration: "underline",
+                            cursor: "pointer"
+                          }}
+                        >
+                          {getName(entities[id])}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </React.Fragment>
+              ) : (
+                <div style={{ marginTop: "4rem", color: "#808080" }}>
+                  There are no other examples of{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {this.state.openInfoPage.unusual.type}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -1121,7 +1188,15 @@ class EntityGraph extends Component {
             {this.state.depthNodes.depthNegOne.map((e, i) =>
               e === "autochthony_NegOne" ? (
                 <AutochthonyIcon
-                  name="autochthony_NegOne"
+                  name={e}
+                  x={
+                    this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
+                  }
+                  y={this.state.graphAttr.NegOneY}
+                />
+              ) : e === "createdWithoutParents_NegOne" ? (
+                <CreatedWithoutParentsIcon
+                  name={e}
                   x={
                     this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
                   }
@@ -1178,7 +1253,6 @@ class EntityGraph extends Component {
                 onClick={this.handlePageChange}
               />
             ))}
-            {console.log("Line links", this.state.lineLinks)}
             {this.state.lineLinks.map((e, i) => (
               <Line
                 name={e.name}
