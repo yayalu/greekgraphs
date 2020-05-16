@@ -316,6 +316,7 @@ class EntityGraph extends Component {
       allConnections.push(connection);
     }
 
+    console.log("allConnections", allConnections);
     return allConnections;
   };
 
