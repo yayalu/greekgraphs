@@ -78,7 +78,7 @@ class EntityGraph extends Component {
       id: this.props.id,
       entityData: entityData,
       depthNodes: this.getDepthNodes(entityData),
-      lineLinks: this.geAllLinePoints(
+      lineLinks: this.getAllLinePoints(
         this.getDepthNodes(entityData),
         entityData,
         connectionsList
@@ -107,7 +107,7 @@ class EntityGraph extends Component {
         id: this.props.id,
         entityData: entityData,
         depthNodes: depthNodes,
-        lineLinks: this.geAllLinePoints(
+        lineLinks: this.getAllLinePoints(
           depthNodes,
           entityData,
           connectionsList
@@ -167,8 +167,6 @@ class EntityGraph extends Component {
       depthNegOne.push("parthenogenesis_NegOne");
     } else if (entityData.unusual.bornFromObject.tf) {
       depthNegOne.push("bornFromObject_NegOne");
-    } else if (entityData.unusual.createdByAgent.tf) {
-      depthNegOne.push("createdByAgent_NegOne");
     } else if (entityData.unusual.createdWithoutParents.tf) {
       depthNegOne.push("createdWithoutParents_NegOne");
     } else if (entityData.unusual.diesWithoutChildren.tf) {
@@ -290,6 +288,11 @@ class EntityGraph extends Component {
     } else if (entityData.unusual.parthenogenesis.tf) {
     } else if (entityData.unusual.bornFromObject.tf) {
     } else if (entityData.unusual.createdByAgent.tf) {
+      allConnections.push({
+        parents: [entityData.relationships.CREATORS[0].targetID],
+        children: [id],
+        pNodeDepth: "depthNegOne"
+      });
     } else if (entityData.unusual.diesWithoutChildren.tf) {
     }
 
@@ -299,7 +302,7 @@ class EntityGraph extends Component {
   /* GET LINE POINTS BASED ON THE LINE CONNECTIONS FOUND */
 
   // Create an array holding all relationships between entities, parent+parent->children+siblings [[P,P,C,S], [...]]
-  geAllLinePoints = (depthNodes, entityData, connections) => {
+  getAllLinePoints = (depthNodes, entityData, connections) => {
     /************************/
     /*  GET LINE POINTS 
     /************************/
@@ -594,6 +597,7 @@ class EntityGraph extends Component {
         contested: contested
       });
     }
+
     return allLinePoints;
   };
 
@@ -632,7 +636,6 @@ class EntityGraph extends Component {
     } else {
       URN = passages[id]["CTS URN"];
     }
-
     URN = "https://scaife.perseus.org/reader/" + URN;
     if (passage.endID !== "") {
       end = passages[end].Passage;
@@ -664,6 +667,8 @@ class EntityGraph extends Component {
       return "Local heroes are sometimes said to have sprung up out of the ground. These stories often strengthen a community’s claim to long and uncontested ownership of a territory.";
     } else if (type === "Created Without Parents") {
       return "At the very beginnings of mythical time, some primeval gods – often personifications of basic elemental forces – are said to have simply come into being.";
+    } else if (type === "Created by an Agent") {
+      return "Gods – and some notable heroes – are said to have created mortals.  ";
     }
   };
 
@@ -672,6 +677,8 @@ class EntityGraph extends Component {
       return " is born by autochthony";
     } else if (type === "Created Without Parents") {
       return " is created without parents";
+    } else if (type === "Created by an Agent") {
+      return " is created by an agent";
     }
   };
 
@@ -679,6 +686,9 @@ class EntityGraph extends Component {
   //returns list of IDs that are of this unusual type, excluding the main entity
   //if list is empty, return in main section "no other examples exist"
   getOtherUnusualExamples = (currentExampleID, type) => {
+    {
+      console.log("Accessed", type);
+    }
     if (type === "Autochthony") {
       //List of IDs of other entities with autochthony
       let allExamples = [
@@ -697,6 +707,10 @@ class EntityGraph extends Component {
       //List of IDs of other entities with autochthony
       let allExamples = ["8188388"];
       //Return list of IDs excluding the main entity ID
+      allExamples.splice(allExamples.indexOf(currentExampleID), 1);
+      return allExamples;
+    } else if (type === "Created by an Agent") {
+      let allExamples = ["8189114"];
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
     }
@@ -811,7 +825,10 @@ class EntityGraph extends Component {
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
     nodeDs.forEach(id => {
-      if (id !== "autochthony_NegOne") {
+      if (
+        id !== "autochthony_NegOne" &&
+        id !== "createdWithoutParents_NegOne"
+      ) {
         this.state.stageRef.find("." + id).to({
           strokeWidth: 4,
           stroke: "#000000"
@@ -875,6 +892,14 @@ class EntityGraph extends Component {
         passage: e.target.attrs.info.passage,
         child: this.state.id
       };
+    } else if (e.target.attrs.name.split("_")[0] === "createdByAgent") {
+      //UPDATE TO ALLOW CASES OF DEPTHPOSONE CASES OF AUTOCHTHONY TOO
+      unusual = {
+        tf: true,
+        type: "Created by an Agent",
+        passage: e.target.attrs.info.passage,
+        child: this.state.id
+      };
     }
     this.setState({
       openInfoPage: {
@@ -934,7 +959,23 @@ class EntityGraph extends Component {
         />
       );
     };
-
+    const CreatedByAgentIcon = e => {
+      const [image] = useImage(require("./images/createdByAgent.png"));
+      return (
+        <Image
+          image={image}
+          name={e.name}
+          info={this.state.entityData.unusual.createdByAgent}
+          x={e.x - 40}
+          y={e.y}
+          width={100}
+          height={80}
+          onClick={this.handleClickedIcons}
+          onMouseOver={this.handleMouseOverNode}
+          onMouseOut={this.handleMouseOutNode}
+        />
+      );
+    };
     return (
       <React.Fragment>
         {/* Legend */}
@@ -1040,7 +1081,7 @@ class EntityGraph extends Component {
               : ""}
           </div>
         </div>
-        {/* Info pages for contested relationships */}
+        {/* Info pages for unusual relationships */}
         {this.state.openInfoPage.unusual ? (
           <div
             style={{
@@ -1272,6 +1313,24 @@ class EntityGraph extends Component {
                 onMouseOut={this.handleMouseOutLine}
                 onClick={this.handleClickedLine}
               />
+            ))}
+            {this.state.lineLinks.map((e, i) => (
+              <React.Fragment>
+                {e.unusual.type === "Created by an Agent" ? (
+                  <CreatedByAgentIcon
+                    name={"createdByAgent_NegOne"}
+                    x={e.points[e.points.length / 2 - 1]}
+                    y={
+                      (this.state.graphAttr.NegOneY +
+                        this.state.graphAttr.ZeroY) /
+                        2 -
+                      20
+                    }
+                  />
+                ) : (
+                  <React.Fragment></React.Fragment>
+                )}
+              </React.Fragment>
             ))}
           </Layer>
         </Stage>
