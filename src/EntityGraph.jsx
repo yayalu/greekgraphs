@@ -811,6 +811,25 @@ class EntityGraph extends Component {
     }
   };
 
+  getUnusualImage = type => {
+    if (type === "Autochthony") {
+      return <img src={require("./images/autochthony.png")}></img>;
+    } else if (type === "Created Without Parents") {
+      return <img src={require("./images/createdWithoutParents.png")}></img>;
+    } else if (type === "Created by Someone Else") {
+      return <img src={require("./images/createdByAgent.png")}></img>;
+    } else if (type === "Born from an Object") {
+      return <img src={require("./images/bornFromObject.png")}></img>;
+    } else if (type === "Parthenogenesis") {
+      return (
+        <img
+          style={{ width: "37px", height: "auto" }}
+          src={require("./images/parthenogenesis.png")}
+        ></img>
+      );
+    }
+  };
+
   /****************************************************
    *
    *
@@ -1247,9 +1266,13 @@ class EntityGraph extends Component {
               style={{
                 margin: "20px",
                 border: "3px solid #ff0000",
-                padding: "2rem 4rem 4rem 4rem"
+                padding: "2rem 4rem 4rem 4rem",
+                position: "relative"
               }}
             >
+              <div style={{ position: "absolute", top: "50px", left: "64px" }}>
+                {this.getUnusualImage(this.state.openInfoPage.unusual.type)}
+              </div>
               <p style={{ textAlign: "center", color: "#808080" }}>
                 Unusual relationship
               </p>
