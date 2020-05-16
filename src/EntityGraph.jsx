@@ -505,7 +505,7 @@ class EntityGraph extends Component {
         } else if (entityData.unusual.createdByAgent.tf) {
           unusual = {
             tf: true,
-            type: "Created by an Agent",
+            type: "Created by Someone Else",
             passage: entityData.unusual.createdByAgent.passage,
             child: entityData.id
           };
@@ -709,7 +709,7 @@ class EntityGraph extends Component {
       return "Local heroes are sometimes said to have sprung up out of the ground. These stories often strengthen a community’s claim to long and uncontested ownership of a territory.";
     } else if (type === "Created Without Parents") {
       return "At the very beginnings of mythical time, some primeval gods – often personifications of basic elemental forces – are said to have simply come into being.";
-    } else if (type === "Created by an Agent") {
+    } else if (type === "Created by Someone Else") {
       return "Gods – and some notable heroes – are said to have created mortals.  ";
     } else if (type === "Born from an Object") {
       return "Some gods and heroes were said to have been born in strange ways, including from eggs, and from a body part of one of their parents.";
@@ -724,7 +724,7 @@ class EntityGraph extends Component {
       return " is born by autochthony";
     } else if (type === "Created Without Parents") {
       return " is created without parents";
-    } else if (type.type === "Created by an Agent") {
+    } else if (type.type === "Created by Someone Else") {
       return (
         <span>
           {" "}
@@ -788,7 +788,7 @@ class EntityGraph extends Component {
       //Return list of IDs excluding the main entity ID
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
-    } else if (type === "Created by an Agent") {
+    } else if (type === "Created by Someone Else") {
       let allExamples = ["8189114"];
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
@@ -997,7 +997,7 @@ class EntityGraph extends Component {
     } else if (e.target.attrs.name.split("_")[0] === "createdByAgent") {
       unusual = {
         tf: true,
-        type: "Created by an Agent",
+        type: "Created by Someone Else",
         passage: e.target.attrs.info.passage,
         child: this.state.id
       };
@@ -1280,7 +1280,7 @@ class EntityGraph extends Component {
                         .targetID
                     })
                   : this.state.openInfoPage.unusual.type ===
-                    "Created by an Agent"
+                    "Created by Someone Else"
                   ? this.getUnusualVerb({
                       type: this.state.openInfoPage.unusual.type,
                       objectID: this.state.entityData.relationships.CREATORS[0]
@@ -1516,7 +1516,7 @@ class EntityGraph extends Component {
             ))}
             {this.state.lineLinks.map((e, i) => (
               <React.Fragment>
-                {e.unusual.type === "Created by an Agent" ? (
+                {e.unusual.type === "Created by Someone Else" ? (
                   <CreatedByAgentIcon
                     name={"createdByAgent_NegOne"}
                     x={e.points[e.points.length / 2 - 1]}
