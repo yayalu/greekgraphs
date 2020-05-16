@@ -55,7 +55,7 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
         {/* Modal instructions popup */}
         {/*  */}
         <div>
-          <img
+          {/* <img
             src={require("./images/help.png")}
             alt="How to use"
             className="help-icon"
@@ -64,7 +64,9 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
               position: "absolute"
             }}
             onClick={this.openModal}
-          ></img>
+          ></img> */}
+          <button onClick={this.openModal}>How to use</button>
+
           <Modal
             isOpen={this.state.open}
             onRequestClose={this.closeModal}
