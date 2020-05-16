@@ -288,6 +288,11 @@ class EntityGraph extends Component {
         pNodeDepth: "depthNegOne"
       });
     } else if (entityData.unusual.parthenogenesis.tf) {
+      allConnections.push({
+        parents: ["parthenogenesis_NegOne"],
+        children: [id],
+        pNodeDepth: "depthNegOne"
+      });
     } else if (entityData.unusual.bornFromObject.tf) {
       allConnections.push({
         parents: [
@@ -365,6 +370,7 @@ class EntityGraph extends Component {
         PM_Y = this.state.graphAttr.ZeroY + height + diff; // Assign PM_Y value here
       }
 
+      console.log("Connections", connections[i]);
       // Get middle X location first (average of all X values)
       connections[i].parents.forEach(p => {
         let pX = initX + depth.indexOf(p) * spaceX;
@@ -713,9 +719,6 @@ class EntityGraph extends Component {
   //returns list of IDs that are of this unusual type, excluding the main entity
   //if list is empty, return in main section "no other examples exist"
   getOtherUnusualExamples = (currentExampleID, type) => {
-    {
-      console.log("Accessed", type);
-    }
     if (type === "Autochthony") {
       //List of IDs of other entities with autochthony
       let allExamples = [
@@ -800,7 +803,8 @@ class EntityGraph extends Component {
         idSplit !== "autochthony" &&
         idSplit !== "createdWithoutParents" &&
         idSplit !== "createdByAgent" &&
-        idSplit !== "bornFromObject"
+        idSplit !== "bornFromObject" &&
+        idSplit !== "parthenogenesis"
       ) {
         let nodeWithID = this.state.stageRef.find("." + id);
         nodeWithID.to({
@@ -872,7 +876,8 @@ class EntityGraph extends Component {
         idSplit !== "autochthony" &&
         idSplit !== "createdWithoutParents" &&
         idSplit !== "createdByAgent" &&
-        idSplit !== "bornFromObject"
+        idSplit !== "bornFromObject" &&
+        idSplit !== "parthenogenesis"
       ) {
         this.state.stageRef.find("." + id).to({
           strokeWidth: 4,
@@ -930,7 +935,6 @@ class EntityGraph extends Component {
         child: this.state.id
       };
     } else if (e.target.attrs.name.split("_")[0] === "createdWithoutParents") {
-      //UPDATE TO ALLOW CASES OF DEPTHPOSONE CASES OF AUTOCHTHONY TOO
       unusual = {
         tf: true,
         type: "Created Without Parents",
@@ -938,7 +942,6 @@ class EntityGraph extends Component {
         child: this.state.id
       };
     } else if (e.target.attrs.name.split("_")[0] === "createdByAgent") {
-      //UPDATE TO ALLOW CASES OF DEPTHPOSONE CASES OF AUTOCHTHONY TOO
       unusual = {
         tf: true,
         type: "Created by an Agent",
@@ -946,10 +949,16 @@ class EntityGraph extends Component {
         child: this.state.id
       };
     } else if (e.target.attrs.name.split("_")[0] === "bornFromObject") {
-      //UPDATE TO ALLOW CASES OF DEPTHPOSONE CASES OF AUTOCHTHONY TOO
       unusual = {
         tf: true,
         type: "Born from an Object",
+        passage: e.target.attrs.info.passage,
+        child: this.state.id
+      };
+    } else if (e.target.attrs.name.split("_")[0] === "parthenogenesis") {
+      unusual = {
+        tf: true,
+        type: "Parthenogenesis",
         passage: e.target.attrs.info.passage,
         child: this.state.id
       };
@@ -1029,13 +1038,30 @@ class EntityGraph extends Component {
         />
       );
     };
-    const BornFromObject = e => {
+    const BornFromObjectIcon = e => {
       const [image] = useImage(require("./images/bornFromObject.png"));
       return (
         <Image
           image={image}
           name={e.name}
           info={this.state.entityData.unusual.bornFromObject}
+          x={e.x - 40}
+          y={e.y}
+          width={80}
+          height={80}
+          onClick={this.handleClickedIcons}
+          onMouseOver={this.handleMouseOverNode}
+          onMouseOut={this.handleMouseOutNode}
+        />
+      );
+    };
+    const ParthenogenesisIcon = e => {
+      const [image] = useImage(require("./images/parthenogenesis.png"));
+      return (
+        <Image
+          image={image}
+          name={e.name}
+          info={this.state.entityData.unusual.parthenogenesis}
           x={e.x + 24}
           y={e.y}
           width={100}
@@ -1324,7 +1350,6 @@ class EntityGraph extends Component {
             ))}
           </Layer>
           <Layer>
-            {console.log(this.state.depthNodes.depthNegOne)}
             {this.state.depthNodes.depthNegOne.map((e, i) =>
               e === "autochthony_NegOne" ? (
                 <AutochthonyIcon
@@ -1440,6 +1465,20 @@ class EntityGraph extends Component {
                         this.state.graphAttr.ZeroY) /
                         2 -
                       20
+                    }
+                  />
+                ) : e.unusual.type === "Born from an Object" ? (
+                  <BornFromObjectIcon
+                    name={
+                      "bornFromObject_" +
+                      this.state.entityData.relationships.BORNFROM[0].targetID +
+                      "_NegOne"
+                    }
+                    x={e.points[e.points.length / 2 - 1]}
+                    y={
+                      (this.state.graphAttr.NegOneY +
+                        this.state.graphAttr.ZeroY) /
+                      2
                     }
                   />
                 ) : (
