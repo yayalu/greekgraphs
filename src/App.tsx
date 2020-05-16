@@ -52,10 +52,11 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
   render() {
     return (
       <div className="homepageBackground" style={{ position: "relative" }}>
-        {/* Modal instructions popup */}
-        {/*  */}
-        <div>
-          {/* <img
+        {/* Router links */}
+        <Router>
+          {/* Modal instructions popup */}
+          <div>
+            {/* <img
             src={require("./images/help.png")}
             alt="How to use"
             className="help-icon"
@@ -65,37 +66,27 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
             }}
             onClick={this.openModal}
           ></img> */}
-          <button onClick={this.openModal}>How to use</button>
+            <button onClick={this.openModal}>How to use</button>
 
-          <Modal
-            isOpen={this.state.open}
-            onRequestClose={this.closeModal}
-            style={customStyles}
-            ariaHideApp={false}
-            contentLabel="How to use MANTO"
-          >
-            <h2>Hello</h2>
-            <button onClick={this.closeModal}>close</button>
-            <div>I am a modal</div>
-            <form>
-              <input />
-              <button>tab navigation</button>
-              <button>stays</button>
-              <button>inside</button>
-              <button>the modal</button>
-            </form>
-          </Modal>
-        </div>
-        {/* Router links */}
-        <Router>
-          <div style={{ paddingTop: "4rem", textAlign: "center" }}>
-            <Link to="/">
-              <Header></Header>
-            </Link>
-          </div>
-
-          <Search></Search>
-          {/* <div style={{ marginLeft: "3rem" }}>
+            <Modal
+              isOpen={this.state.open}
+              onRequestClose={this.closeModal}
+              style={customStyles}
+              ariaHideApp={false}
+              contentLabel="How to use MANTO"
+            >
+              <h2>Hello</h2>
+              <button onClick={this.closeModal}>close</button>
+              <div>I am a modal</div>
+              <form>
+                <input />
+                <button>tab navigation</button>
+                <button>stays</button>
+                <button>inside</button>
+                <button>the modal</button>
+              </form>
+            </Modal>
+            {/* <div style={{ marginLeft: "3rem" }}>
             How to use the search tool:
             <ol>
               <li>Type the name of the entity requested in the field. </li>
@@ -107,6 +98,15 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
             For information on how to use the data cards themselves, see this
             page
           </div> */}
+          </div>
+          <div style={{ paddingTop: "4rem", textAlign: "center" }}>
+            <Link to="/">
+              <Header></Header>
+            </Link>
+          </div>
+
+          <Search></Search>
+
           <Switch>
             {/* <Route exact path="/" component={Home} /> */}
             <Route path="/search" component={Search} />
