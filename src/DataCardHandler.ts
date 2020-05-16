@@ -445,7 +445,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
      *
      */
 
-    // X is your MOTHER by parthenogenesis
+    // X is your MOTHER by <UNUSUAL BIRTH>
     else if (tie.predicate === "is born by autochthony [in/on/at]") {
       Oautochthony = { tf: true, passage: tie.passage };
     } else if (tie.predicate === "comes into being") {

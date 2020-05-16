@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import Konva from "konva";
 import { Stage, Layer, Text, Rect, Line, Image } from "react-konva";
 import relationships from "./data/relationships.json";
+import objects from "./data/objects.json";
 import { getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import useImage from "use-image";
@@ -155,9 +156,6 @@ class EntityGraph extends Component {
     entityData.relationships.CREATORS.forEach(c => {
       depthNegOne.push(c.targetID);
     });
-    entityData.relationships.BORNFROM.forEach(b => {
-      depthNegOne.push(b.targetID);
-    });
 
     // Create unusual nodes, and add them to the end of depth -1
     // TODO deal with depth Zero nodes too
@@ -166,7 +164,11 @@ class EntityGraph extends Component {
     } else if (entityData.unusual.parthenogenesis.tf) {
       depthNegOne.push("parthenogenesis_NegOne");
     } else if (entityData.unusual.bornFromObject.tf) {
-      depthNegOne.push("bornFromObject_NegOne");
+      depthNegOne.push(
+        "bornFromObject_" +
+          entityData.unusual.bornFromObject.objectID +
+          "_NegOne"
+      ); //bornFromObject: <type>_<objectID>_<depth>
     } else if (entityData.unusual.createdWithoutParents.tf) {
       depthNegOne.push("createdWithoutParents_NegOne");
     } else if (entityData.unusual.diesWithoutChildren.tf) {
@@ -287,6 +289,15 @@ class EntityGraph extends Component {
       });
     } else if (entityData.unusual.parthenogenesis.tf) {
     } else if (entityData.unusual.bornFromObject.tf) {
+      allConnections.push({
+        parents: [
+          "bornFromObject_" +
+            entityData.relationships.BORNFROM[0].targetID +
+            "_NegOne"
+        ],
+        children: [id],
+        pNodeDepth: "depthNegOne"
+      });
     } else if (entityData.unusual.createdByAgent.tf) {
       allConnections.push({
         parents: [entityData.relationships.CREATORS[0].targetID],
@@ -756,9 +767,12 @@ class EntityGraph extends Component {
     let nodeIDs = e.target.attrs.name.split(",");
     nodeIDs.forEach(id => {
       //Remove highlighting of icon border
+      let idSplit = id.split("_")[0];
       if (
-        id !== "autochthony_NegOne" &&
-        id !== "createdWithoutParents_NegOne"
+        idSplit !== "autochthony" &&
+        idSplit !== "createdWithoutParents" &&
+        idSplit !== "createdByAgent" &&
+        idSplit !== "bornFromObject"
       ) {
         let nodeWithID = this.state.stageRef.find("." + id);
         nodeWithID.to({
@@ -825,9 +839,12 @@ class EntityGraph extends Component {
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
     nodeDs.forEach(id => {
+      let idSplit = id.split("_")[0];
       if (
-        id !== "autochthony_NegOne" &&
-        id !== "createdWithoutParents_NegOne"
+        idSplit !== "autochthony" &&
+        idSplit !== "createdWithoutParents" &&
+        idSplit !== "createdByAgent" &&
+        idSplit !== "bornFromObject"
       ) {
         this.state.stageRef.find("." + id).to({
           strokeWidth: 4,
@@ -900,6 +917,14 @@ class EntityGraph extends Component {
         passage: e.target.attrs.info.passage,
         child: this.state.id
       };
+    } else if (e.target.attrs.name.split("_")[0] === "bornFromObject") {
+      //UPDATE TO ALLOW CASES OF DEPTHPOSONE CASES OF AUTOCHTHONY TOO
+      unusual = {
+        tf: true,
+        type: "Born from an Object",
+        passage: e.target.attrs.info.passage,
+        child: this.state.id
+      };
     }
     this.setState({
       openInfoPage: {
@@ -967,6 +992,23 @@ class EntityGraph extends Component {
           name={e.name}
           info={this.state.entityData.unusual.createdByAgent}
           x={e.x - 40}
+          y={e.y}
+          width={100}
+          height={80}
+          onClick={this.handleClickedIcons}
+          onMouseOver={this.handleMouseOverNode}
+          onMouseOut={this.handleMouseOutNode}
+        />
+      );
+    };
+    const BornFromObject = e => {
+      const [image] = useImage(require("./images/bornFromObject.png"));
+      return (
+        <Image
+          image={image}
+          name={e.name}
+          info={this.state.entityData.unusual.bornFromObject}
+          x={e.x + 24}
           y={e.y}
           width={100}
           height={80}
@@ -1176,22 +1218,44 @@ class EntityGraph extends Component {
         {/* Graph rendering with KonvajS */}
         <Stage ref="stage" width={6000} height={2000}>
           <Layer>
-            {this.state.depthNodes.depthNegOne.map((e, i) => (
-              <Text
-                x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
-                ref="text"
-                y={this.state.graphAttr.NegOneY}
-                text={getName(entities[e])}
-                fontSize={18}
-                fontFamily="Calibri"
-                fontStyle="bold"
-                fill="#000"
-                width={this.state.graphAttr.nodeWidth}
-                height={this.state.graphAttr.nodeHeight}
-                padding={20}
-                align="center"
-              />
-            ))}
+            {this.state.depthNodes.depthNegOne.map((e, i) =>
+              e.split("_")[0] === "bornFromObject" &&
+              e.split("_")[2] === "NegOne" ? (
+                <Text
+                  x={
+                    this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
+                  }
+                  ref="text"
+                  y={this.state.graphAttr.NegOneY}
+                  text={getName(objects[e.split("_")[1]])}
+                  fontSize={18}
+                  fontFamily="Calibri"
+                  fontStyle="bold"
+                  fill="#808080"
+                  width={this.state.graphAttr.nodeWidth}
+                  height={this.state.graphAttr.nodeHeight}
+                  padding={20}
+                  align="center"
+                />
+              ) : (
+                <Text
+                  x={
+                    this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
+                  }
+                  ref="text"
+                  y={this.state.graphAttr.NegOneY}
+                  text={getName(entities[e])}
+                  fontSize={18}
+                  fontFamily="Calibri"
+                  fontStyle="bold"
+                  fill="#000"
+                  width={this.state.graphAttr.nodeWidth}
+                  height={this.state.graphAttr.nodeHeight}
+                  padding={20}
+                  align="center"
+                />
+              )
+            )}
             {this.state.depthNodes.depthZero.map((e, i) => (
               <Text
                 x={this.state.graphAttr.initX + this.state.graphAttr.spaceX * i}
@@ -1226,6 +1290,7 @@ class EntityGraph extends Component {
             ))}
           </Layer>
           <Layer>
+            {console.log(this.state.depthNodes.depthNegOne)}
             {this.state.depthNodes.depthNegOne.map((e, i) =>
               e === "autochthony_NegOne" ? (
                 <AutochthonyIcon
@@ -1242,6 +1307,22 @@ class EntityGraph extends Component {
                     this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
                   }
                   y={this.state.graphAttr.NegOneY}
+                />
+              ) : e.split("_")[0] === "bornFromObject" &&
+                e.split("_")[2] === "NegOne" ? (
+                <Rect
+                  refs={"rect"}
+                  id={e}
+                  name={e}
+                  x={
+                    this.state.graphAttr.initX + this.state.graphAttr.spaceX * i
+                  }
+                  y={this.state.graphAttr.NegOneY}
+                  width={this.state.graphAttr.nodeWidth}
+                  height={this.state.graphAttr.nodeHeight}
+                  stroke="#808080"
+                  strokeWidth={4}
+                  dash={[10, 5]}
                 />
               ) : (
                 <Rect
