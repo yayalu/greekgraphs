@@ -56,17 +56,16 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
         <Router>
           {/* Modal instructions popup */}
           <div>
-            {/* <img
-            src={require("./images/help.png")}
-            alt="How to use"
-            className="help-icon"
-            style={{
-              margin: "2rem 0 0 1rem",
-              position: "absolute"
-            }}
-            onClick={this.openModal}
-          ></img> */}
-            <button onClick={this.openModal}>How to use</button>
+            <img
+              src={require("./images/help.png")}
+              alt="How to use"
+              className="help-icon"
+              style={{
+                margin: "2rem 0 0 1rem",
+                position: "absolute"
+              }}
+              onClick={this.openModal}
+            ></img>
 
             <Modal
               isOpen={this.state.open}
