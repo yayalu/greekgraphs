@@ -15,7 +15,7 @@
 
 .help-icon {
   width: 1.5rem;
-  opacity: 100% !important;
+  opacity: 1 !important;
   cursor: pointer;
 }
 
