@@ -62,8 +62,7 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
               className="help-icon"
               style={{
                 margin: "2rem 0 0 1rem",
-                position: "absolute",
-                opacity: 100%
+                position: "absolute"
               }}
               onClick={this.openModal}
             ></img>
