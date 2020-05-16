@@ -54,7 +54,6 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
       <div className="homepageBackground" style={{ position: "relative" }}>
         {/* Modal instructions popup */}
         {/*  */}
-
         <div>
           <img
             src={require("./images/help.png")}
@@ -65,7 +64,10 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
               position: "absolute"
             }}
             onClick={this.openModal}
-          ></img>
+          >
+            {" "}
+            {console.log("Hello from inside")}
+          </img>
           <Modal
             isOpen={this.state.open}
             onRequestClose={this.closeModal}
@@ -85,7 +87,6 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
             </form>
           </Modal>
         </div>
-
         {/* Router links */}
         <Router>
           <div style={{ paddingTop: "4rem", textAlign: "center" }}>
