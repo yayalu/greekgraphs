@@ -161,8 +161,6 @@ class EntityGraph extends Component {
     // TODO deal with depth Zero nodes too
     if (entityData.unusual.autochthony.tf) {
       depthNegOne.push("autochthony_NegOne");
-    } else if (entityData.unusual.parthenogenesis.tf) {
-      depthNegOne.push("parthenogenesis_NegOne");
     } else if (entityData.unusual.bornFromObject.tf) {
       depthNegOne.push(
         "bornFromObject_" +
@@ -174,6 +172,7 @@ class EntityGraph extends Component {
     } else if (entityData.unusual.diesWithoutChildren.tf) {
       depthNegOne.push("diesWithoutChildren_NegOne");
     }
+    // parthenogenesis is dealt with in a direct connection between mother and child, see later
 
     //siblings, twins and spouses depth 0
     entityData.relationships.SIBLINGS.forEach(s => {
@@ -287,12 +286,6 @@ class EntityGraph extends Component {
         children: [id],
         pNodeDepth: "depthNegOne"
       });
-    } else if (entityData.unusual.parthenogenesis.tf) {
-      allConnections.push({
-        parents: ["parthenogenesis_NegOne"],
-        children: [id],
-        pNodeDepth: "depthNegOne"
-      });
     } else if (entityData.unusual.bornFromObject.tf) {
       allConnections.push({
         parents: [
@@ -310,6 +303,17 @@ class EntityGraph extends Component {
         pNodeDepth: "depthNegOne"
       });
     } else if (entityData.unusual.diesWithoutChildren.tf) {
+    }
+
+    // If is parthenogenesis:
+    //MOTHER+FATHER -> YOU+SIBLING+TWIN
+    if (entityData.unusual.parthenogenesis.tf) {
+      let connection = {
+        parents: [entityData.relationships.MOTHERS[0].targetID],
+        children: [id],
+        pNodeDepth: "depthNegOne"
+      };
+      allConnections.push(connection);
     }
 
     return allConnections;
@@ -354,85 +358,106 @@ class EntityGraph extends Component {
     for (let i = 0; i < connections.length; i++) {
       // connections[INDEX] = {parents: [id1, id2, ...], children: [id1, id2, ...]}
 
-      // TODO: Make the following more efficient
       let linePoints = [];
 
-      let PM_Y = 0,
-        PM_X = 0;
-
-      // Get the depth of the nodes
-      let depth;
-      if (connections[i].pNodeDepth === "depthNegOne") {
-        depth = depthNodes.depthNegOne;
-        PM_Y = this.state.graphAttr.NegOneY + height + diff; // Assign PM_Y value here
+      // Deal with parthenogenesis, because unlike the other types, parthenogenesis is just a diagonal.
+      // TODO: Put this in a better place
+      if (
+        entityData.unusual.parthenogenesis.tf &&
+        connections[i].parents.length === 1 &&
+        connections[i].parents[0] ===
+          entityData.relationships.MOTHERS[0].targetID
+      ) {
+        // Draw a line directly from parent to child if is a case of parthenogenesis
+        let pX =
+          initX +
+          depthNodes.depthNegOne.indexOf(connections[i].parents[0]) * spaceX +
+          width / 2;
+        let pY = this.state.graphAttr.NegOneY + height;
+        let cX =
+          initX +
+          depthNodes.depthZero.indexOf(entityData.id) * spaceX +
+          width / 2;
+        let cY = this.state.graphAttr.ZeroY;
+        linePoints.push(pX, pY, cX, cY);
       } else {
-        depth = depthNodes.depthZero;
-        PM_Y = this.state.graphAttr.ZeroY + height + diff; // Assign PM_Y value here
-      }
+        // TODO: Make the following more efficient
 
-      console.log("Connections", connections[i]);
-      // Get middle X location first (average of all X values)
-      connections[i].parents.forEach(p => {
-        let pX = initX + depth.indexOf(p) * spaceX;
-        PM_X = PM_X + pX;
-      });
-      PM_X =
-        connections[i].parents.length > 1 // Removes division by 0 error
-          ? (PM_X + width) / connections[i].parents.length
-          : PM_X + width / 2;
+        let PM_Y = 0,
+          PM_X = 0;
 
-      // Check parent nodes. PM -> PL -> P -> PL -> PM. This joins the lines at the middle point for each connection.
-      connections[i].parents.forEach(p => {
-        let pIndex = depth.indexOf(p);
-        let pY = 0;
+        // Get the depth of the nodes
+        let depth;
         if (connections[i].pNodeDepth === "depthNegOne") {
-          pY = this.state.graphAttr.NegOneY + height;
+          depth = depthNodes.depthNegOne;
+          PM_Y = this.state.graphAttr.NegOneY + height + diff; // Assign PM_Y value here
         } else {
-          pY = this.state.graphAttr.ZeroY + height;
-        }
-        linePoints.push(PM_X, PM_Y); //PM
-        linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
-        linePoints.push(
-          initX + pIndex * spaceX + width / 2,
-          pY //P
-        );
-        linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
-        linePoints.push(PM_X, PM_Y); //PM
-      });
-
-      // Check children nodes
-      if (connections[i].children.length > 0) {
-        let CM_Y = 0;
-        // Update the Y location to the depth for children
-        if (connections[i].pNodeDepth === "depthNegOne") {
           depth = depthNodes.depthZero;
-          CM_Y = this.state.graphAttr.ZeroY - diff; // Assign PM_Y value here
-        } else {
-          depth = depthNodes.depthPosOne;
-          CM_Y = this.state.graphAttr.PosOneY - diff; // Assign PM_Y value here
+          PM_Y = this.state.graphAttr.ZeroY + height + diff; // Assign PM_Y value here
         }
-
-        // Add a line from the existing (PM_X, PM_Y) spot to (PM_X, CM_Y)
-        linePoints.push(PM_X, CM_Y);
-
-        // CM -> CL -> C -> CL -> CM. This joins the lines at the middle point for each connection.
-        connections[i].children.forEach(c => {
-          let cIndex = depth.indexOf(c);
-          let cY = 0;
-          if (connections[i].pNodeDepth === "depthNegOne") {
-            cY = this.state.graphAttr.ZeroY;
-          } else {
-            cY = this.state.graphAttr.PosOneY;
-          }
-          linePoints.push(PM_X, CM_Y); //CM
-          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //CL
-          linePoints.push(
-            initX + cIndex * spaceX + width / 2,
-            cY //C
-          );
-          linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //CL
-          linePoints.push(PM_X, CM_Y); //CM
+        // Get middle X location first (average of all X values)
+        connections[i].parents.forEach(p => {
+          let pX = initX + depth.indexOf(p) * spaceX;
+          PM_X = PM_X + pX;
         });
+        PM_X =
+          connections[i].parents.length > 1 // Removes division by 0 error
+            ? (PM_X + width) / connections[i].parents.length
+            : PM_X + width / 2;
+
+        // Check parent nodes. PM -> PL -> P -> PL -> PM. This joins the lines at the middle point for each connection.
+        connections[i].parents.forEach(p => {
+          let pIndex = depth.indexOf(p);
+          let pY = 0;
+          if (connections[i].pNodeDepth === "depthNegOne") {
+            pY = this.state.graphAttr.NegOneY + height;
+          } else {
+            pY = this.state.graphAttr.ZeroY + height;
+          }
+          linePoints.push(PM_X, PM_Y); //PM
+          linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
+          linePoints.push(
+            initX + pIndex * spaceX + width / 2,
+            pY //P
+          );
+          linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
+          linePoints.push(PM_X, PM_Y); //PM
+        });
+
+        // Check children nodes
+        if (connections[i].children.length > 0) {
+          let CM_Y = 0;
+          // Update the Y location to the depth for children
+          if (connections[i].pNodeDepth === "depthNegOne") {
+            depth = depthNodes.depthZero;
+            CM_Y = this.state.graphAttr.ZeroY - diff; // Assign PM_Y value here
+          } else {
+            depth = depthNodes.depthPosOne;
+            CM_Y = this.state.graphAttr.PosOneY - diff; // Assign PM_Y value here
+          }
+
+          // Add a line from the existing (PM_X, PM_Y) spot to (PM_X, CM_Y)
+          linePoints.push(PM_X, CM_Y);
+
+          // CM -> CL -> C -> CL -> CM. This joins the lines at the middle point for each connection.
+          connections[i].children.forEach(c => {
+            let cIndex = depth.indexOf(c);
+            let cY = 0;
+            if (connections[i].pNodeDepth === "depthNegOne") {
+              cY = this.state.graphAttr.ZeroY;
+            } else {
+              cY = this.state.graphAttr.PosOneY;
+            }
+            linePoints.push(PM_X, CM_Y); //CM
+            linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //CL
+            linePoints.push(
+              initX + cIndex * spaceX + width / 2,
+              cY //C
+            );
+            linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //CL
+            linePoints.push(PM_X, CM_Y); //CM
+          });
+        }
       }
 
       //Create line name (aka. all the nodes involved)
@@ -614,7 +639,6 @@ class EntityGraph extends Component {
         contested: contested
       });
     }
-
     return allLinePoints;
   };
 
@@ -688,16 +712,40 @@ class EntityGraph extends Component {
       return "Gods – and some notable heroes – are said to have created mortals.  ";
     } else if (type === "Born from an Object") {
       return "Some gods and heroes were said to have been born in strange ways, including from eggs, and from a body part of one of their parents.";
+    } else if (type === "Parthenogenesis") {
+      return "Some goddesses are said to have given birth to children without having had sex. As a result, the offspring do not have fathers.";
     }
   };
 
   getUnusualVerb = type => {
+    console.log(type);
     if (type === "Autochthony") {
       return " is born by autochthony";
     } else if (type === "Created Without Parents") {
       return " is created without parents";
-    } else if (type === "Created by an Agent") {
-      return " is created by an agent";
+    } else if (type.type === "Created by an Agent") {
+      return (
+        <span>
+          {" "}
+          is created by{" "}
+          <span style={{ fontWeight: "bold" }}>
+            {getName(entities[type.objectID])}
+          </span>
+        </span>
+      );
+    } else if (type === "Parthenogenesis") {
+      return (
+        <span>
+          {" "}
+          is born from{" "}
+          <span style={{ fontWeight: "bold" }}>
+            {getName(
+              entities[this.state.entityData.relationships.MOTHERS[0].targetID]
+            )}
+          </span>{" "}
+          by parthenogenesis.
+        </span>
+      );
     } else if (
       type.type &&
       type.objectID &&
@@ -753,6 +801,10 @@ class EntityGraph extends Component {
         "8187870",
         "9414339"
       ];
+      allExamples.splice(allExamples.indexOf(currentExampleID), 1);
+      return allExamples;
+    } else if (type === "Parthenogenesis") {
+      let allExamples = ["8188476"];
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
     }
@@ -1062,10 +1114,10 @@ class EntityGraph extends Component {
           image={image}
           name={e.name}
           info={this.state.entityData.unusual.parthenogenesis}
-          x={e.x + 24}
-          y={e.y}
-          width={100}
-          height={80}
+          x={e.x}
+          y={e.y - 30}
+          width={45}
+          height={70}
           onClick={this.handleClickedIcons}
           onMouseOver={this.handleMouseOverNode}
           onMouseOut={this.handleMouseOutNode}
@@ -1224,6 +1276,13 @@ class EntityGraph extends Component {
                   ? this.getUnusualVerb({
                       type: this.state.openInfoPage.unusual.type,
                       objectID: this.state.entityData.relationships.BORNFROM[0]
+                        .targetID
+                    })
+                  : this.state.openInfoPage.unusual.type ===
+                    "Created by an Agent"
+                  ? this.getUnusualVerb({
+                      type: this.state.openInfoPage.unusual.type,
+                      objectID: this.state.entityData.relationships.CREATORS[0]
                         .targetID
                     })
                   : this.getUnusualVerb(this.state.openInfoPage.unusual.type)}
@@ -1480,6 +1539,12 @@ class EntityGraph extends Component {
                         this.state.graphAttr.ZeroY) /
                       2
                     }
+                  />
+                ) : e.unusual.type === "Parthenogenesis" ? (
+                  <ParthenogenesisIcon
+                    name={"parthenogenesis_NegOne"}
+                    x={(e.points[0] + e.points[2]) / 2}
+                    y={(e.points[1] + e.points[3]) / 2}
                   />
                 ) : (
                   <React.Fragment></React.Fragment>
