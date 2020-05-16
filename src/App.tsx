@@ -64,10 +64,7 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
               position: "absolute"
             }}
             onClick={this.openModal}
-          >
-            {" "}
-            {console.log("Hello from inside")}
-          </img>
+          ></img>
           <Modal
             isOpen={this.state.open}
             onRequestClose={this.closeModal}
