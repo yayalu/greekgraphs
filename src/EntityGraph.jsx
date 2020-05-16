@@ -680,6 +680,8 @@ class EntityGraph extends Component {
       return "At the very beginnings of mythical time, some primeval gods – often personifications of basic elemental forces – are said to have simply come into being.";
     } else if (type === "Created by an Agent") {
       return "Gods – and some notable heroes – are said to have created mortals.  ";
+    } else if (type === "Born from an Object") {
+      return "Some gods and heroes were said to have been born in strange ways, including from eggs, and from a body part of one of their parents.";
     }
   };
 
@@ -690,6 +692,20 @@ class EntityGraph extends Component {
       return " is created without parents";
     } else if (type === "Created by an Agent") {
       return " is created by an agent";
+    } else if (
+      type.type &&
+      type.objectID &&
+      type.type === "Born from an Object"
+    ) {
+      return (
+        <span>
+          {" "}
+          is born from{" "}
+          <span style={{ fontWeight: "bold" }}>
+            {getName(objects[type.objectID])}
+          </span>
+        </span>
+      );
     }
   };
 
@@ -722,6 +738,18 @@ class EntityGraph extends Component {
       return allExamples;
     } else if (type === "Created by an Agent") {
       let allExamples = ["8189114"];
+      allExamples.splice(allExamples.indexOf(currentExampleID), 1);
+      return allExamples;
+    } else if (type === "Born from an Object") {
+      let allExamples = [
+        "8189128",
+        "8188011",
+        "8190006",
+        "8188175",
+        "8188272",
+        "8187870",
+        "9414339"
+      ];
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
     }
@@ -1166,7 +1194,13 @@ class EntityGraph extends Component {
                 <span style={{ fontWeight: "bold" }}>
                   {this.state.entityData.name}
                 </span>
-                {this.getUnusualVerb(this.state.openInfoPage.unusual.type)}
+                {this.state.openInfoPage.unusual.type === "Born from an Object"
+                  ? this.getUnusualVerb({
+                      type: this.state.openInfoPage.unusual.type,
+                      objectID: this.state.entityData.relationships.BORNFROM[0]
+                        .targetID
+                    })
+                  : this.getUnusualVerb(this.state.openInfoPage.unusual.type)}
                 {/*TODO: Fix for not just autochthony for current entity */}
                 {this.state.openInfoPage.unusual.passage.map((p, i) => {
                   return <span> ({this.getPassageLink(p)}) </span>;
