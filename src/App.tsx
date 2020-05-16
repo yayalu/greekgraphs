@@ -5,6 +5,7 @@ import Header from "./Header";
 import Search from "./Search";
 import DataCards from "./DataCards";
 import ReactGA from "react-ga";
+import Modal from "react-modal";
 
 import {
   HashRouter as Router,
@@ -14,53 +15,75 @@ import {
   Redirect
 } from "react-router-dom";
 
-class App extends React.Component<{}, { subjectID: string; show: boolean }> {
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)"
+  }
+};
+
+class App extends React.Component<{}, { subjectID: string; open: boolean }> {
   constructor(props: any) {
     super(props);
     this.state = {
       subjectID: "",
-      show: false
+      open: false
     };
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   }
 
   changeEntity(ID: string) {
     this.setState({ subjectID: ID });
   }
 
-  toggleModalState() {
-    if (this.state.show) {
-      this.setState({ show: false });
-    } else {
-      this.setState({
-        show: true
-      });
-    }
+  openModal() {
+    this.setState({ open: true });
   }
 
-  initializeReactGA() {
-    ReactGA.initialize("UA-151993194-1");
-    ReactGA.pageview("/homepage");
+  closeModal() {
+    this.setState({ open: false });
   }
 
   render() {
     return (
-      <div className="homepageBackground">
+      <div className="homepageBackground" style={{ position: "relative" }}>
         {/* Modal instructions popup */}
-        <div
-          style={{ margin: "2rem 0 0 1rem" }}
-          onClick={() => this.toggleModalState()}
-        >
+        {/*  */}
+
+        <div>
           <img
             src={require("./images/help.png")}
             alt="How to use"
             className="help-icon"
+            style={{
+              margin: "2rem 0 0 1rem",
+              position: "absolute"
+            }}
+            onClick={this.openModal}
           ></img>
-        </div>
-        <div className={this.state.show ? "modal-body" : "no-display"}>
-          <div>Testing me</div>
-          <div>
-            <button onClick={() => this.toggleModalState()}>Close</button>
-          </div>
+          <Modal
+            isOpen={this.state.open}
+            onRequestClose={this.closeModal}
+            style={customStyles}
+            ariaHideApp={false}
+            contentLabel="How to use MANTO"
+          >
+            <h2>Hello</h2>
+            <button onClick={this.closeModal}>close</button>
+            <div>I am a modal</div>
+            <form>
+              <input />
+              <button>tab navigation</button>
+              <button>stays</button>
+              <button>inside</button>
+              <button>the modal</button>
+            </form>
+          </Modal>
         </div>
 
         {/* Router links */}
