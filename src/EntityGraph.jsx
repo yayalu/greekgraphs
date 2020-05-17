@@ -169,10 +169,9 @@ class EntityGraph extends Component {
       ); //bornFromObject: <type>_<objectID>_<depth>
     } else if (entityData.unusual.createdWithoutParents.tf) {
       depthNegOne.push("createdWithoutParents_NegOne");
-    } else if (entityData.unusual.diesWithoutChildren.tf) {
-      depthNegOne.push("diesWithoutChildren_NegOne");
     }
     // parthenogenesis is dealt with in a direct connection between mother and child, see later
+    // diesWithoutChildren doesn't require a separate node spot
 
     //siblings, twins and spouses depth 0
     entityData.relationships.SIBLINGS.forEach(s => {
@@ -365,6 +364,15 @@ class EntityGraph extends Component {
       }
       allConnections.push(connection);
     } else if (entityData.unusual.diesWithoutChildren.tf) {
+      //TODO: Deal with contested diesWithoutChildren
+      let connection = {
+        parents: [id],
+        children: ["diesWithoutChildren"],
+        pNodeDepth: "depthZero",
+        contestedUnusual: false,
+        isUnusual: false
+      };
+      allConnections.push(connection);
     } else if (entityData.unusual.parthenogenesis.tf) {
       let connection = {
         parents: [entityData.relationships.MOTHERS[0].targetID],
@@ -445,6 +453,29 @@ class EntityGraph extends Component {
           width / 2;
         let cY = this.state.graphAttr.ZeroY;
         linePoints.push(pX, pY, cX, cY);
+      }
+      // Check if entity dies without children, aka. put a line straight down to an X
+      else if (connections[i].children[0] === "diesWithoutChildren") {
+        // Draw a line directly downards to an X
+        let pX =
+          initX +
+          depthNodes.depthZero.indexOf(connections[i].parents[0]) * spaceX +
+          width / 2;
+        console.log(
+          "pX part ",
+          depthNodes.depthNegOne.indexOf(connections[i].parents[0])
+        );
+        let pY = this.state.graphAttr.ZeroY + height;
+        let lowerpY = pY + diff + 10;
+        linePoints.push(pX, pY);
+        linePoints.push(pX, lowerpY); // center of x
+        linePoints.push(pX - 8, lowerpY - 8); // top left corner of X
+        linePoints.push(pX, lowerpY); // back to center of x
+        linePoints.push(pX + 8, lowerpY - 8); // top right corner of X
+        linePoints.push(pX, lowerpY); // back to center of x
+        linePoints.push(pX - 8, lowerpY + 8); //bottom left corner of X
+        linePoints.push(pX, lowerpY); // back to center of x
+        linePoints.push(pX + 8, lowerpY + 8); //bottom right corner of X
       } else {
         // TODO: Make the following more efficient
 
@@ -594,15 +625,14 @@ class EntityGraph extends Component {
             passage: entityData.unusual.bornFromObject.passage,
             child: entityData.id
           };
-        } else if (entityData.unusual.diesWithoutChildren.tf) {
-          //TODO: deal with this in a more suitable place
+        } /* else if (entityData.unusual.diesWithoutChildren.tf) {
           unusual = {
             tf: true,
             type: "Dies without children",
             passage: entityData.unusual.diesWithoutChildren.passage,
             child: entityData.id
           };
-        }
+        } */
 
         // CHECK CONTESTED (PART 2): Check if the main entity has > two parents. If so, is contested
         if (connections[i].parents.length > 2) {
@@ -637,13 +667,15 @@ class EntityGraph extends Component {
 
       // Check Main Node -> Children
       else if (connections[i].pNodeDepth === "depthZero") {
-        // UNUSUAL: Since the main node is one of the parents,
-        // loop through every child for unusuality
-        connections[i].children.forEach(c => {
-          let cRelationships = JSON.parse(relationships[c]);
+        if (connections[i].children[0] === "diesWithoutChildren") {
+        } else {
+          // UNUSUAL: Since the main node is one of the parents,
+          // loop through every child for unusuality
+          connections[i].children.forEach(c => {
+            let cRelationships = JSON.parse(relationships[c]);
 
-          // Check for unusualness
-          /* TODO: FIX UNUSUALANESS CHECKER FOR CHILDREN
+            // Check for unusualness
+            /* TODO: FIX UNUSUALANESS CHECKER FOR CHILDREN
           if (cRelationships.unusual.autochthony.tf) {
             unusual = {
               tf: true,
@@ -667,41 +699,42 @@ class EntityGraph extends Component {
           }
           */
 
-          // CONTESTED: Check if the child has > two parents (one of which is the main character). If so, is contested
-          // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
-          if (
-            cRelationships.relationships.MOTHERS.length +
-              cRelationships.relationships.FATHERS.length >
-            2
-          ) {
-            // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
-            let contestedParents = [];
-            let uncontestedParents; //uncontested parents (singular)
-            let passageLinks = [];
-            if (cRelationships.relationships.MOTHERS.length > 1) {
-              contestedParents = cRelationships.relationships.MOTHERS;
-              cRelationships.relationships.MOTHERS.forEach(m => {
-                passageLinks.push(m.passage);
-              });
-              uncontestedParents = cRelationships.relationships.FATHERS[0];
-            } else {
-              // (entityData.relationships.FATHERS.length > 1) {
-              contestedParents = cRelationships.relationships.FATHERS;
-              cRelationships.relationships.MOTHERS.forEach(m => {
-                passageLinks.push(m.passage);
-              });
-              uncontestedParents = cRelationships.relationships.MOTHERS[0];
+            // CONTESTED: Check if the child has > two parents (one of which is the main character). If so, is contested
+            // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
+            if (
+              cRelationships.relationships.MOTHERS.length +
+                cRelationships.relationships.FATHERS.length >
+              2
+            ) {
+              // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
+              let contestedParents = [];
+              let uncontestedParents; //uncontested parents (singular)
+              let passageLinks = [];
+              if (cRelationships.relationships.MOTHERS.length > 1) {
+                contestedParents = cRelationships.relationships.MOTHERS;
+                cRelationships.relationships.MOTHERS.forEach(m => {
+                  passageLinks.push(m.passage);
+                });
+                uncontestedParents = cRelationships.relationships.FATHERS[0];
+              } else {
+                // (entityData.relationships.FATHERS.length > 1) {
+                contestedParents = cRelationships.relationships.FATHERS;
+                cRelationships.relationships.MOTHERS.forEach(m => {
+                  passageLinks.push(m.passage);
+                });
+                uncontestedParents = cRelationships.relationships.MOTHERS[0];
+              }
+              contested = {
+                tf: true,
+                type: "Contested tradition",
+                passageLinks: passageLinks,
+                contestedParents: contestedParents,
+                uncontestedParents: uncontestedParents,
+                child: c
+              }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
             }
-            contested = {
-              tf: true,
-              type: "Contested tradition",
-              passageLinks: passageLinks,
-              contestedParents: contestedParents,
-              uncontestedParents: uncontestedParents,
-              child: c
-            }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
-          }
-        });
+          });
+        }
       }
 
       allLinePoints.push({
@@ -714,6 +747,7 @@ class EntityGraph extends Component {
         pNodeDepth: connections[i].pNodeDepth
       });
     }
+    console.log(allLinePoints);
     return allLinePoints;
   };
 
