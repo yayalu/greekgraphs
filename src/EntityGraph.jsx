@@ -224,12 +224,18 @@ class EntityGraph extends Component {
   getConnectionsList = (entityData, id) => {
     let allConnections = [];
 
-    //MOTHER+FATHER -> YOU+SIBLING+TWIN
+    //ADDING CONNECTIONS FOR MOTHER+FATHER -> YOU+SIBLING+TWIN
     if (
       entityData.relationships.MOTHERS.length > 0 ||
       entityData.relationships.FATHERS.length > 0
     ) {
-      let connection = { parents: [], children: [], pNodeDepth: "" };
+      let connection = {
+        parents: [],
+        children: [],
+        pNodeDepth: "",
+        contestedUnusual: false,
+        isUnusual: false //"isUnusual" is used to denote the part of the contestedUnusual grouping that is not unusual, e.g. the normal disputed relationship paired with the unusual one
+      };
       let parentsDepth = entityData.relationships.MOTHERS.concat(
         entityData.relationships.FATHERS
       );
@@ -244,13 +250,32 @@ class EntityGraph extends Component {
       });
       connection.children.push(id);
       connection.pNodeDepth = "depthNegOne";
+
+      // If there are parents but there are also
+      if (
+        entityData.unusual.autochthony.tf ||
+        entityData.unusual.createdWithoutParents.tf ||
+        entityData.unusual.bornFromObject.tf ||
+        entityData.unusual.createdByAgent.tf ||
+        (entityData.unusual.parthenogenesis.tf &&
+          (entityData.relationships.MOTHERS.length > 1 ||
+            entityData.relationships.FATHERS.length > 0))
+      ) {
+        connection.contestedUnusual = true;
+      }
       allConnections.push(connection);
     }
 
-    //YOU+OTHERPARENTID -> CHILDREN
+    //ADDING CONNECTIONS FOR YOU+OTHERPARENTID -> CHILDREN
     if (entityData.relationships.CHILDREN.length > 0) {
       entityData.relationships.CHILDREN.forEach(cp => {
-        let connection = { parents: [], children: [], pNodeDepth: "" };
+        let connection = {
+          parents: [],
+          children: [],
+          pNodeDepth: "",
+          contestedUnusual: false,
+          isUnusual: false
+        };
         cp.child.forEach(c => {
           connection.children.push(c.targetID);
         });
@@ -260,63 +285,99 @@ class EntityGraph extends Component {
         connection.parents.push(id);
         connection.pNodeDepth = "depthZero";
         allConnections.push(connection);
+        //TODO: Add contestedUnusual here
       });
     }
 
-    //Check if spouse is already listed in otherParentIDs in children. If not, means is connection without children.    //TODO: BORN FROM (OBJECT)
+    //ADDING CONNECTIONS FOR SPOUSES (PROVIDED THE SPOUSE ID DOESN'T ALREADY EXIST IN OTHERPARENTSID ABOVE
     if (entityData.relationships.SPOUSES.length > 0) {
       entityData.relationships.SPOUSES.forEach(s => {
         if (!this.isSpouseRepeated(s.targetID, allConnections)) {
-          allConnections.push({ parents: [id, s.targetID], children: [] });
+          allConnections.push({
+            parents: [id, s.targetID],
+            children: [],
+            pNodeDepth: "depthZero",
+            contestedUnusual: false,
+            isUnusual: false
+          });
           // TODO: Deal with children is empty when spouse without children
+          // TODO: Add contestedUnusual here
         }
       });
     }
 
-    //IF UNUSUAL RELATIONSHIP:
+    let moreParents =
+      entityData.relationships.MOTHERS.length > 0 ||
+      entityData.relationships.FATHERS.length > 0;
+
+    //CHECKING ADDING CONNECTIONS FOR ALL UNUSUAL RELATIONSHIPS (separate to mother, father etc. checkings):
     if (entityData.unusual.autochthony.tf) {
-      allConnections.push({
+      // if there are also mothers and fathers, this means the idea of autochthony is contested
+      let connection = {
         parents: ["autochthony_NegOne"],
         children: [id],
-        pNodeDepth: "depthNegOne"
-      });
+        pNodeDepth: "depthNegOne",
+        contestedUnusual: false,
+        isUnusual: true
+      };
+      if (moreParents) {
+        connection.contestedUnusual = true;
+      }
+      allConnections.push(connection);
     } else if (entityData.unusual.createdWithoutParents.tf) {
-      allConnections.push({
+      let connection = {
         parents: ["createdWithoutParents_NegOne"],
         children: [id],
-        pNodeDepth: "depthNegOne"
-      });
+        pNodeDepth: "depthNegOne",
+        contestedUnusual: false,
+        isUnusual: true
+      };
+      if (moreParents) {
+        connection.contestedUnusual = true;
+      }
+      allConnections.push(connection);
     } else if (entityData.unusual.bornFromObject.tf) {
-      allConnections.push({
+      let connection = {
         parents: [
           "bornFromObject_" +
             entityData.relationships.BORNFROM[0].targetID +
             "_NegOne"
         ],
         children: [id],
-        pNodeDepth: "depthNegOne"
-      });
+        pNodeDepth: "depthNegOne",
+        contestedUnusual: false,
+        isUnusual: true
+      };
+      if (moreParents) {
+        connection.contestedUnusual = true;
+      }
+      allConnections.push(connection);
     } else if (entityData.unusual.createdByAgent.tf) {
-      allConnections.push({
+      let connection = {
         parents: [entityData.relationships.CREATORS[0].targetID],
         children: [id],
-        pNodeDepth: "depthNegOne"
-      });
+        pNodeDepth: "depthNegOne",
+        contestedUnusual: false,
+        isUnusual: true
+      };
+      if (moreParents) {
+        connection.contestedUnusual = true;
+      }
+      allConnections.push(connection);
     } else if (entityData.unusual.diesWithoutChildren.tf) {
-    }
-
-    // If is parthenogenesis:
-    //MOTHER+FATHER -> YOU+SIBLING+TWIN
-    if (entityData.unusual.parthenogenesis.tf) {
+    } else if (entityData.unusual.parthenogenesis.tf) {
       let connection = {
         parents: [entityData.relationships.MOTHERS[0].targetID],
         children: [id],
-        pNodeDepth: "depthNegOne"
+        pNodeDepth: "depthNegOne",
+        contestedUnusual: false,
+        isUnusual: true
       };
+      if (moreParents) {
+        connection.contestedUnusual = true;
+      }
       allConnections.push(connection);
     }
-
-    console.log("allConnections", allConnections);
     return allConnections;
   };
 
@@ -359,6 +420,9 @@ class EntityGraph extends Component {
     for (let i = 0; i < connections.length; i++) {
       // connections[INDEX] = {parents: [id1, id2, ...], children: [id1, id2, ...]}
 
+      /*****************************************************/
+      /*  GET LINE POINTS FOR EVERY CONNECTION
+      /*****************************************************/
       let linePoints = [];
 
       // Deal with parthenogenesis, because unlike the other types, parthenogenesis is just a diagonal.
@@ -461,7 +525,9 @@ class EntityGraph extends Component {
         }
       }
 
-      //Create line name (aka. all the nodes involved)
+      /*****************************************************/
+      /*  GET LINE NAME
+      /*****************************************************/
       let name = connections[i].parents
         .concat(connections[i].children)
         .toString();
@@ -483,11 +549,16 @@ class EntityGraph extends Component {
         uncontestedParents: undefined,
         child: undefined
       };
+      // CHECK CONTESTED (PART 1): Check if the connection has already been acknowledged as contested and unusual at the same timee
+      let contestedUnusual = connections[i].contestedUnusual;
+      let isUnusual = connections[i].isUnusual;
 
-      // Check Parent -> Main Node
+      // FOR PARENT -> MAIN NODE CONNECTIONS
       if (connections[i].pNodeDepth === "depthNegOne") {
         // UNUSUAL: Since the depth in question is depth -1 => one of the children must be the main entity
         // Only check unusual status and contested status of the main entity
+
+        // CHECK IF CONNECTION IS UNUSUAL
         if (entityData.unusual.autochthony.tf) {
           unusual = {
             tf: true,
@@ -533,8 +604,7 @@ class EntityGraph extends Component {
           };
         }
 
-        // CONTESTED: Check if the main entity has > two parents. If so, is contested
-        // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
+        // CHECK CONTESTED (PART 2): Check if the main entity has > two parents. If so, is contested
         if (connections[i].parents.length > 2) {
           // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
           let contestedParents = [];
@@ -564,6 +634,7 @@ class EntityGraph extends Component {
           }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
         }
       }
+
       // Check Main Node -> Children
       else if (connections[i].pNodeDepth === "depthZero") {
         // UNUSUAL: Since the main node is one of the parents,
@@ -572,7 +643,7 @@ class EntityGraph extends Component {
           let cRelationships = JSON.parse(relationships[c]);
 
           // Check for unusualness
-          /* TODO: unusual relationships for children 
+          /* TODO: FIX UNUSUALANESS CHECKER FOR CHILDREN
           if (cRelationships.unusual.autochthony.tf) {
             unusual = {
               tf: true,
@@ -637,7 +708,10 @@ class EntityGraph extends Component {
         name: name,
         points: linePoints,
         unusual: unusual,
-        contested: contested
+        contested: contested,
+        contestedUnusual: contestedUnusual,
+        isUnusual: isUnusual,
+        pNodeDepth: connections[i].pNodeDepth
       });
     }
     return allLinePoints;
@@ -719,7 +793,6 @@ class EntityGraph extends Component {
   };
 
   getUnusualVerb = type => {
-    console.log(type);
     if (type === "Autochthony") {
       return " is born by autochthony";
     } else if (type === "Created Without Parents") {
@@ -866,6 +939,20 @@ class EntityGraph extends Component {
       strokeWidth: 8,
       opacity: 1
     });
+
+    // Deal with change of stroke colour when hovering over contestedUnusual connections
+    if (e.target.attrs.contestedUnusual.isContested) {
+      if (e.target.attrs.contestedUnusual.isUnusual) {
+        e.target.to({
+          stroke: "#ff0000"
+        });
+      } else {
+        e.target.to({
+          stroke: "#000000"
+        });
+      }
+    }
+
     // thicken the nodes attached to the line
     let nodeIDs = e.target.attrs.name.split(",");
     nodeIDs.forEach(id => {
@@ -882,7 +969,10 @@ class EntityGraph extends Component {
         nodeWithID.to({
           strokeWidth: 8
         });
-        if (e.target.attrs.unusual.tf) {
+        if (
+          e.target.attrs.contestedUnusual.isUnusual &&
+          e.target.attrs.unusual.tf
+        ) {
           document.body.style.cursor = "pointer";
           nodeWithID.to({
             stroke: "#ff0000"
@@ -940,6 +1030,12 @@ class EntityGraph extends Component {
       opacity:
         e.target.attrs.unusual.tf || e.target.attrs.contested.tf ? 1 : 0.3
     });
+    // Deal with change of stroke colour when hovering over contestedUnusual connections
+    if (e.target.attrs.contestedUnusual.isContested) {
+      e.target.to({
+        stroke: "#0000ff"
+      });
+    }
     // thicken the nodes attached to the line
     let nodeDs = e.target.attrs.name.split(",");
     nodeDs.forEach(id => {
@@ -964,7 +1060,11 @@ class EntityGraph extends Component {
   };
 
   handleClickedLine = e => {
-    if (e.target.attrs.unusual.tf) {
+    console.log("e", e);
+    if (
+      e.target.attrs.unusual.tf &&
+      e.target.attrs.contestedUnusual.isUnusual
+    ) {
       //this.props.handleUnusualClicked = e.target.attrs.unusual;
       this.setState({
         openInfoPage: {
@@ -1523,11 +1623,15 @@ class EntityGraph extends Component {
                 points={e.points}
                 unusual={e.unusual}
                 contested={e.contested}
+                contestedUnusual={{
+                  isContested: e.contestedUnusual,
+                  isUnusual: e.isUnusual
+                }}
                 stroke={
-                  e.unusual.tf
-                    ? "#ff0000"
-                    : e.contested.tf
+                  e.contested.tf || e.contestedUnusual
                     ? "#0000ff"
+                    : e.unusual.tf
+                    ? "#ff0000"
                     : "#000000"
                 }
                 opacity={e.unusual.tf || e.contested.tf ? 1 : 0.3}
