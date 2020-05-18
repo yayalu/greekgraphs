@@ -9,6 +9,7 @@ import { getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import useImage from "use-image";
 import passages from "./data/passages.json";
+import { tickStep, max } from "d3";
 
 class EntityGraph extends Component {
   constructor(props) {
@@ -933,6 +934,43 @@ class EntityGraph extends Component {
     }
   };
 
+  getStageWidth = () => {
+    if (this.state.depthNodes) {
+      let maxNodesPerDepth = 0;
+      if (this.state.depthNodes.depthNegOne.length > maxNodesPerDepth) {
+        maxNodesPerDepth = this.state.depthNodes.depthNegOne.length;
+      }
+      if (this.state.depthNodes.depthZero.length > maxNodesPerDepth) {
+        maxNodesPerDepth = this.state.depthNodes.depthZero.length;
+      }
+      if (this.state.depthNodes.depthPosOne.length > maxNodesPerDepth) {
+        maxNodesPerDepth = this.state.depthNodes.depthPosOne.length;
+      }
+      return (
+        this.state.graphAttr.initX +
+        maxNodesPerDepth * this.state.graphAttr.spaceX +
+        100
+      );
+    }
+    return 1000;
+  };
+
+  getStageHeight = () => {
+    if (this.state.depthNodes) {
+      if (this.state.depthNodes.depthPosOne.length > 0) {
+        return (
+          this.state.graphAttr.PosOneY + this.state.graphAttr.nodeHeight + 150
+        );
+      } else {
+        return (
+          this.state.graphAttr.ZeroY + this.state.graphAttr.nodeHeight + 150
+        );
+      }
+    } else {
+      return 200;
+    }
+  };
+
   /****************************************************
    *
    *
@@ -1489,7 +1527,11 @@ class EntityGraph extends Component {
           ""
         )}
         {/* Graph rendering with KonvajS */}
-        <Stage ref="stage" width={6000} height={2000}>
+        <Stage
+          ref="stage"
+          width={this.getStageWidth()}
+          height={this.getStageHeight()}
+        >
           <Layer>
             {this.state.depthNodes.depthNegOne.map((e, i) =>
               e.split("_")[0] === "bornFromObject" &&
