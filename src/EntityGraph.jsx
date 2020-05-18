@@ -195,14 +195,16 @@ class EntityGraph extends Component {
         depthZero = this.checkForDuplicates(depthZero, p); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
       });
     }
+    console.log("depthZero1", depthZero);
 
     // Add the central node in the graph. Removes 3-parent contest resulting in "OR" on the main node, see Aerope
     if (depthZero.length > 3) {
       depthZero.splice(Math.ceil(depthZero.length / 2), 0, this.props.id); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
-    } else {
+    } else if (!depthZero.includes(this.props.id)) {
       depthZero.splice(0, 0, this.props.id);
     }
 
+    console.log("depthZero2", depthZero);
     return {
       depthNegOne: depthNegOne,
       depthZero: depthZero,
