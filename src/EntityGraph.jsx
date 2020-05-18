@@ -1071,10 +1071,10 @@ class EntityGraph extends Component {
           padding = 15;
         }
       });
-      let x =
+      /* let x =
         (sumX + this.state.graphAttr.nodeWidth) / numExistingContestNodes -
         padding;
-      let ORText = new Konva.Text({
+       let ORText = new Konva.Text({
         name: "ORText",
         x: x,
         y: y + 30,
@@ -1086,7 +1086,7 @@ class EntityGraph extends Component {
         height: 80,
         align: "center"
       });
-      this.state.stageRef.children[1].add(ORText);
+      this.state.stageRef.children[1].add(ORText); */
     }
   };
 
@@ -1122,9 +1122,9 @@ class EntityGraph extends Component {
       }
     });
 
-    if (e.target.attrs.contested.tf) {
+    /* if (e.target.attrs.contested.tf) {
       this.state.stageRef.children[1].find(".ORText")[0].remove();
-    }
+    } */
   };
 
   handleClickedLine = e => {
@@ -1715,7 +1715,7 @@ class EntityGraph extends Component {
             ))}
             {this.state.lineLinks.map((e, i) => (
               <React.Fragment>
-                {e.unusual.type === "Created by Someone Else" ? (
+                {e.unusual.type === "Created by Someone Else" && e.isUnusual ? (
                   <CreatedByAgentIcon
                     name={"createdByAgent_NegOne"}
                     x={e.points[e.points.length / 2 - 1]}
@@ -1726,7 +1726,7 @@ class EntityGraph extends Component {
                       20
                     }
                   />
-                ) : e.unusual.type === "Born from an Object" ? (
+                ) : e.unusual.type === "Born from an Object" && e.isUnusual ? (
                   <BornFromObjectIcon
                     name={
                       "bornFromObject_" +
@@ -1740,7 +1740,7 @@ class EntityGraph extends Component {
                       2
                     }
                   />
-                ) : e.unusual.type === "Parthenogenesis" ? (
+                ) : e.unusual.type === "Parthenogenesis" && e.isUnusual ? (
                   <ParthenogenesisIcon
                     name={"parthenogenesis_NegOne"}
                     x={(e.points[0] + e.points[2]) / 2}
