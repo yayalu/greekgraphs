@@ -461,10 +461,6 @@ class EntityGraph extends Component {
           initX +
           depthNodes.depthZero.indexOf(connections[i].parents[0]) * spaceX +
           width / 2;
-        console.log(
-          "pX part ",
-          depthNodes.depthNegOne.indexOf(connections[i].parents[0])
-        );
         let pY = this.state.graphAttr.ZeroY + height;
         let lowerpY = pY + diff + 10;
         linePoints.push(pX, pY);
