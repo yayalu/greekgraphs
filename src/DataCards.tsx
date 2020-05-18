@@ -105,13 +105,12 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else {
       URN = passages[id]["CTS URN"];
     }
-
+    URN = URN.replace(/grc2/, "eng2"); // View the existing passages CTS URN to english translation
     URN = "https://scaife.perseus.org/reader/" + URN;
     if (passage.endID !== "") {
       end = passages[end].Passage;
       URN = URN + "-" + end;
     }
-    URN = URN + "/?right=perseus-eng2";
 
     return (
       <span>
