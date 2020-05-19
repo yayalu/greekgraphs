@@ -1430,7 +1430,7 @@ class EntityGraph extends Component {
             ) : (
               <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
                 <span style={{ fontWeight: "bold" }}>
-                  {getName(entities[this.state.entityData.id])}{" "}
+                  {this.state.entityData.name}{" "}
                 </span>
                 has no children according to{" "}
                 {this.state.entityData.unusual &&
@@ -1443,9 +1443,47 @@ class EntityGraph extends Component {
                   : ""}
                 <p></p>
                 However,
+                <p></p>
                 {this.state.entityData.relationships
                   ? this.state.entityData.relationships.CHILDREN.map(cp => {
-                      // TODO "According to <passage links>, <name> has children (child if < 2) <name> with <names of other parents"
+                      return (
+                        <span>
+                          <span style={{ fontWeight: "bold" }}>
+                            {this.state.entityData.name}
+                          </span>{" "}
+                          has{" "}
+                          {cp.child.map(c => {
+                            return (
+                              <span>
+                                <span style={{ fontWeight: "bold" }}>
+                                  {c.target}{" "}
+                                </span>{" "}
+                                {c.passage.map(p => {
+                                  console.log(p);
+                                  return this.getPassageLink(p);
+                                })}
+                                {cp.otherParentIDs.length > 0 ? (
+                                  <span>{", "}</span>
+                                ) : (
+                                  ""
+                                )}
+                              </span>
+                            );
+                          })}{" "}
+                          {cp.otherParentIDs.length > 0 ? (
+                            <span>with </span>
+                          ) : (
+                            ""
+                          )}
+                          {cp.otherParentIDs.map(p => {
+                            console.log("p");
+                            return p ===
+                              cp.otherParentIDs[cp.otherParentIDs.length - 1]
+                              ? getName(entities[p]) + ", "
+                              : getName(entities[p]);
+                          })}
+                        </span>
+                      );
                     })
                   : ""}
               </div>

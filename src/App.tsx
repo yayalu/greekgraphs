@@ -30,7 +30,7 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
     super(props);
     this.state = {
       subjectID: "",
-      open: true
+      open: false
     };
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -49,9 +49,6 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
   }
 
   render() {
-    {
-      console.log(this.state.open);
-    }
     return (
       <div className="homepageBackground" style={{ position: "relative" }}>
         {/* Router links */}
