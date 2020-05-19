@@ -18,13 +18,14 @@ class EntityGraph extends Component {
       allShapes: [],
       stageRef: undefined,
       graphAttr: {
-        initX: 150,
-        spaceX: 200,
-        nodeWidth: 150,
-        nodeHeight: 80,
-        NegOneY: 100,
-        ZeroY: 400,
-        PosOneY: 700
+        // these are all set in componentDidUpdate
+        initX: 0,
+        spaceX: 0,
+        nodeWidth: 0,
+        nodeHeight: 0,
+        NegOneY: 0,
+        ZeroY: 0,
+        PosOneY: 0
       },
       depthNodes: {
         depthNegOne: [],
@@ -73,17 +74,46 @@ class EntityGraph extends Component {
     // SPACE-WASTING BUT WORKS AS A TEMPORARY SOLUTION
     let entityData = JSON.parse(relationships[this.props.id]);
     let connectionsList = this.getConnectionsList(entityData, this.props.id);
+
+    let depthNodes = this.getDepthNodes(entityData);
+    let NegOneY = 0,
+      ZeroY = 0,
+      PosOneY = 0;
+    if (depthNodes.depthNegOne.length === 0) {
+      ZeroY = 100;
+      if (depthNodes.depthPosOne.length > 0) {
+        PosOneY = 400;
+      }
+    } else if (depthNodes.depthPosOne.length === 0) {
+      NegOneY = 100;
+      ZeroY = 400;
+    } else {
+      NegOneY = 100;
+      ZeroY = 400;
+      PosOneY = 700;
+    }
+    let graphAttr = {
+      initX: 150,
+      spaceX: 200,
+      nodeWidth: 150,
+      nodeHeight: 80,
+      NegOneY: NegOneY, // set later on
+      ZeroY: ZeroY, // set later on
+      PosOneY: PosOneY // set later on
+    };
     // Set states
     this.setState({
       allShapes: this.refs.stage.children[1].children,
       stageRef: this.refs.stage,
+      graphAttr: graphAttr,
       id: this.props.id,
       entityData: entityData,
-      depthNodes: this.getDepthNodes(entityData),
+      depthNodes: depthNodes,
       lineLinks: this.getAllLinePoints(
-        this.getDepthNodes(entityData),
+        depthNodes,
         entityData,
-        connectionsList
+        connectionsList,
+        graphAttr
       ),
       openInfoPage: {
         showContestPage: false,
@@ -103,16 +133,45 @@ class EntityGraph extends Component {
       // Create a connection calculator here
       let connectionsList = this.getConnectionsList(entityData, this.props.id);
 
+      let NegOneY = 0,
+        ZeroY = 0,
+        PosOneY = 0;
+      if (depthNodes.depthNegOne.length === 0) {
+        ZeroY = 100;
+        if (depthNodes.depthPosOne.length > 0) {
+          PosOneY = 400;
+        }
+      } else if (depthNodes.depthPosOne.length === 0) {
+        NegOneY = 100;
+        ZeroY = 400;
+      } else {
+        NegOneY = 100;
+        ZeroY = 400;
+        PosOneY = 700;
+      }
+
+      let graphAttr = {
+        initX: 150,
+        spaceX: 200,
+        nodeWidth: 150,
+        nodeHeight: 80,
+        NegOneY: NegOneY, // set later on
+        ZeroY: ZeroY, // set later on
+        PosOneY: PosOneY // set later on
+      };
+
       this.setState({
         allShapes: this.refs.stage.children[1].children,
         stageRef: this.refs.stage,
+        graphAttr: graphAttr,
         id: this.props.id,
         entityData: entityData,
         depthNodes: depthNodes,
         lineLinks: this.getAllLinePoints(
           depthNodes,
           entityData,
-          connectionsList
+          connectionsList,
+          graphAttr
         ),
         openInfoPage: {
           showContestPage: false,
@@ -392,7 +451,7 @@ class EntityGraph extends Component {
   /* GET LINE POINTS BASED ON THE LINE CONNECTIONS FOUND */
 
   // Create an array holding all relationships between entities, parent+parent->children+siblings [[P,P,C,S], [...]]
-  getAllLinePoints = (depthNodes, entityData, connections) => {
+  getAllLinePoints = (depthNodes, entityData, connections, graphAttr) => {
     /************************/
     /*  GET LINE POINTS 
     /************************/
@@ -418,11 +477,11 @@ class EntityGraph extends Component {
 
     // [P1, P1L, P2L, P2, P2L, PM] [PM, CU, C1U, C1, C1U, C2U, C2]
     //Connect parent nodes
-    let width = this.state.graphAttr.nodeWidth;
-    let height = this.state.graphAttr.nodeHeight;
+    let width = graphAttr.nodeWidth;
+    let height = graphAttr.nodeHeight;
     let diff = 50;
-    let initX = this.state.graphAttr.initX;
-    let spaceX = this.state.graphAttr.spaceX;
+    let initX = graphAttr.initX;
+    let spaceX = graphAttr.spaceX;
 
     /* TODO: FIX THIS FOR GENERATION-ANONYMOUS */
     for (let i = 0; i < connections.length; i++) {
@@ -446,12 +505,12 @@ class EntityGraph extends Component {
           initX +
           depthNodes.depthNegOne.indexOf(connections[i].parents[0]) * spaceX +
           width / 2;
-        let pY = this.state.graphAttr.NegOneY + height;
+        let pY = graphAttr.NegOneY + height;
         let cX =
           initX +
           depthNodes.depthZero.indexOf(entityData.id) * spaceX +
           width / 2;
-        let cY = this.state.graphAttr.ZeroY;
+        let cY = graphAttr.ZeroY;
         linePoints.push(pX, pY, cX, cY);
       }
       // Check if entity dies without children, aka. put a line straight down to an X
@@ -461,7 +520,7 @@ class EntityGraph extends Component {
           initX +
           depthNodes.depthZero.indexOf(connections[i].parents[0]) * spaceX +
           width / 2;
-        let pY = this.state.graphAttr.ZeroY + height;
+        let pY = graphAttr.ZeroY + height;
         let lowerpY = pY + diff + 10;
         linePoints.push(pX, pY);
         linePoints.push(pX, lowerpY); // center of x
@@ -482,10 +541,10 @@ class EntityGraph extends Component {
         let depth;
         if (connections[i].pNodeDepth === "depthNegOne") {
           depth = depthNodes.depthNegOne;
-          PM_Y = this.state.graphAttr.NegOneY + height + diff; // Assign PM_Y value here
+          PM_Y = graphAttr.NegOneY + height + diff; // Assign PM_Y value here
         } else {
           depth = depthNodes.depthZero;
-          PM_Y = this.state.graphAttr.ZeroY + height + diff; // Assign PM_Y value here
+          PM_Y = graphAttr.ZeroY + height + diff; // Assign PM_Y value here
         }
         // Get middle X location first (average of all X values)
         connections[i].parents.forEach(p => {
@@ -502,9 +561,9 @@ class EntityGraph extends Component {
           let pIndex = depth.indexOf(p);
           let pY = 0;
           if (connections[i].pNodeDepth === "depthNegOne") {
-            pY = this.state.graphAttr.NegOneY + height;
+            pY = graphAttr.NegOneY + height;
           } else {
-            pY = this.state.graphAttr.ZeroY + height;
+            pY = graphAttr.ZeroY + height;
           }
           linePoints.push(PM_X, PM_Y); //PM
           linePoints.push(initX + pIndex * spaceX + width / 2, PM_Y); //PL
@@ -522,10 +581,10 @@ class EntityGraph extends Component {
           // Update the Y location to the depth for children
           if (connections[i].pNodeDepth === "depthNegOne") {
             depth = depthNodes.depthZero;
-            CM_Y = this.state.graphAttr.ZeroY - diff; // Assign PM_Y value here
+            CM_Y = graphAttr.ZeroY - diff; // Assign PM_Y value here
           } else {
             depth = depthNodes.depthPosOne;
-            CM_Y = this.state.graphAttr.PosOneY - diff; // Assign PM_Y value here
+            CM_Y = graphAttr.PosOneY - diff; // Assign PM_Y value here
           }
 
           // Add a line from the existing (PM_X, PM_Y) spot to (PM_X, CM_Y)
@@ -536,9 +595,9 @@ class EntityGraph extends Component {
             let cIndex = depth.indexOf(c);
             let cY = 0;
             if (connections[i].pNodeDepth === "depthNegOne") {
-              cY = this.state.graphAttr.ZeroY;
+              cY = graphAttr.ZeroY;
             } else {
-              cY = this.state.graphAttr.PosOneY;
+              cY = graphAttr.PosOneY;
             }
             linePoints.push(PM_X, CM_Y); //CM
             linePoints.push(initX + cIndex * spaceX + width / 2, CM_Y); //CL
