@@ -716,12 +716,9 @@ class EntityGraph extends Component {
       // Check Main Node -> Children
       else if (connections[i].pNodeDepth === "depthZero") {
         if (
-          (connections[i].children[0] === "diesWithoutChildren" &&
-            entityData.relationships.CHILDREN[0]) ||
-          (connections[i].children.length > 0 &&
-            entityData.unusual.diesWithoutChildren.tf)
+          connections[i].children[0] === "diesWithoutChildren" &&
+          entityData.relationships.CHILDREN.length > 0
         ) {
-          // CHECK CONTESTED (PART 3.1): Check if contested legacy, aka. has children but is explicitly diesWithoutChildren
           contested = {
             tf: true,
             type: "Contested Legacy",
@@ -730,14 +727,28 @@ class EntityGraph extends Component {
             uncontestedParents: undefined,
             child: undefined
           };
-        } else {
-          // UNUSUAL: Since the main node is one of the parents,
-          // loop through every child for unusuality
-          connections[i].children.forEach(c => {
-            let cRelationships = JSON.parse(relationships[c]);
+        } else if (connections[i].children[0] !== "diesWithoutChildren") {
+          if (
+            connections[i].children.length > 0 &&
+            entityData.unusual.diesWithoutChildren.tf
+          ) {
+            // CHECK CONTESTED (PART 3.1): Check if contested legacy, aka. has children but is explicitly diesWithoutChildren
+            contested = {
+              tf: true,
+              type: "Contested Legacy",
+              passageLinks: undefined,
+              contestedParents: undefined,
+              uncontestedParents: undefined,
+              child: undefined
+            };
+          } else {
+            // UNUSUAL: Since the main node is one of the parents,
+            // loop through every child for unusuality
+            connections[i].children.forEach(c => {
+              let cRelationships = JSON.parse(relationships[c]);
 
-            // Check for unusualness
-            /* TODO: FIX UNUSUALANESS CHECKER FOR CHILDREN
+              // Check for unusualness
+              /* TODO: FIX UNUSUALANESS CHECKER FOR CHILDREN
           if (cRelationships.unusual.autochthony.tf) {
             unusual = {
               tf: true,
@@ -761,41 +772,42 @@ class EntityGraph extends Component {
           }
           */
 
-            // CONTESTED: Check if the child has > two parents (one of which is the main character). If so, is contested
-            // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
-            if (
-              cRelationships.relationships.MOTHERS.length +
-                cRelationships.relationships.FATHERS.length >
-              2
-            ) {
-              // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
-              let contestedParents = [];
-              let uncontestedParents; //uncontested parents (singular)
-              let passageLinks = [];
-              if (cRelationships.relationships.MOTHERS.length > 1) {
-                contestedParents = cRelationships.relationships.MOTHERS;
-                cRelationships.relationships.MOTHERS.forEach(m => {
-                  passageLinks.push(m.passage);
-                });
-                uncontestedParents = cRelationships.relationships.FATHERS[0];
-              } else {
-                // (entityData.relationships.FATHERS.length > 1) {
-                contestedParents = cRelationships.relationships.FATHERS;
-                cRelationships.relationships.MOTHERS.forEach(m => {
-                  passageLinks.push(m.passage);
-                });
-                uncontestedParents = cRelationships.relationships.MOTHERS[0];
+              // CONTESTED: Check if the child has > two parents (one of which is the main character). If so, is contested
+              // TODO: Make this more complex - note what Greta said about the complexity of contested relationships
+              if (
+                cRelationships.relationships.MOTHERS.length +
+                  cRelationships.relationships.FATHERS.length >
+                2
+              ) {
+                // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
+                let contestedParents = [];
+                let uncontestedParents; //uncontested parents (singular)
+                let passageLinks = [];
+                if (cRelationships.relationships.MOTHERS.length > 1) {
+                  contestedParents = cRelationships.relationships.MOTHERS;
+                  cRelationships.relationships.MOTHERS.forEach(m => {
+                    passageLinks.push(m.passage);
+                  });
+                  uncontestedParents = cRelationships.relationships.FATHERS[0];
+                } else {
+                  // (entityData.relationships.FATHERS.length > 1) {
+                  contestedParents = cRelationships.relationships.FATHERS;
+                  cRelationships.relationships.MOTHERS.forEach(m => {
+                    passageLinks.push(m.passage);
+                  });
+                  uncontestedParents = cRelationships.relationships.MOTHERS[0];
+                }
+                contested = {
+                  tf: true,
+                  type: "Contested Parentage",
+                  passageLinks: passageLinks,
+                  contestedParents: contestedParents,
+                  uncontestedParents: uncontestedParents,
+                  child: c
+                }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
               }
-              contested = {
-                tf: true,
-                type: "Contested Parentage",
-                passageLinks: passageLinks,
-                contestedParents: contestedParents,
-                uncontestedParents: uncontestedParents,
-                child: c
-              }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
-            }
-          });
+            });
+          }
         }
       }
 
