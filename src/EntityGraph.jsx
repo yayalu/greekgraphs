@@ -195,7 +195,6 @@ class EntityGraph extends Component {
         depthZero = this.checkForDuplicates(depthZero, p); // NOte that the above deals with entityInfo type, but this (aka. highlighted node) is just ID
       });
     }
-    console.log("depthZero1", depthZero);
 
     // Add the central node in the graph. Removes 3-parent contest resulting in "OR" on the main node, see Aerope
     if (depthZero.length > 3) {
@@ -203,8 +202,6 @@ class EntityGraph extends Component {
     } else if (!depthZero.includes(this.props.id)) {
       depthZero.splice(0, 0, this.props.id);
     }
-
-    console.log("depthZero2", depthZero);
     return {
       depthNegOne: depthNegOne,
       depthZero: depthZero,
@@ -624,14 +621,7 @@ class EntityGraph extends Component {
             passage: entityData.unusual.bornFromObject.passage,
             child: entityData.id
           };
-        } /* else if (entityData.unusual.diesWithoutChildren.tf) {
-          unusual = {
-            tf: true,
-            type: "Dies without children",
-            passage: entityData.unusual.diesWithoutChildren.passage,
-            child: entityData.id
-          };
-        } */
+        }
 
         // CHECK CONTESTED (PART 2): Check if the main entity has > two parents. If so, is contested
         if (connections[i].parents.length > 2) {
@@ -655,7 +645,7 @@ class EntityGraph extends Component {
           }
           contested = {
             tf: true,
-            type: "Contested tradition",
+            type: "Contested Parentage",
             passageLinks: passageLinks,
             contestedParents: contestedParents,
             uncontestedParents: uncontestedParents,
@@ -666,7 +656,21 @@ class EntityGraph extends Component {
 
       // Check Main Node -> Children
       else if (connections[i].pNodeDepth === "depthZero") {
-        if (connections[i].children[0] === "diesWithoutChildren") {
+        if (
+          (connections[i].children[0] === "diesWithoutChildren" &&
+            entityData.relationships.CHILDREN[0]) ||
+          (connections[i].children.length > 0 &&
+            entityData.unusual.diesWithoutChildren.tf)
+        ) {
+          // CHECK CONTESTED (PART 3.1): Check if contested legacy, aka. has children but is explicitly diesWithoutChildren
+          contested = {
+            tf: true,
+            type: "Contested Legacy",
+            passageLinks: undefined,
+            contestedParents: undefined,
+            uncontestedParents: undefined,
+            child: undefined
+          };
         } else {
           // UNUSUAL: Since the main node is one of the parents,
           // loop through every child for unusuality
@@ -725,7 +729,7 @@ class EntityGraph extends Component {
               }
               contested = {
                 tf: true,
-                type: "Contested tradition",
+                type: "Contested Parentage",
                 passageLinks: passageLinks,
                 contestedParents: contestedParents,
                 uncontestedParents: uncontestedParents,
@@ -1057,7 +1061,10 @@ class EntityGraph extends Component {
       }
     });
 
-    if (e.target.attrs.contested.tf) {
+    if (
+      e.target.attrs.contested.tf &&
+      e.target.attrs.contested.type === "Contested Parentage"
+    ) {
       let sumX = 0;
       let numExistingContestNodes = 0;
       let y = 0;
@@ -1346,7 +1353,14 @@ class EntityGraph extends Component {
               padding: "2rem 4rem 4rem 4rem"
             }}
           >
-            <h2 style={{ textAlign: "center" }}>Contested Tradition </h2>
+            <p style={{ textAlign: "center", color: "#808080" }}>
+              Contested Tradition
+            </p>
+            <h2 style={{ textAlign: "center" }}>
+              {this.state.openInfoPage.contest
+                ? this.state.openInfoPage.contest.type
+                : ""}
+            </h2>
             <p></p>
             <p style={{ fontStyle: "italic", textAlign: "center" }}>
               (inconsistencies between retellings of the tradition)
@@ -1358,65 +1372,84 @@ class EntityGraph extends Component {
               god or hero were.
             </p>
             <p>In this case, the contestation is:</p>
-            {this.state.openInfoPage.contest
-              ? this.state.openInfoPage.contest.contestedParents.map((c, i) => {
-                  return (
-                    <div
-                      style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}
-                    >
-                      <span style={{ fontWeight: "bold" }}>
-                        {getName(
-                          entities[this.state.openInfoPage.contest.child]
-                        )}
-                      </span>{" "}
-                      is child of{" "}
-                      <span style={{ fontWeight: "bold" }}>
-                        {getName(
-                          entities[
-                            this.state.openInfoPage.contest.uncontestedParents
-                              .targetID
-                          ]
-                        )}
-                      </span>{" "}
-                      and{" "}
-                      <span style={{ fontWeight: "bold" }}>
-                        {getName(entities[c.targetID])}
-                      </span>{" "}
-                      according to{" "}
-                      <span>
-                        {this.state.openInfoPage.contest.passageLinks[i].map(
-                          (p, i) => {
-                            if (
-                              i ===
-                              this.state.openInfoPage.contest.passageLinks[i]
-                                .length -
-                                1
-                            ) {
-                              return this.getPassageLink(p);
-                            } else {
-                              return (
-                                <span>
-                                  {this.getPassageLink}
-                                  {" and"}
-                                </span>
-                              );
-                            }
-                          }
-                        )}
-                      </span>
-                      {i ===
-                      this.state.openInfoPage.contest.contestedParents.length -
-                        1 ? (
-                        ""
-                      ) : (
-                        <div>
-                          <p></p>OR<p></p>
-                        </div>
+            {this.state.openInfoPage.contest &&
+            this.state.openInfoPage.contest.type === "Contested Parentage" ? (
+              this.state.openInfoPage.contest.contestedParents.map((c, i) => {
+                return (
+                  <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
+                    <span style={{ fontWeight: "bold" }}>
+                      {getName(entities[this.state.openInfoPage.contest.child])}
+                    </span>{" "}
+                    is child of{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {getName(
+                        entities[
+                          this.state.openInfoPage.contest.uncontestedParents
+                            .targetID
+                        ]
                       )}
-                    </div>
-                  );
-                })
-              : ""}
+                    </span>{" "}
+                    and{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {getName(entities[c.targetID])}
+                    </span>{" "}
+                    according to{" "}
+                    <span>
+                      {this.state.openInfoPage.contest.passageLinks[i].map(
+                        (p, i) => {
+                          if (
+                            i ===
+                            this.state.openInfoPage.contest.passageLinks[i]
+                              .length -
+                              1
+                          ) {
+                            return this.getPassageLink(p);
+                          } else {
+                            return (
+                              <span>
+                                {this.getPassageLink}
+                                {" and"}
+                              </span>
+                            );
+                          }
+                        }
+                      )}
+                    </span>
+                    {i ===
+                    this.state.openInfoPage.contest.contestedParents.length -
+                      1 ? (
+                      ""
+                    ) : (
+                      <div>
+                        <p></p>OR<p></p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
+                <span style={{ fontWeight: "bold" }}>
+                  {getName(entities[this.state.entityData.id])}{" "}
+                </span>
+                has no children according to{" "}
+                {this.state.entityData.unusual &&
+                this.state.entityData.unusual.diesWithoutChildren.tf
+                  ? this.state.entityData.unusual.diesWithoutChildren.passage.map(
+                      m => {
+                        return this.getPassageLink(m);
+                      }
+                    )
+                  : ""}
+                <p></p>
+                However,
+                {this.state.entityData.relationships
+                  ? this.state.entityData.relationships.CHILDREN.map(cp => {
+                      // TODO "According to <passage links>, <name> has children (child if < 2) <name> with <names of other parents"
+                    })
+                  : ""}
+              </div>
+            )}
           </div>
         </div>
         {/* Info pages for unusual relationships */}
