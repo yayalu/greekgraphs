@@ -821,7 +821,6 @@ class EntityGraph extends Component {
         pNodeDepth: connections[i].pNodeDepth
       });
     }
-    console.log(allLinePoints);
     return allLinePoints;
   };
 
@@ -1208,7 +1207,6 @@ class EntityGraph extends Component {
   };
 
   handleClickedLine = e => {
-    console.log("e", e);
     if (
       e.target.attrs.unusual.tf &&
       e.target.attrs.contestedUnusual.isUnusual
@@ -1402,8 +1400,10 @@ class EntityGraph extends Component {
             src={require("./images/legend.png")}
             style={{ maxWidth: "80%" }}
           ></img>
-          <p></p>Hover over elements to show the connections. Clicking on the
-          nodes will direct you to the graph for that node.
+          <p></p>Hover over the lines and icons to show the connections.
+          Clicking on the nodes will direct you to the graph for that node.
+          Clicking on coloured lines and icons shows you information for that
+          connection.
         </div>
         {/* Info pages for contested relationships */}
         <div
@@ -1467,9 +1467,9 @@ class EntityGraph extends Component {
                     according to{" "}
                     <span>
                       {this.state.openInfoPage.contest.passageLinks[i].map(
-                        (p, i) => {
+                        (p, j) => {
                           if (
-                            i ===
+                            j ===
                             this.state.openInfoPage.contest.passageLinks[i]
                               .length -
                               1
@@ -1478,8 +1478,8 @@ class EntityGraph extends Component {
                           } else {
                             return (
                               <span>
-                                {this.getPassageLink}
-                                {" and"}
+                                {this.getPassageLink(p)}
+                                {" and "}
                               </span>
                             );
                           }
@@ -1530,7 +1530,6 @@ class EntityGraph extends Component {
                                   {c.target}{" "}
                                 </span>{" "}
                                 {c.passage.map(p => {
-                                  console.log(p);
                                   return this.getPassageLink(p);
                                 })}
                                 {cp.otherParentIDs.length > 0 ? (
@@ -1547,7 +1546,6 @@ class EntityGraph extends Component {
                             ""
                           )}
                           {cp.otherParentIDs.map(p => {
-                            console.log("p");
                             return p ===
                               cp.otherParentIDs[cp.otherParentIDs.length - 1]
                               ? getName(entities[p]) + ", "
