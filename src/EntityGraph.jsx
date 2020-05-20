@@ -520,16 +520,16 @@ class EntityGraph extends Component {
           depthNodes.depthZero.indexOf(connections[i].parents[0]) * spaceX +
           width / 2;
         let pY = graphAttr.ZeroY + height;
-        let lowerpY = pY + diff + 10;
+        let lowerpY = pY + diff + 35;
         linePoints.push(pX, pY);
         linePoints.push(pX, lowerpY); // center of x
-        linePoints.push(pX - 8, lowerpY - 8); // top left corner of X
+        linePoints.push(pX - 12, lowerpY - 12); // top left corner of X
         linePoints.push(pX, lowerpY); // back to center of x
-        linePoints.push(pX + 8, lowerpY - 8); // top right corner of X
+        linePoints.push(pX + 12, lowerpY - 12); // top right corner of X
         linePoints.push(pX, lowerpY); // back to center of x
-        linePoints.push(pX - 8, lowerpY + 8); //bottom left corner of X
+        linePoints.push(pX - 12, lowerpY + 12); //bottom left corner of X
         linePoints.push(pX, lowerpY); // back to center of x
-        linePoints.push(pX + 8, lowerpY + 8); //bottom right corner of X
+        linePoints.push(pX + 12, lowerpY + 12); //bottom right corner of X
       } else {
         // TODO: Make the following more efficient
 
@@ -1149,9 +1149,8 @@ class EntityGraph extends Component {
     });
 
     if (
-      (e.target.attrs.contested.tf &&
-        e.target.attrs.contested.type === "Contested Parentage") ||
-      e.target.attrs.contested.type === "Contested Legacy"
+      e.target.attrs.contested.tf &&
+      e.target.attrs.contested.type === "Contested Parentage"
     ) {
       // Add "OR" icon to top right of every node that's contested here
 
@@ -1160,7 +1159,7 @@ class EntityGraph extends Component {
           let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
           let ORText = new Konva.Text({
             name: "ORText",
-            x: pAttrs.x + this.state.graphAttr.nodeWidth - 70,
+            x: pAttrs.x + this.state.graphAttr.nodeWidth - 65,
             y: pAttrs.y + 5,
             text: "OR",
             fontSize: 26,
@@ -1205,6 +1204,46 @@ class EntityGraph extends Component {
         align: "center"
       });
       this.state.stageRef.children[1].add(ORText); */
+    } else if (
+      e.target.attrs.contested.tf &&
+      e.target.attrs.contested.type === "Contested Legacy"
+    ) {
+      this.state.entityData.relationships.CHILDREN.forEach(childGroup => {
+        childGroup.child.forEach(c => {
+          if (this.state.stageRef.find("." + c.targetID)[0]) {
+            let pAttrs = this.state.stageRef.find("." + c.targetID)[0].attrs;
+            let ORText = new Konva.Text({
+              name: "ORText",
+              x: pAttrs.x + this.state.graphAttr.nodeWidth - 65,
+              y: pAttrs.y + 5,
+              text: "OR",
+              fontSize: 26,
+              fontStyle: "bold",
+              fill: "#0000ff",
+              width: 80,
+              height: 80,
+              align: "center"
+            });
+            this.state.stageRef.children[1].add(ORText);
+          }
+        });
+      });
+      let mainEntity = this.state.stageRef.find(
+        "." + this.state.entityData.id
+      )[0].attrs;
+      let ORText = new Konva.Text({
+        name: "ORText",
+        x: mainEntity.x + this.state.graphAttr.nodeWidth / 2 - 10,
+        y: mainEntity.y + this.state.graphAttr.nodeHeight + 60,
+        text: "OR",
+        fontSize: 26,
+        fontStyle: "bold",
+        fill: "#0000ff",
+        width: 80,
+        height: 80,
+        align: "center"
+      });
+      this.state.stageRef.children[1].add(ORText);
     }
   };
 
