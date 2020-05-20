@@ -1466,25 +1466,26 @@ class EntityGraph extends Component {
                     </span>{" "}
                     according to{" "}
                     <span>
-                      {this.state.openInfoPage.contest.passageLinks[i].map(
-                        (p, j) => {
-                          if (
-                            j ===
-                            this.state.openInfoPage.contest.passageLinks[i]
-                              .length -
-                              1
-                          ) {
-                            return this.getPassageLink(p);
-                          } else {
-                            return (
-                              <span>
-                                {this.getPassageLink(p)}
-                                {" and "}
-                              </span>
-                            );
-                          }
-                        }
+                      {console.log(
+                        "Open page",
+                        this.state.openInfoPage.contest,
+                        "is undefined",
+                        this.state.openInfoPage.contest.passageLinks[i],
+                        "i",
+                        i
                       )}
+                      {c.passage.map((p, j) => {
+                        if (j === c.passage.length - 1) {
+                          return this.getPassageLink(p);
+                        } else {
+                          return (
+                            <span>
+                              {this.getPassageLink(p)}
+                              {" and "}
+                            </span>
+                          );
+                        }
+                      })}
                     </span>
                     {i ===
                     this.state.openInfoPage.contest.contestedParents.length -
