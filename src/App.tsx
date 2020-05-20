@@ -128,6 +128,7 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
               <a
                 href="https://en.wikipedia.org/wiki/Bibliotheca_(Pseudo-Apollodorus)"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 https://en.wikipedia.org/wiki/Bibliotheca_(Pseudo-Apollodorus)
               </a>
@@ -149,6 +150,7 @@ class App extends React.Component<{}, { subjectID: string; open: boolean }> {
               <a
                 href="https://books.google.com.au/books?id=s8pgDwAAQBAJ&source=gbs_book_other_versions"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 https://books.google.com.au/books?id=s8pgDwAAQBAJ&source=gbs_book_other_versions)
               </a>

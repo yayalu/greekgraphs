@@ -1,15 +1,14 @@
 // template from: https://konvajs.org/docs/react/index.html
 // Refs (stage and components): https://reactjsexample.com/react-binding-to-canvas-element-via-konva-framework/
 import React, { Component } from "react";
-import Konva from "konva";
 import { Stage, Layer, Text, Rect, Line, Image } from "react-konva";
 import relationships from "./data/relationships.json";
 import objects from "./data/objects.json";
 import { getName } from "./DataCardHandler";
 import entities from "./data/entities.json";
 import useImage from "use-image";
+import Konva from "konva";
 import passages from "./data/passages.json";
-import { tickStep, max } from "d3";
 
 class EntityGraph extends Component {
   constructor(props) {
@@ -993,16 +992,34 @@ class EntityGraph extends Component {
 
   getUnusualImage = type => {
     if (type === "Autochthony") {
-      return <img src={require("./images/autochthony.png")}></img>;
+      return (
+        <img alt="autochthony" src={require("./images/autochthony.png")}></img>
+      );
     } else if (type === "Created Without Parents") {
-      return <img src={require("./images/createdWithoutParents.png")}></img>;
+      return (
+        <img
+          alt="creation without parents"
+          src={require("./images/createdWithoutParents.png")}
+        ></img>
+      );
     } else if (type === "Created by Someone Else") {
-      return <img src={require("./images/createdByAgent.png")}></img>;
+      return (
+        <img
+          alt="created by someone else"
+          src={require("./images/createdByAgent.png")}
+        ></img>
+      );
     } else if (type === "Born from an Object") {
-      return <img src={require("./images/bornFromObject.png")}></img>;
+      return (
+        <img
+          alt="born from object"
+          src={require("./images/bornFromObject.png")}
+        ></img>
+      );
     } else if (type === "Parthenogenesis") {
       return (
         <img
+          alt="parthenogenesis"
           style={{ width: "37px", height: "auto" }}
           src={require("./images/parthenogenesis.png")}
         ></img>
@@ -1132,10 +1149,32 @@ class EntityGraph extends Component {
     });
 
     if (
-      e.target.attrs.contested.tf &&
-      e.target.attrs.contested.type === "Contested Parentage"
+      (e.target.attrs.contested.tf &&
+        e.target.attrs.contested.type === "Contested Parentage") ||
+      e.target.attrs.contested.type === "Contested Legacy"
     ) {
-      let sumX = 0;
+      // Add "OR" icon to top right of every node that's contested here
+
+      e.target.attrs.contested.contestedParents.forEach(p => {
+        if (this.state.stageRef.find("." + p.targetID)[0]) {
+          let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
+          let ORText = new Konva.Text({
+            name: "ORText",
+            x: pAttrs.x + this.state.graphAttr.nodeWidth - 70,
+            y: pAttrs.y + 5,
+            text: "OR",
+            fontSize: 26,
+            fontStyle: "bold",
+            fill: "#0000ff",
+            width: 80,
+            height: 80,
+            align: "center"
+          });
+          this.state.stageRef.children[1].add(ORText);
+        }
+      });
+
+      /* let sumX = 0;
       let numExistingContestNodes = 0;
       let y = 0;
       let padding = 40;
@@ -1150,7 +1189,7 @@ class EntityGraph extends Component {
           padding = 15;
         }
       });
-      /* let x =
+      let x =
         (sumX + this.state.graphAttr.nodeWidth) / numExistingContestNodes -
         padding;
        let ORText = new Konva.Text({
@@ -1201,9 +1240,9 @@ class EntityGraph extends Component {
       }
     });
 
-    /* if (e.target.attrs.contested.tf) {
-      this.state.stageRef.children[1].find(".ORText")[0].remove();
-    } */
+    if (e.target.attrs.contested.tf) {
+      this.state.stageRef.children[1].find(".ORText").remove();
+    }
   };
 
   handleClickedLine = e => {
@@ -1466,14 +1505,6 @@ class EntityGraph extends Component {
                     </span>{" "}
                     according to{" "}
                     <span>
-                      {console.log(
-                        "Open page",
-                        this.state.openInfoPage.contest,
-                        "is undefined",
-                        this.state.openInfoPage.contest.passageLinks[i],
-                        "i",
-                        i
-                      )}
                       {c.passage.map((p, j) => {
                         if (j === c.passage.length - 1) {
                           return this.getPassageLink(p);
