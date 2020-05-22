@@ -718,20 +718,21 @@ class DataCards extends React.Component<DatumProps, DatumState> {
     } else {
     } */
 
+    let entityID: string = "";
+    // Deal with Lycaon not showing up in Sons of Lycaon card
+    if (this.state.id === "9615105") {
+      entityID = "8189700";
+    } else {
+      entityID = entities[id]["Collective (geneal.): children of ID"];
+    }
     return (
       <div id="datacard-alternativename">
         The {relation} of{" "}
         <span
           style={{ textDecoration: "underline", cursor: "pointer" }}
-          onClick={() =>
-            this.handleNameClicked(
-              entities[id]["Collective (geneal.): children of ID"]
-            )
-          }
+          onClick={() => this.handleNameClicked(entityID)}
         >
-          {getName(
-            entities[entities[id]["Collective (geneal.): children of ID"]]
-          )}
+          {getName(entities[entityID])}
         </span>
         {otherParents === "" ? (
           ""

@@ -858,6 +858,7 @@ class EntityGraph extends Component {
     } else {
       URN = passages[id]["CTS URN"];
     }
+    URN = URN.replace(/grc2/, "eng2"); // View the existing passages CTS URN to english translation
     URN = "https://scaife.perseus.org/reader/" + URN;
     if (passage.endID !== "") {
       end = passages[end].Passage;
