@@ -55,6 +55,8 @@ class Search extends React.Component<SearchProps, SearchState> {
 
   pageRedirect = () => {
     if (this.state.redirect) {
+      let currentInput = document.getElementById("input") as HTMLInputElement;
+      currentInput.value = "";
       return <Redirect to={"/datacards?id=" + this.state.targetID} />;
     }
   };
