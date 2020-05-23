@@ -138,6 +138,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       category: "NameClicked",
       action: "User clicked on a name within the data card"
     });
+    window.scrollTo(0, 0);
     this.props.history.push("/datacards?id=" + targetID);
   }
 

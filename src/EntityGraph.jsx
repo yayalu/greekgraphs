@@ -1300,6 +1300,7 @@ class EntityGraph extends Component {
         }
       });
     } else if (e.target.attrs.contested.tf) {
+      window.scrollTo(0, 0);
       this.setState({
         openInfoPage: {
           showContestPage: true,
@@ -1470,7 +1471,7 @@ class EntityGraph extends Component {
       );
     };
     return (
-      <React.Fragment>
+      <div id="outerDiv">
         {/* Legend */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1>Graph Legend</h1>
@@ -1967,7 +1968,7 @@ class EntityGraph extends Component {
             ))}
           </Layer>
         </Stage>
-      </React.Fragment>
+      </div>
     );
   }
 }
