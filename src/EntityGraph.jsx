@@ -886,8 +886,8 @@ class EntityGraph extends Component {
   }
 
   getContestedPermutations(contest) {
-    let outer;
-    let inner;
+    let outer = [];
+    let inner = [];
     if (
       contest.contestedFathers.length > 1 &&
       contest.contestedMothers.length > 1
@@ -899,19 +899,73 @@ class EntityGraph extends Component {
         outer = contest.contestedMothers;
         inner = contest.contestedFathers;
       }
+    } // dispute when other parent is unknown, and known parents are contested
+    else if (
+      (contest.contestedFathers.length === 0) &
+      (contest.uncontestedParents.length === 0) &
+      (contest.contestedMothers.length > 0)
+    ) {
+      outer = contest.contestedMothers;
+    } else if (
+      (contest.contestedMothers.length === 0) &
+      (contest.uncontestedParents.length === 0) &
+      (contest.contestedFathers.length > 0)
+    ) {
+      outer = contest.contestedFathers;
     } else {
       outer = contest.uncontestedParents;
-      if (contest.contestedFathers.length > 1) {
-        inner = contest.contestedFathers;
-      } else if (contest.contestedMothers.length > 1) {
-        inner = contest.contestedMothers;
-      }
+      inner =
+        contest.contestedFathers.length > 0
+          ? contest.contestedFathers
+          : contest.contestedMothers;
     }
-    console.log("outer", outer, "inner", inner);
     return (
       <div>
         {outer.map((out, i) => {
-          return inner.map((inn, j) => {
+          if (inner.length > 0) {
+            return inner.map((inn, j) => {
+              return (
+                <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
+                  <span style={{ fontWeight: "bold" }}>
+                    {getName(entities[contest.child])}
+                  </span>{" "}
+                  is child of{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {getName(entities[out.targetID])}
+                  </span>{" "}
+                  <span>
+                    {out.passage.map((p, k) => {
+                      return <span>{this.getPassageLink(p)} </span>;
+                    })}
+                  </span>
+                  and{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {getName(entities[inn.targetID])}
+                  </span>{" "}
+                  {inn.passage.map((p, k) => {
+                    return <span>{this.getPassageLink(p)} </span>;
+                  })}
+                  {/* if (k === child.passage.length - 1) {
+                  return this.getPassageLink(p);
+                } else {
+                  return (
+                    <span>
+                      {this.getPassageLink(p)}
+                      {" "}
+                    </span>
+                  );
+                } */}
+                  {i === outer.length - 1 && j === inner.length - 1 ? (
+                    ""
+                  ) : (
+                    <div>
+                      <p></p>OR<p></p>
+                    </div>
+                  )}
+                </div>
+              );
+            });
+          } else {
             return (
               <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
                 <span style={{ fontWeight: "bold" }}>
@@ -926,24 +980,7 @@ class EntityGraph extends Component {
                     return <span>{this.getPassageLink(p)} </span>;
                   })}
                 </span>
-                and{" "}
-                <span style={{ fontWeight: "bold" }}>
-                  {getName(entities[inn.targetID])}
-                </span>{" "}
-                {inn.passage.map((p, k) => {
-                  return <span>{this.getPassageLink(p)} </span>;
-                })}
-                {/* if (k === child.passage.length - 1) {
-                  return this.getPassageLink(p);
-                } else {
-                  return (
-                    <span>
-                      {this.getPassageLink(p)}
-                      {" "}
-                    </span>
-                  );
-                } */}
-                {i === outer.length - 1 && j === inner.length - 1 ? (
+                {i === outer.length - 1 ? (
                   ""
                 ) : (
                   <div>
@@ -952,7 +989,7 @@ class EntityGraph extends Component {
                 )}
               </div>
             );
-          });
+          }
         })}
       </div>
     );
