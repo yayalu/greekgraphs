@@ -1290,6 +1290,15 @@ class EntityGraph extends Component {
       e.target.attrs.unusual.tf &&
       e.target.attrs.contestedUnusual.isUnusual
     ) {
+      //Rudimentary solution for scrolling up to the contested info page
+      if (
+        !this.state.openInfoPage.showContestPage &&
+        !this.state.openInfoPage.showUnusualPage
+      ) {
+        window.scrollBy(-3000, -200);
+      } else {
+        window.scrollBy(-3000, -400);
+      }
       //this.props.handleUnusualClicked = e.target.attrs.unusual;
       this.setState({
         openInfoPage: {
@@ -1300,7 +1309,21 @@ class EntityGraph extends Component {
         }
       });
     } else if (e.target.attrs.contested.tf) {
-      window.scrollTo(0, 0);
+      // let legend = document.getElementById("legend");
+      // let pos = legend.getBoundingClientRect();
+      // let x = 0; //
+      // let y = pos.bottom;
+      // console.log("Current input", pos);
+
+      //Rudimentary solution for scrolling up to the contested info page
+      if (
+        !this.state.openInfoPage.showContestPage &&
+        !this.state.openInfoPage.showUnusualPage
+      ) {
+        window.scrollBy(-3000, -200);
+      } else {
+        window.scrollBy(-3000, -400);
+      }
       this.setState({
         openInfoPage: {
           showContestPage: true,
@@ -1360,6 +1383,15 @@ class EntityGraph extends Component {
         passage: e.target.attrs.info.passage,
         child: this.state.id
       };
+    }
+    //Rudimentary solution for scrolling up to the contested info page
+    if (
+      !this.state.openInfoPage.showContestPage &&
+      !this.state.openInfoPage.showUnusualPage
+    ) {
+      window.scrollBy(-3000, -200);
+    } else {
+      window.scrollBy(-3000, -400);
     }
     this.setState({
       openInfoPage: {
@@ -1471,9 +1503,9 @@ class EntityGraph extends Component {
       );
     };
     return (
-      <div id="outerDiv">
+      <React.Fragment>
         {/* Legend */}
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "2rem" }} id="legend">
           <h1>Graph Legend</h1>
           <img
             alt="graph legend"
@@ -1485,6 +1517,7 @@ class EntityGraph extends Component {
           Clicking on coloured lines and icons shows you information for that
           connection.
         </div>
+
         {/* Info pages for contested relationships */}
         <div
           style={{
@@ -1496,6 +1529,7 @@ class EntityGraph extends Component {
           className={
             this.state.openInfoPage.showContestPage ? "" : "no-display"
           }
+          id="contestedInfoPage"
         >
           <div
             style={{
@@ -1644,6 +1678,7 @@ class EntityGraph extends Component {
             className={
               this.state.openInfoPage.showUnusualPage ? "" : "no-display"
             }
+            id="unusualInfoPage"
           >
             <div
               style={{
@@ -1968,7 +2003,7 @@ class EntityGraph extends Component {
             ))}
           </Layer>
         </Stage>
-      </div>
+      </React.Fragment>
     );
   }
 }
