@@ -629,8 +629,8 @@ class EntityGraph extends Component {
       let contested = {
         tf: false,
         type: "",
-        passageLinks: undefined,
-        contestedParents: undefined,
+        contestedMothers: undefined,
+        contestedFathers: undefined,
         uncontestedParents: undefined,
         child: undefined
       };
@@ -683,29 +683,27 @@ class EntityGraph extends Component {
 
         // CHECK CONTESTED (PART 2): Check if the main entity has > two parents. If so, is contested
         if (connections[i].parents.length > 2) {
-          // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
-          let contestedParents = [];
-          let uncontestedParents;
-          let passageLinks = [];
+          let contestedMothers = [];
+          let contestedFathers = [];
+          let uncontestedParents = [];
+
           if (entityData.relationships.MOTHERS.length > 1) {
-            contestedParents = entityData.relationships.MOTHERS;
-            entityData.relationships.MOTHERS.forEach(m => {
-              passageLinks.push(m.passage);
-            });
-            uncontestedParents = entityData.relationships.FATHERS[0];
-          } else {
-            // (entityData.relationships.FATHERS.length > 1) {
-            contestedParents = entityData.relationships.FATHERS;
-            entityData.relationships.MOTHERS.forEach(m => {
-              passageLinks.push(m.passage);
-            });
-            uncontestedParents = entityData.relationships.MOTHERS[0];
+            contestedMothers = entityData.relationships.MOTHERS;
+          } else if (entityData.relationships.MOTHERS.length === 1) {
+            uncontestedParents.push(entityData.relationships.MOTHERS[0]);
           }
+
+          if (entityData.relationships.FATHERS.length > 1) {
+            contestedFathers = entityData.relationships.FATHERS;
+          } else if (entityData.relationships.FATHERS.length === 1) {
+            uncontestedParents.push(entityData.relationships.FATHERS[0]);
+          }
+
           contested = {
             tf: true,
             type: "Contested Parentage",
-            passageLinks: passageLinks,
-            contestedParents: contestedParents,
+            contestedMothers: contestedMothers,
+            contestedFathers: contestedFathers,
             uncontestedParents: uncontestedParents,
             child: entityData.id
           }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
@@ -721,8 +719,8 @@ class EntityGraph extends Component {
           contested = {
             tf: true,
             type: "Contested Legacy",
-            passageLinks: undefined,
-            contestedParents: undefined,
+            contestedMothers: undefined,
+            contestedFathers: undefined,
             uncontestedParents: undefined,
             child: undefined
           };
@@ -735,8 +733,8 @@ class EntityGraph extends Component {
             contested = {
               tf: true,
               type: "Contested Legacy",
-              passageLinks: undefined,
-              contestedParents: undefined,
+              contestedMothers: undefined,
+              contestedFathers: undefined,
               uncontestedParents: undefined,
               child: undefined
             };
@@ -778,29 +776,31 @@ class EntityGraph extends Component {
                   cRelationships.relationships.FATHERS.length >
                 2
               ) {
-                // CURRENTLY ASSUMES ONLY ONE SIDE HAS MORE THAN ONE PARENT
-                let contestedParents = [];
-                let uncontestedParents; //uncontested parents (singular)
-                let passageLinks = [];
+                let contestedMothers = [];
+                let contestedFathers = [];
+                let uncontestedParents = [];
                 if (cRelationships.relationships.MOTHERS.length > 1) {
-                  contestedParents = cRelationships.relationships.MOTHERS;
-                  cRelationships.relationships.MOTHERS.forEach(m => {
-                    passageLinks.push(m.passage);
-                  });
-                  uncontestedParents = cRelationships.relationships.FATHERS[0];
-                } else {
-                  // (entityData.relationships.FATHERS.length > 1) {
-                  contestedParents = cRelationships.relationships.FATHERS;
-                  cRelationships.relationships.MOTHERS.forEach(m => {
-                    passageLinks.push(m.passage);
-                  });
-                  uncontestedParents = cRelationships.relationships.MOTHERS[0];
+                  contestedMothers = cRelationships.relationships.MOTHERS;
+                } else if (cRelationships.relationships.MOTHERS.length === 1) {
+                  uncontestedParents = [
+                    cRelationships.relationships.MOTHERS[0]
+                  ];
                 }
+
+                if (cRelationships.relationships.FATHERS.length > 1) {
+                  // (entityData.relationships.FATHERS.length > 1) {
+                  contestedFathers = cRelationships.relationships.FATHERS;
+                } else if (cRelationships.relationships.FATHERS.length === 1) {
+                  uncontestedParents = [
+                    cRelationships.relationships.FATHERS[0]
+                  ];
+                }
+
                 contested = {
                   tf: true,
                   type: "Contested Parentage",
-                  passageLinks: passageLinks,
-                  contestedParents: contestedParents,
+                  contestedMothers: contestedMothers,
+                  contestedFathers: contestedFathers,
                   uncontestedParents: uncontestedParents,
                   child: c
                 }; // contestedParents - the list of all parents that are contested, e.g. contested mothers, contested fathers
@@ -882,6 +882,79 @@ class EntityGraph extends Component {
           {start !== end && end !== "" ? "-" + end : ""}
         </a>
       </span>
+    );
+  }
+
+  getContestedPermutations(contest) {
+    let outer;
+    let inner;
+    if (
+      contest.contestedFathers.length > 1 &&
+      contest.contestedMothers.length > 1
+    ) {
+      if (contest.contestedFathers.length >= contest.contestedMothers.length) {
+        outer = contest.contestedFathers;
+        inner = contest.contestedMothers;
+      } else {
+        outer = contest.contestedMothers;
+        inner = contest.contestedFathers;
+      }
+    } else {
+      outer = contest.uncontestedParents;
+      if (contest.contestedFathers.length > 1) {
+        inner = contest.contestedFathers;
+      } else if (contest.contestedMothers.length > 1) {
+        inner = contest.contestedMothers;
+      }
+    }
+    console.log("outer", outer, "inner", inner);
+    return (
+      <div>
+        {outer.map((out, i) => {
+          return inner.map((inn, j) => {
+            return (
+              <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
+                <span style={{ fontWeight: "bold" }}>
+                  {getName(entities[contest.child])}
+                </span>{" "}
+                is child of{" "}
+                <span style={{ fontWeight: "bold" }}>
+                  {getName(entities[out.targetID])}
+                </span>{" "}
+                <span>
+                  {out.passage.map((p, k) => {
+                    return <span>{this.getPassageLink(p)} </span>;
+                  })}
+                </span>
+                and{" "}
+                <span style={{ fontWeight: "bold" }}>
+                  {getName(entities[inn.targetID])}
+                </span>{" "}
+                {inn.passage.map((p, k) => {
+                  return <span>{this.getPassageLink(p)} </span>;
+                })}
+                {/* if (k === child.passage.length - 1) {
+                  return this.getPassageLink(p);
+                } else {
+                  return (
+                    <span>
+                      {this.getPassageLink(p)}
+                      {" "}
+                    </span>
+                  );
+                } */}
+                {i === outer.length - 1 && j === inner.length - 1 ? (
+                  ""
+                ) : (
+                  <div>
+                    <p></p>OR<p></p>
+                  </div>
+                )}
+              </div>
+            );
+          });
+        })}
+      </div>
     );
   }
 
@@ -1155,7 +1228,26 @@ class EntityGraph extends Component {
     ) {
       // Add "OR" icon to top right of every node that's contested here
 
-      e.target.attrs.contested.contestedParents.forEach(p => {
+      e.target.attrs.contested.contestedMothers.forEach(p => {
+        if (this.state.stageRef.find("." + p.targetID)[0]) {
+          let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
+          let ORText = new Konva.Text({
+            name: "ORText",
+            x: pAttrs.x + this.state.graphAttr.nodeWidth - 65,
+            y: pAttrs.y + 5,
+            text: "OR",
+            fontSize: 26,
+            fontStyle: "bold",
+            fill: "#0000ff",
+            width: 80,
+            height: 80,
+            align: "center"
+          });
+          this.state.stageRef.children[1].add(ORText);
+        }
+      });
+
+      e.target.attrs.contested.contestedFathers.forEach(p => {
         if (this.state.stageRef.find("." + p.targetID)[0]) {
           let pAttrs = this.state.stageRef.find("." + p.targetID)[0].attrs;
           let ORText = new Konva.Text({
@@ -1299,7 +1391,6 @@ class EntityGraph extends Component {
       } else {
         window.scrollBy(-3000, -400);
       }
-      //this.props.handleUnusualClicked = e.target.attrs.unusual;
       this.setState({
         openInfoPage: {
           showContestPage: false,
@@ -1559,53 +1650,9 @@ class EntityGraph extends Component {
             <p>In this case, the contestation is:</p>
             {this.state.openInfoPage.contest &&
             this.state.openInfoPage.contest.type === "Contested Parentage" ? (
-              this.state.openInfoPage.contest.contestedParents.map((c, i) => {
-                return (
-                  <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
-                    <span style={{ fontWeight: "bold" }}>
-                      {getName(entities[this.state.openInfoPage.contest.child])}
-                    </span>{" "}
-                    is child of{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {getName(
-                        entities[
-                          this.state.openInfoPage.contest.uncontestedParents
-                            .targetID
-                        ]
-                      )}
-                    </span>{" "}
-                    and{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      {getName(entities[c.targetID])}
-                    </span>{" "}
-                    according to{" "}
-                    <span>
-                      {c.passage.map((p, j) => {
-                        if (j === c.passage.length - 1) {
-                          return this.getPassageLink(p);
-                        } else {
-                          return (
-                            <span>
-                              {this.getPassageLink(p)}
-                              {" and "}
-                            </span>
-                          );
-                        }
-                      })}
-                    </span>
-                    {i ===
-                    this.state.openInfoPage.contest.contestedParents.length -
-                      1 ? (
-                      ""
-                    ) : (
-                      <div>
-                        <p></p>OR<p></p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
+              this.getContestedPermutations(this.state.openInfoPage.contest)
             ) : (
+              // Dies without children contested
               <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
                 <span style={{ fontWeight: "bold" }}>
                   {this.state.entityData.name}{" "}
