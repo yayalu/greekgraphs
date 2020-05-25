@@ -207,13 +207,13 @@ class EntityGraph extends Component {
 
     //Parents and step-parents depth -1
     entityData.relationships.MOTHERS.forEach(m => {
-      depthNegOne.push(m.targetID);
+      depthNegOne = this.checkForDuplicates(depthNegOne, m.targetID);
     });
     entityData.relationships.FATHERS.forEach(f => {
-      depthNegOne.push(f.targetID);
+      depthNegOne = this.checkForDuplicates(depthNegOne, f.targetID);
     });
     entityData.relationships.CREATORS.forEach(c => {
-      depthNegOne.push(c.targetID);
+      depthNegOne = this.checkForDuplicates(depthNegOne, c.targetID);
     });
 
     // Create unusual nodes, and add them to the end of depth -1
@@ -234,13 +234,13 @@ class EntityGraph extends Component {
 
     //siblings, twins and spouses depth 0
     entityData.relationships.SIBLINGS.forEach(s => {
-      depthZero.push(s.targetID);
+      depthZero = this.checkForDuplicates(depthZero, s.targetID);
     });
     entityData.relationships.TWIN.forEach(t => {
-      depthZero.push(t.targetID);
+      depthZero = this.checkForDuplicates(depthZero, t.targetID);
     });
     entityData.relationships.SPOUSES.forEach(s => {
-      depthZero.push(s.targetID);
+      depthZero = this.checkForDuplicates(depthZero, s.targetID);
     });
 
     // + all other parents
