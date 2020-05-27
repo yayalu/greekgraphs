@@ -471,7 +471,7 @@ class EntityGraph extends Component {
     // CHECK INCESTUOUS RELATIONSHIPS
 
     // Check incest over multiple depths
-    // TODO: Currently only does gen 1 incest e.g. depthNegOne -> depthZero, depthZero -> depthPosOne
+    // TODO: Currently only does gen depth 1 incest e.g. depthNegOne -> depthZero, depthZero -> depthPosOne
     for (let i = 0; i < depthNodes.depthNegOne.length; i++) {
       if (depthNodes.depthZero.includes(depthNodes.depthNegOne[i])) {
         let connection = {
@@ -498,6 +498,26 @@ class EntityGraph extends Component {
         allConnections.push(connection);
       }
     }
+    // Check incest over the same depth (only sibling & spouse atm)
+    // ignores all unusual cases, e.g. autochthony_NegOne
+    entityData.relationships.SPOUSES.forEach(spo => {
+      entityData.relationships.SIBLINGS.forEach(sib => {
+        if (
+          spo.targetID === sib.targetID &&
+          depthNodes.depthZero.includes(spo.targetID)
+        ) {
+          let connection = {
+            parents: [entityData.id, spo.targetID],
+            children: [],
+            pNodeDepth: "depthZero",
+            contestedUnusual: false,
+            isUnusual: false,
+            isIncest: true
+          };
+          allConnections.push(connection);
+        }
+      });
+    });
 
     return allConnections;
   };
@@ -585,8 +605,10 @@ class EntityGraph extends Component {
         linePoints.push(pX - 12, lowerpY + 12); //bottom left corner of X
         linePoints.push(pX, lowerpY); // back to center of x
         linePoints.push(pX + 12, lowerpY + 12); //bottom right corner of X
-      } else if (connections[i].isIncest) {
-        // Deal with incest - multiple depths
+      }
+      // Deal with incest
+      else if (connections[i].isIncest) {
+        // intergenerational (over multiple depths)
         if (connections[i].parents.length === 1) {
           let x1 = 0,
             x2 = 0,
@@ -619,7 +641,21 @@ class EntityGraph extends Component {
           }
           linePoints.push(x1, y1, x2, y2);
         }
+        // spousal-sibling (over same depth)
         if (connections[i].parents.length > 1) {
+          let x1 =
+            initX +
+            depthNodes.depthZero.indexOf(connections[i].parents[0]) * spaceX +
+            width / 2;
+          let aY = graphAttr.ZeroY;
+          let x2 =
+            initX +
+            depthNodes.depthZero.indexOf(connections[i].parents[1]) * spaceX +
+            width / 2;
+          linePoints.push(x1, aY, x1, aY - diff, x2, aY - diff, x2, aY);
+
+          let bY = graphAttr.ZeroY + graphAttr.nodeHeight;
+          linePoints.push(x1, bY, x1, bY + diff, x2, bY + diff, x2, bY);
         }
       } else {
         // TODO: All other connections
@@ -914,16 +950,39 @@ class EntityGraph extends Component {
         }
       }
 
-      allLinePoints.push({
-        name: name,
-        points: linePoints,
-        unusual: unusual,
-        incest: incest,
-        contested: contested,
-        contestedUnusual: contestedUnusual,
-        isUnusual: isUnusual,
-        pNodeDepth: connections[i].pNodeDepth
-      });
+      if (connections[i].isIncest && connections[i].parents.length > 1) {
+        allLinePoints.push({
+          name: name,
+          points: linePoints.slice(0, 8),
+          unusual: unusual,
+          incest: incest,
+          contested: contested,
+          contestedUnusual: contestedUnusual,
+          isUnusual: isUnusual,
+          pNodeDepth: connections[i].pNodeDepth
+        });
+        allLinePoints.push({
+          name: name,
+          points: linePoints.slice(8, linePoints.length),
+          unusual: unusual,
+          incest: incest,
+          contested: contested,
+          contestedUnusual: contestedUnusual,
+          isUnusual: isUnusual,
+          pNodeDepth: connections[i].pNodeDepth
+        });
+      } else {
+        allLinePoints.push({
+          name: name,
+          points: linePoints,
+          unusual: unusual,
+          incest: incest,
+          contested: contested,
+          contestedUnusual: contestedUnusual,
+          isUnusual: isUnusual,
+          pNodeDepth: connections[i].pNodeDepth
+        });
+      }
     }
     return allLinePoints;
   };
@@ -1204,7 +1263,9 @@ class EntityGraph extends Component {
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
     } else if (type === "sameGen" || type === "interGen") {
-      let allExamples = ["8188355", "8188390", "8188388"];
+      let allExamples = ["8188399", "8188355", "8187838", "8188390", "8188388"];
+      allExamples.splice(allExamples.indexOf(currentExampleID), 1);
+      allExamples.splice(allExamples.indexOf(this.state.entityData.id), 1);
       return allExamples;
     } else return [];
   };
@@ -1328,14 +1389,17 @@ class EntityGraph extends Component {
   /* Line handling (contested + unusual) */
   handleMouseOverLine = e => {
     // thicken the main line
-
     e.target.to({
       strokeWidth: 8,
       opacity: 1
     });
-    // console.log(e, "Before 2");
+    // if is incestuous and sameGen, thicken other line as well
+    /* Doesn't work for some reason 
+    if (e.target.attrs.incest.type === "sameGen") {
+      let matchingLines = this.state.stageRef.find(e.target.attrs.name);
+      console.log(matchingLines, e.target.attrs.name, this.state.stageRef);
+    } */
 
-    // console.log(e, "After");
     // Deal with change of stroke colour when hovering over contestedUnusual connections
     if (e.target.attrs.contestedUnusual.isContested) {
       if (e.target.attrs.contestedUnusual.isUnusual) {
@@ -2078,14 +2142,26 @@ class EntityGraph extends Component {
                       " "
                     : ""}
                 </span>
-                {this.state.openInfoPage.incest
-                  ? this.state.openInfoPage.incest.type === "sameGen"
-                    ? "has a relationship with X which is an incestuous relationship."
-                    : "is mentioned twice in this graph in different generations, meaning they are involved in an incestuous inter-generational relationship."
-                  : ""}
+                {this.state.openInfoPage.incest ? (
+                  this.state.openInfoPage.incest.type === "sameGen" ? (
+                    <span>
+                      has a relationship with{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {getName(
+                          entities[this.state.openInfoPage.incest.involved[1]]
+                        )}{" "}
+                      </span>
+                      which is an incestuous relationship.
+                    </span>
+                  ) : (
+                    "is mentioned twice in this graph in different generations, meaning they are either involved in, or are a product of an incestuous inter-generational relationship."
+                  )
+                ) : (
+                  ""
+                )}
               </div>
               {this.getOtherUnusualExamples(
-                this.state.entityData.id,
+                this.state.openInfoPage.incest.involved[0],
                 this.state.openInfoPage.incest.type
               ).length > 0 ? (
                 <React.Fragment>
@@ -2094,7 +2170,7 @@ class EntityGraph extends Component {
                   </div>
                   <ul>
                     {this.getOtherUnusualExamples(
-                      this.state.entityData.id,
+                      this.state.openInfoPage.incest.involved[0],
                       this.state.openInfoPage.incest.type
                     ).map(id => {
                       return (
