@@ -38,7 +38,9 @@ class EntityGraph extends Component {
         showContestPage: false,
         contest: undefined,
         showUnusualPage: false,
-        unusual: undefined
+        unusual: undefined,
+        showIncestPage: false,
+        incest: undefined
       }
     };
     this.getDepthNodes = this.getDepthNodes.bind(this);
@@ -72,9 +74,13 @@ class EntityGraph extends Component {
     // THE FOLLOWING POPULATES THE GRAPH WITH DEFUALT RELATIONSHIP INFORMATION (AGAMEMNON) AS THIS DEALS WIIH UNDEFINED ERRORS
     // SPACE-WASTING BUT WORKS AS A TEMPORARY SOLUTION
     let entityData = JSON.parse(relationships[this.props.id]);
-    let connectionsList = this.getConnectionsList(entityData, this.props.id);
-
     let depthNodes = this.getDepthNodes(entityData);
+    let connectionsList = this.getConnectionsList(
+      entityData,
+      depthNodes,
+      this.props.id
+    );
+
     let NegOneY = 0,
       ZeroY = 0,
       PosOneY = 0;
@@ -118,7 +124,9 @@ class EntityGraph extends Component {
         showContestPage: false,
         contest: undefined,
         showUnusualPage: false,
-        unusual: undefined
+        unusual: undefined,
+        showIncestPage: false,
+        incest: undefined
       }
     });
   }
@@ -130,7 +138,11 @@ class EntityGraph extends Component {
       let depthNodes = this.getDepthNodes(entityData);
 
       // Create a connection calculator here
-      let connectionsList = this.getConnectionsList(entityData, this.props.id);
+      let connectionsList = this.getConnectionsList(
+        entityData,
+        depthNodes,
+        this.props.id
+      );
 
       let NegOneY = 0,
         ZeroY = 0,
@@ -176,7 +188,9 @@ class EntityGraph extends Component {
           showContestPage: false,
           contest: undefined,
           showUnusualPage: false,
-          unusual: undefined
+          unusual: undefined,
+          showIncestPage: false,
+          incest: undefined
         }
       });
     }
@@ -278,7 +292,7 @@ class EntityGraph extends Component {
 
   /* GET THE CONNECTIONS BETWEEN ENTITIES BASED ON THE RELATIONSHIPS GIVEN */
   /* returns: [{parents: [list of ids], children: [list of ids], pNodeDepth: <depthNegOne, depthZero, depthPosOne>} , {...}] */
-  getConnectionsList = (entityData, id) => {
+  getConnectionsList = (entityData, depthNodes, id) => {
     let allConnections = [];
 
     //ADDING CONNECTIONS FOR MOTHER+FATHER -> YOU+SIBLING+TWIN
@@ -291,7 +305,8 @@ class EntityGraph extends Component {
         children: [],
         pNodeDepth: "",
         contestedUnusual: false,
-        isUnusual: false //"isUnusual" is used to denote the part of the contestedUnusual grouping that is not unusual, e.g. the normal disputed relationship paired with the unusual one
+        isUnusual: false, //"isUnusual" is used to denote the part of the contestedUnusual grouping that is not unusual, e.g. the normal disputed relationship paired with the unusual one
+        isIncest: false
       };
       let parentsDepth = entityData.relationships.MOTHERS.concat(
         entityData.relationships.FATHERS
@@ -331,7 +346,8 @@ class EntityGraph extends Component {
           children: [],
           pNodeDepth: "",
           contestedUnusual: false,
-          isUnusual: false
+          isUnusual: false,
+          isIncest: false
         };
         cp.child.forEach(c => {
           connection.children.push(c.targetID);
@@ -355,7 +371,8 @@ class EntityGraph extends Component {
             children: [],
             pNodeDepth: "depthZero",
             contestedUnusual: false,
-            isUnusual: false
+            isUnusual: false,
+            isIncest: false
           });
           // TODO: Deal with children is empty when spouse without children
           // TODO: Add contestedUnusual here
@@ -375,7 +392,8 @@ class EntityGraph extends Component {
         children: [id],
         pNodeDepth: "depthNegOne",
         contestedUnusual: false,
-        isUnusual: true
+        isUnusual: true,
+        isIncest: false
       };
       if (moreParents) {
         connection.contestedUnusual = true;
@@ -387,7 +405,8 @@ class EntityGraph extends Component {
         children: [id],
         pNodeDepth: "depthNegOne",
         contestedUnusual: false,
-        isUnusual: true
+        isUnusual: true,
+        isIncest: false
       };
       if (moreParents) {
         connection.contestedUnusual = true;
@@ -403,7 +422,8 @@ class EntityGraph extends Component {
         children: [id],
         pNodeDepth: "depthNegOne",
         contestedUnusual: false,
-        isUnusual: true
+        isUnusual: true,
+        isIncest: false
       };
       if (moreParents) {
         connection.contestedUnusual = true;
@@ -415,7 +435,8 @@ class EntityGraph extends Component {
         children: [id],
         pNodeDepth: "depthNegOne",
         contestedUnusual: false,
-        isUnusual: true
+        isUnusual: true,
+        isIncest: false
       };
       if (moreParents) {
         connection.contestedUnusual = true;
@@ -428,7 +449,8 @@ class EntityGraph extends Component {
         children: ["diesWithoutChildren"],
         pNodeDepth: "depthZero",
         contestedUnusual: false,
-        isUnusual: false
+        isUnusual: false,
+        isIncest: false
       };
       allConnections.push(connection);
     } else if (entityData.unusual.parthenogenesis.tf) {
@@ -437,13 +459,46 @@ class EntityGraph extends Component {
         children: [id],
         pNodeDepth: "depthNegOne",
         contestedUnusual: false,
-        isUnusual: true
+        isUnusual: true,
+        isIncest: false
       };
       if (moreParents) {
         connection.contestedUnusual = true;
       }
       allConnections.push(connection);
     }
+
+    // CHECK INCESTUOUS RELATIONSHIPS
+
+    // Check incest over multiple depths
+    // TODO: Currently only does gen 1 incest e.g. depthNegOne -> depthZero, depthZero -> depthPosOne
+    for (let i = 0; i < depthNodes.depthNegOne.length; i++) {
+      if (depthNodes.depthZero.includes(depthNodes.depthNegOne[i])) {
+        let connection = {
+          parents: [depthNodes.depthNegOne[i]],
+          children: [],
+          pNodeDepth: "depthNegOne",
+          contestedUnusual: false,
+          isUnusual: false,
+          isIncest: true
+        };
+        allConnections.push(connection);
+      }
+    }
+    for (let i = 0; i < depthNodes.depthZero.length; i++) {
+      if (depthNodes.depthPosOne.includes(depthNodes.depthZero[i])) {
+        let connection = {
+          parents: [depthNodes.depthZero[i]],
+          children: [],
+          pNodeDepth: "depthZero",
+          contestedUnusual: false,
+          isUnusual: false,
+          isIncest: true
+        };
+        allConnections.push(connection);
+      }
+    }
+
     return allConnections;
   };
 
@@ -530,8 +585,44 @@ class EntityGraph extends Component {
         linePoints.push(pX - 12, lowerpY + 12); //bottom left corner of X
         linePoints.push(pX, lowerpY); // back to center of x
         linePoints.push(pX + 12, lowerpY + 12); //bottom right corner of X
+      } else if (connections[i].isIncest) {
+        // Deal with incest - multiple depths
+        if (connections[i].parents.length === 1) {
+          let x1 = 0,
+            x2 = 0,
+            y1 = 0,
+            y2 = 0;
+          if (connections[i].pNodeDepth === "depthNegOne") {
+            x1 =
+              initX +
+              depthNodes.depthNegOne.indexOf(connections[i].parents[0]) *
+                spaceX +
+              width / 2;
+            x2 =
+              initX +
+              depthNodes.depthZero.indexOf(connections[i].parents[0]) * spaceX +
+              width / 2;
+            y1 = graphAttr.NegOneY + height;
+            y2 = graphAttr.ZeroY;
+          } else if (connections[i].pNodeDepth === "depthZero") {
+            x1 =
+              initX +
+              depthNodes.depthZero.indexOf(connections[i].parents[0]) * spaceX +
+              width / 2;
+            x2 =
+              initX +
+              depthNodes.depthPosOne.indexOf(connections[i].parents[0]) *
+                spaceX +
+              width / 2;
+            y1 = graphAttr.ZeroY + height;
+            y2 = graphAttr.PosOneY;
+          }
+          linePoints.push(x1, y1, x2, y2);
+        }
+        if (connections[i].parents.length > 1) {
+        }
       } else {
-        // TODO: Make the following more efficient
+        // TODO: All other connections
 
         let PM_Y = 0,
           PM_X = 0;
@@ -634,12 +725,25 @@ class EntityGraph extends Component {
         uncontestedParents: undefined,
         child: undefined
       };
+      let incest = {
+        tf: false,
+        type: "", //sameGen (e.g. sibling and spouse, same depth), interGen (child & parent, child & aunt, different depths)
+        involved: undefined
+      };
       // CHECK CONTESTED (PART 1): Check if the connection has already been acknowledged as contested and unusual at the same timee
       let contestedUnusual = connections[i].contestedUnusual;
       let isUnusual = connections[i].isUnusual;
 
+      // CHECK INCEST
+      if (connections[i].isIncest) {
+        incest = {
+          tf: true,
+          type: connections[i].parents.length <= 1 ? "interGen" : "sameGen",
+          involved: connections[i].parents
+        };
+      }
       // FOR PARENT -> MAIN NODE CONNECTIONS
-      if (connections[i].pNodeDepth === "depthNegOne") {
+      else if (connections[i].pNodeDepth === "depthNegOne") {
         // UNUSUAL: Since the depth in question is depth -1 => one of the children must be the main entity
         // Only check unusual status and contested status of the main entity
 
@@ -814,6 +918,7 @@ class EntityGraph extends Component {
         name: name,
         points: linePoints,
         unusual: unusual,
+        incest: incest,
         contested: contested,
         contestedUnusual: contestedUnusual,
         isUnusual: isUnusual,
@@ -1098,7 +1203,10 @@ class EntityGraph extends Component {
       let allExamples = ["8188476"];
       allExamples.splice(allExamples.indexOf(currentExampleID), 1);
       return allExamples;
-    }
+    } else if (type === "sameGen" || type === "interGen") {
+      let allExamples = ["8188355", "8188390", "8188388"];
+      return allExamples;
+    } else return [];
   };
 
   getUnusualImage = type => {
@@ -1198,20 +1306,36 @@ class EntityGraph extends Component {
   };
 
   handlePageChange = e => {
-    this.props.relationshipClicked(e.target.attrs.id);
+    // TODO: Fix this horrible solution for destroy undefined error for incestuous relationships
+    if (this.state.openInfoPage.incest && this.state.openInfoPage.incest.tf) {
+      this.props.relationshipClicked(e.target.attrs.id);
+      window.location.reload();
+    } else {
+      this.props.relationshipClicked(e.target.attrs.id);
+    }
   };
+
   handleInTextPageChange = id => {
-    this.props.relationshipClicked(id);
+    // TODO: Fix this horrible solution for destroy undefined error for incestuous relationships
+    if (this.state.openInfoPage.incest && this.state.openInfoPage.incest.tf) {
+      this.props.relationshipClicked(id);
+      window.location.reload();
+    } else {
+      this.props.relationshipClicked(id);
+    }
   };
 
   /* Line handling (contested + unusual) */
   handleMouseOverLine = e => {
     // thicken the main line
+
     e.target.to({
       strokeWidth: 8,
       opacity: 1
     });
+    // console.log(e, "Before 2");
 
+    // console.log(e, "After");
     // Deal with change of stroke colour when hovering over contestedUnusual connections
     if (e.target.attrs.contestedUnusual.isContested) {
       if (e.target.attrs.contestedUnusual.isUnusual) {
@@ -1224,7 +1348,6 @@ class EntityGraph extends Component {
         });
       }
     }
-
     // thicken the nodes attached to the line
     let nodeIDs = e.target.attrs.name.split(",");
     nodeIDs.forEach(id => {
@@ -1235,7 +1358,8 @@ class EntityGraph extends Component {
         idSplit !== "createdWithoutParents" &&
         idSplit !== "createdByAgent" &&
         idSplit !== "bornFromObject" &&
-        idSplit !== "parthenogenesis"
+        idSplit !== "parthenogenesis" &&
+        id !== "incest"
       ) {
         let nodeWithID = this.state.stageRef.find("." + id);
         nodeWithID.to({
@@ -1254,6 +1378,12 @@ class EntityGraph extends Component {
           document.body.style.cursor = "pointer";
           nodeWithID.to({
             stroke: "#0000ff"
+          });
+        }
+        if (e.target.attrs.incest.tf) {
+          document.body.style.cursor = "pointer";
+          nodeWithID.to({
+            stroke: "#3bb143"
           });
         }
       }
@@ -1375,15 +1505,21 @@ class EntityGraph extends Component {
       });
       this.state.stageRef.children[1].add(ORText);
     }
+    // console.log("End");
   };
 
   handleMouseOutLine = e => {
+    // console.log(e, "Mouseout");
     // thin the main line
     document.body.style.cursor = "default";
     e.target.to({
       strokeWidth: 4,
       opacity:
-        e.target.attrs.unusual.tf || e.target.attrs.contested.tf ? 1 : 0.3
+        e.target.attrs.unusual.tf ||
+        e.target.attrs.contested.tf ||
+        e.target.attrs.incest.tf
+          ? 1
+          : 0.3
     });
     // Deal with change of stroke colour when hovering over contestedUnusual connections
     if (e.target.attrs.contestedUnusual.isContested) {
@@ -1391,7 +1527,8 @@ class EntityGraph extends Component {
         stroke: "#0000ff"
       });
     }
-    // thicken the nodes attached to the line
+
+    // thin out the nodes attached to the line upon mouseout
     let nodeDs = e.target.attrs.name.split(",");
     nodeDs.forEach(id => {
       let idSplit = id.split("_")[0];
@@ -1408,7 +1545,6 @@ class EntityGraph extends Component {
         });
       }
     });
-
     if (e.target.attrs.contested.tf) {
       this.state.stageRef.children[1].find(".ORText").remove();
     }
@@ -1422,7 +1558,8 @@ class EntityGraph extends Component {
       //Rudimentary solution for scrolling up to the contested info page
       if (
         !this.state.openInfoPage.showContestPage &&
-        !this.state.openInfoPage.showUnusualPage
+        !this.state.openInfoPage.showUnusualPage &&
+        !this.state.openInfoPage.showIncestPage
       ) {
         window.scrollBy(-3000, -200);
       } else {
@@ -1433,7 +1570,9 @@ class EntityGraph extends Component {
           showContestPage: false,
           contest: undefined,
           showUnusualPage: true,
-          unusual: e.target.attrs.unusual
+          unusual: e.target.attrs.unusual,
+          showIncestPage: false,
+          incest: undefined
         }
       });
     } else if (e.target.attrs.contested.tf) {
@@ -1446,7 +1585,8 @@ class EntityGraph extends Component {
       //Rudimentary solution for scrolling up to the contested info page
       if (
         !this.state.openInfoPage.showContestPage &&
-        !this.state.openInfoPage.showUnusualPage
+        !this.state.openInfoPage.showUnusualPage &&
+        !this.state.openInfoPage.showIncestPage
       ) {
         window.scrollBy(-3000, -200);
       } else {
@@ -1457,7 +1597,29 @@ class EntityGraph extends Component {
           showContestPage: true,
           contest: e.target.attrs.contested,
           showUnusualPage: false,
-          unusual: undefined
+          unusual: undefined,
+          showIncestPage: false,
+          incest: undefined
+        }
+      });
+    } else if (e.target.attrs.incest.tf) {
+      if (
+        !this.state.openInfoPage.showContestPage &&
+        !this.state.openInfoPage.showUnusualPage &&
+        !this.state.openInfoPage.showIncestPage
+      ) {
+        window.scrollBy(-3000, -200);
+      } else {
+        window.scrollBy(-3000, -400);
+      }
+      this.setState({
+        openInfoPage: {
+          showContestPage: false,
+          contest: undefined,
+          showUnusualPage: false,
+          unusual: undefined,
+          showIncestPage: true,
+          incest: e.target.attrs.incest
         }
       });
     } else {
@@ -1466,7 +1628,9 @@ class EntityGraph extends Component {
           showContestPage: false,
           contest: undefined,
           showUnusualPage: false,
-          unusual: undefined
+          unusual: undefined,
+          showIncestPage: false,
+          incest: undefined
         }
       }); //  Is a normal relationship line, do nothing
     }
@@ -1515,7 +1679,8 @@ class EntityGraph extends Component {
     //Rudimentary solution for scrolling up to the contested info page
     if (
       !this.state.openInfoPage.showContestPage &&
-      !this.state.openInfoPage.showUnusualPage
+      !this.state.openInfoPage.showUnusualPage &&
+      !this.state.openInfoPage.showIncestPage
     ) {
       window.scrollBy(-3000, -200);
     } else {
@@ -1526,7 +1691,9 @@ class EntityGraph extends Component {
         showContestPage: false,
         contest: undefined,
         showUnusualPage: true,
-        unusual: unusual
+        unusual: unusual,
+        showIncestPage: false,
+        incest: undefined
       }
 
       // For this.state.liveinks, split by "," and check if any of the arrays .includes(autochthony ID depth neg one)
@@ -1860,6 +2027,100 @@ class EntityGraph extends Component {
         ) : (
           ""
         )}
+        {/* Info pages for incest relationships */}
+        {this.state.openInfoPage.incest ? (
+          <div
+            style={{
+              margin: "20px 96px 20px 96px",
+              border: "1px solid #000000",
+              boxShadow: "2px 2px 4px 2px #bbbbbb",
+              background: "#ffffff"
+            }}
+            className={this.state.openInfoPage.incest ? "" : "no-display"}
+            id="incestInfoPage"
+          >
+            <div
+              style={{
+                margin: "20px",
+                border: "3px solid #3bb143",
+                padding: "2rem 4rem 4rem 4rem",
+                position: "relative"
+              }}
+            >
+              <h2 style={{ textAlign: "center" }}>
+                {this.state.openInfoPage.incest
+                  ? this.state.openInfoPage.incest.type === "sameGen"
+                    ? "Sibling-Spousal Incest"
+                    : "Intergenerational Incest"
+                  : ""}
+              </h2>
+              <p style={{ fontStyle: "italic", textAlign: "center" }}>
+                (relationships between close relatives in{" "}
+                {this.state.openInfoPage.incest
+                  ? this.state.openInfoPage.incest.type === "sameGen"
+                    ? "the same "
+                    : "different "
+                  : ""}{" "}
+                generations)
+              </p>
+              <p>
+                Greek myth is full of incestuous relationships. In Apollodoros,
+                they are particularly prominent in the early generations of the
+                gods.
+              </p>
+              <div style={{ fontSize: "1.3rem", margin: "1rem 0 1rem 0" }}>
+                <span style={{ fontWeight: "bold" }}>
+                  {this.state.openInfoPage.incest
+                    ? " " +
+                      getName(
+                        entities[this.state.openInfoPage.incest.involved[0]]
+                      ) +
+                      " "
+                    : ""}
+                </span>
+                {this.state.openInfoPage.incest
+                  ? this.state.openInfoPage.incest.type === "sameGen"
+                    ? "has a relationship with X which is an incestuous relationship."
+                    : "is mentioned twice in this graph in different generations, meaning they are involved in an incestuous inter-generational relationship."
+                  : ""}
+              </div>
+              {this.getOtherUnusualExamples(
+                this.state.entityData.id,
+                this.state.openInfoPage.incest.type
+              ).length > 0 ? (
+                <React.Fragment>
+                  <div style={{ marginTop: "4rem", color: "#808080" }}>
+                    Some other examples of incest:
+                  </div>
+                  <ul>
+                    {this.getOtherUnusualExamples(
+                      this.state.entityData.id,
+                      this.state.openInfoPage.incest.type
+                    ).map(id => {
+                      return (
+                        <li
+                          onClick={() => {
+                            this.handleInTextPageChange(id);
+                          }}
+                          style={{
+                            textDecoration: "underline",
+                            cursor: "pointer"
+                          }}
+                        >
+                          {getName(entities[id])}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </React.Fragment>
+              ) : (
+                "There are no other examples of incest"
+              )}
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
         {/* Graph rendering with KonvajS */}
         <Stage
           ref="stage"
@@ -2025,9 +2286,10 @@ class EntityGraph extends Component {
             ))}
             {this.state.lineLinks.map((e, i) => (
               <Line
-                name={e.name}
+                name={e.incest.tf ? "incest," + e.name : e.name} // rudimentary deal with hovering error
                 points={e.points}
                 unusual={e.unusual}
+                incest={e.incest}
                 contested={e.contested}
                 contestedUnusual={{
                   isContested: e.contestedUnusual,
@@ -2038,9 +2300,13 @@ class EntityGraph extends Component {
                     ? "#0000ff"
                     : e.unusual.tf
                     ? "#ff0000"
+                    : e.incest.tf
+                    ? "#3bb143"
                     : "#000000"
                 }
-                opacity={e.unusual.tf || e.contested.tf ? 1 : 0.3}
+                opacity={
+                  e.unusual.tf || e.contested.tf || e.incest.tf ? 1 : 0.3
+                }
                 strokeWidth={4}
                 onMouseOver={this.handleMouseOverLine}
                 onMouseOut={this.handleMouseOutLine}
