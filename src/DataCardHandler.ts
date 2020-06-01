@@ -26,6 +26,7 @@ type childrenInfo = {
 export type relationshipInfo = {
   MOTHERS: entityInfo[];
   FATHERS: entityInfo[];
+  PARENTS: entityInfo[];
   CREATORS: entityInfo[];
   BORNFROM: entityInfo[];
   SIBLINGS: entityInfo[];
@@ -100,6 +101,7 @@ export const updateComponent = (id: string) => {
     let empty: relationshipInfo = {
       MOTHERS: [],
       FATHERS: [],
+      PARENTS: [],
       CREATORS: [],
       BORNFROM: [],
       SIBLINGS: [],
@@ -347,6 +349,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   let relationships: relationshipInfo = {
     MOTHERS: [],
     FATHERS: [],
+    PARENTS: [],
     CREATORS: [],
     BORNFROM: [],
     SIBLINGS: [],
@@ -403,6 +406,26 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
         relationships.FATHERS,
         d
       );
+    }
+
+    // X is your PARENT, e.g. gender is unknown (but check gender is unknown first)
+    else if (tie.predicate === "is parent of") {
+      if (entities[tie.targetID]["Agent/Coll.: gender"] === "Female") {
+        relationships.MOTHERS = checkAndRemoveDuplicates(
+          relationships.MOTHERS,
+          d
+        );
+      } else if (entities[tie.targetID]["Agent/Coll.: gender"] === "Male") {
+        relationships.FATHERS = checkAndRemoveDuplicates(
+          relationships.FATHERS,
+          d
+        );
+      } else {
+        relationships.PARENTS = checkAndRemoveDuplicates(
+          relationships.PARENTS,
+          d
+        );
+      }
     }
 
     // X is your CHILD
@@ -490,6 +513,7 @@ const sortConnectionsIntoRelationships = (id: string, connections: any) => {
   /* Alphabetize the relationships */
   relationships.MOTHERS = alphabetize(relationships.MOTHERS);
   relationships.FATHERS = alphabetize(relationships.FATHERS);
+  relationships.PARENTS = alphabetize(relationships.PARENTS);
   relationships.SIBLINGS = alphabetize(relationships.SIBLINGS);
   relationships.TWIN = alphabetize(relationships.TWIN);
   relationships.SPOUSES = alphabetize(relationships.SPOUSES);
@@ -880,6 +904,7 @@ export const checkNoRelations = (relationships: any) => {
   return (
     relationships.MOTHERS.length === 0 &&
     relationships.FATHERS.length === 0 &&
+    relationships.PARENTS.length === 0 &&
     relationships.SIBLINGS.length === 0 &&
     relationships.TWIN.length === 0 &&
     relationships.SPOUSES.length === 0 &&

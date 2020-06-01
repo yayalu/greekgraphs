@@ -57,6 +57,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       relationships: {
         MOTHERS: [],
         FATHERS: [],
+        PARENTS: [],
         CREATORS: [],
         BORNFROM: [],
         SIBLINGS: [],
@@ -187,6 +188,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         grandparents,
         JSON.parse(relationships[m.targetID]).relationships.FATHERS
       );
+      grandparents = this.removeGrandparentDuplicates(
+        grandparents,
+        JSON.parse(relationships[m.targetID]).relationships.PARENTS
+      );
     });
     that.state.relationships.FATHERS.forEach(f => {
       grandparents = this.removeGrandparentDuplicates(
@@ -196,6 +201,10 @@ class DataCards extends React.Component<DatumProps, DatumState> {
       grandparents = this.removeGrandparentDuplicates(
         grandparents,
         JSON.parse(relationships[f.targetID]).relationships.FATHERS
+      );
+      grandparents = this.removeGrandparentDuplicates(
+        grandparents,
+        JSON.parse(relationships[f.targetID]).relationships.PARENTS
       );
     });
     //Remove duplicate grandparents
@@ -250,7 +259,11 @@ class DataCards extends React.Component<DatumProps, DatumState> {
   getPluralization(relationship: string) {
     if (relationship === "PART OF") {
       return relationship + ": ";
-    } else if (relationship === "MOTHERS" || relationship === "FATHERS") {
+    } else if (
+      relationship === "MOTHERS" ||
+      relationship === "FATHERS" ||
+      relationship === "PARENTS"
+    ) {
       return Pluralize.singular(relationship) + ": ";
     } else if (
       relationship === "CHILDREN" &&
@@ -914,7 +927,8 @@ class DataCards extends React.Component<DatumProps, DatumState> {
             <div>{this.getAlternativePage()}</div>
             {/* If data is available for the subject */}
             {this.state.relationships["MOTHERS"].length +
-              this.state.relationships["FATHERS"].length >
+              this.state.relationships["FATHERS"].length +
+              this.state.relationships["PARENTS"].length >
             0 ? (
               <div>{this.getGrandparentDataPoints()}</div>
             ) : (
