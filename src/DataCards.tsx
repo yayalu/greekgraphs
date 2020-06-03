@@ -753,7 +753,7 @@ class DataCards extends React.Component<DatumProps, DatumState> {
         ) : (
           <span>
             {" "}
-            OR{" "}
+            and{" "}
             <span
               style={{ textDecoration: "underline", cursor: "pointer" }}
               onClick={() =>
