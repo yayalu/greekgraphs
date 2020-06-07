@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/greekgraphs/static/css/main.c2b0b2b1.chunk.css",
-    "main.js": "/greekgraphs/static/js/main.7c4b0f25.chunk.js",
-    "main.js.map": "/greekgraphs/static/js/main.7c4b0f25.chunk.js.map",
+    "main.js": "/greekgraphs/static/js/main.b241bcc5.chunk.js",
+    "main.js.map": "/greekgraphs/static/js/main.b241bcc5.chunk.js.map",
     "runtime~main.js": "/greekgraphs/static/js/runtime~main.6bf6a2d4.js",
     "runtime~main.js.map": "/greekgraphs/static/js/runtime~main.6bf6a2d4.js.map",
     "static/js/2.222bb00d.chunk.js": "/greekgraphs/static/js/2.222bb00d.chunk.js",
     "static/js/2.222bb00d.chunk.js.map": "/greekgraphs/static/js/2.222bb00d.chunk.js.map",
     "index.html": "/greekgraphs/index.html",
-    "precache-manifest.1def3b14a63f12bc0ca6f6f110f3fb3d.js": "/greekgraphs/precache-manifest.1def3b14a63f12bc0ca6f6f110f3fb3d.js",
+    "precache-manifest.f70909b27d34571c372890ebe79dfb75.js": "/greekgraphs/precache-manifest.f70909b27d34571c372890ebe79dfb75.js",
     "service-worker.js": "/greekgraphs/service-worker.js",
     "static/css/main.c2b0b2b1.chunk.css.map": "/greekgraphs/static/css/main.c2b0b2b1.chunk.css.map",
     "static/media/arrow.svg": "/greekgraphs/static/media/arrow.1cd80763.svg",
     "static/media/legend.png": "/greekgraphs/static/media/legend.37c5e084.png",
-    "static/media/logo.svg": "/greekgraphs/static/media/logo.1740fffd.svg",
+    "static/media/logo.svg": "/greekgraphs/static/media/logo.e510764a.svg",
     "static/media/parthenogenesis.png": "/greekgraphs/static/media/parthenogenesis.ae322018.png"
   }
 }
