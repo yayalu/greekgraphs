@@ -1,6 +1,7 @@
 #  Analysis and Visualisation of Complex Family Relationships in Greek Mythology
 
-This is the source code for the interface designed by Yaya Lu, for her honours project at the Australian National University (2019-2020).
+This is the source code for the interface designed by Yaya Lu, for her honours project at the Australian National University (2019-2020)
+Final thesis available as a PDF in this repo.
 
 ## Websites for MANTO
 * Public URL for the website: [website](https://yayalu.github.io/greekgraphs) 
