@@ -36,7 +36,7 @@
     "react-modal": "^3.11.2",
     "react-native-d3-tree-graph": "^1.0.12",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.1.1",
+    "react-scripts": "5.0.1",
     "react-select-search": "^0.10.1",
     "semantic-ui-react": "^0.88.2",
     "typescript": "3.5.3",
